@@ -1,0 +1,68 @@
+.modulo {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+  position: relative;
+}
+
+.modulo-back {
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,0.5);
+  transition: color 0.15s;
+}
+.modulo-back:hover { color: rgba(255,255,255,0.9); }
+
+.modulo-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 12px;
+}
+
+.modulo-name {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(60px, 12vw, 160px);
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.modulo-sub {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 18px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 48px;
+}
+
+.modulo-stat {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(40px, 8vw, 100px);
+  color: rgba(255,255,255,0.95);
+  line-height: 1;
+}
+
+.modulo-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-top: 8px;
+}

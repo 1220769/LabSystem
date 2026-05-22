@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,700;1,300;1,700&family=Oswald:wght@700&display=swap');
+.landing {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: #F0EDE4;
+}
+
+.stamp {
+  position: absolute;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(10,10,8,0.22);
+  line-height: 1.7;
+  pointer-events: none;
+}
+.stamp-tl { top: 22px; left: 28px; }
+.stamp-tr { top: 22px; right: 28px; text-align: right; }
+
+.tube-scene {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+
+
+
+.seg-label {
+  position: absolute;
+  left: calc(100% + 28px);
+  transform: translateY(-50%);
+  pointer-events: none;
+  animation: labelIn 0.18s ease both;
+}
+
+@keyframes labelIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(-6px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+.seg-label-line {
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: 20px;
+  height: 1px;
+  background: rgba(10,10,8,0.2);
+  margin-right: 8px;
+  transform: translateY(-50%);
+}
+
+.seg-label-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(10,10,8,0.35);
+  margin-bottom: 3px;
+}
+
+.seg-label-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  color: #0A0A08;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.seg-label-desc {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 11px;
+  color: rgba(10,10,8,0.35);
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+.hint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(10,10,8,0.22);
+  white-space: nowrap;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.slogan {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Oswald', sans-serif;
+font-weight: 700;
+ font-size: clamp(52px, 8vw, 130px);
+color: #0A0A08;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+.slogan-left {
+  right: calc(50% + 60px);
+  left: 0;
+  text-align: center;
+}
+
+.slogan-right {
+  left: calc(50% + 60px);
+  right: 0;
+  text-align: center;
+  font-size: clamp(60px, 10vw, 160px);
+}
+.panel {
+  position: absolute;
+  inset: 0;
+  background: #0A0A08;
+  display: flex;
+  align-items: stretch;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.panel--open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.panel-left {
+  width: 220px;
+  border-right: 1px solid rgba(242,239,232,0.07);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.panel-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: rgba(242,239,232,0.7);
+  margin-bottom: 32px;
+}
+.panel-logo em { color: #C8001A; font-style: normal; }
+
+.panel-swatch {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  margin-bottom: 14px;
+  opacity: 0.7;
+}
+
+.panel-module-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 0.04em;
+  color: #F0EDE4;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.panel-module-sub {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 12px;
+  color: rgba(242,239,232,0.38);
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.panel-stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  color: #C8001A;
+  line-height: 1;
+}
+
+.panel-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(242,239,232,0.28);
+  margin-top: 4px;
+}
+
+.panel-close {
+  margin-top: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(242,239,232,0.22);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  transition: color 0.15s;
+}
+.panel-close:hover { color: rgba(242,239,232,0.7); }
+
+.panel-right {
+  flex: 1;
+  padding: 32px 36px;
+  overflow-y: auto;
+}
+
+.panel-section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(242,239,232,0.22);
+  margin-bottom: 16px;
+}
+
+.panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(242,239,232,0.05);
+}
+.panel-row:last-child { border-bottom: none; }
+
+.panel-row-name {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  color: rgba(242,239,232,0.82);
+}
+
+.panel-row-id {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(242,239,232,0.28);
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.badge-ok   { background: rgba(0,200,150,0.12);  color: #00C896; }
+.badge-pend { background: rgba(232,160,32,0.12); color: #E8A020; }
+.badge-crit { background: rgba(200,0,26,0.15);   color: #C8001A; }@keyframes rainbow {
+  0%   { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.tube-svg {
+  filter: drop-shadow(0 8px 40px rgba(10,10,8,0.10));
+  animation: rainbow 2s linear infinite;
+}
+.dive-overlay {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  pointer-events: none;
+}
