@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
+import { useAuthStore } from '../../store/authStore'
 import './Utilizadores.css'
 
 type Role = 'administrador' | 'tecnico' | 'medico' | 'enfermeiro' | 'financeiro' | 'utente'
@@ -52,14 +53,23 @@ const EMPTY_FORM: IForm = {
   nome: '', email: '', password: '', role: 'tecnico', telefone: '', departamento: '',
 }
 
+interface IStats {
+  total: number
+  ativos: number
+  inativos: number
+  porRole: { _id: string; total: number; ativos: number }[]
+}
+
 export default function Utilizadores({ seg }: { seg: { color: string; name: string } }) {
-  const navigate  = useNavigate()
+  const navigate   = useNavigate()
+  const { user: me } = useAuthStore()
   const [tab,      setTab]      = useState<TabUz>('todos')
   const [search,   setSearch]   = useState('')
   const [users,    setUsers]    = useState<IUser[]>([])
   const [total,    setTotal]    = useState(0)
   const [page,     setPage]     = useState(1)
   const [loading,  setLoading]  = useState(false)
+  const [stats,    setStats]    = useState<IStats | null>(null)
   const [selected, setSelected] = useState<IUser | null>(null)
   const [editing,  setEditing]  = useState(false)
   const [creating, setCreating] = useState(false)
@@ -69,8 +79,9 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
 
   const PAGES = Math.max(1, Math.ceil(total / 20))
 
-  const activeCount   = users.filter(u => u.ativo).length
-  const inactiveCount = users.filter(u => !u.ativo).length
+  const loadStats = useCallback(() => {
+    api.get('/users/stats').then(r => setStats(r.data)).catch(() => {})
+  }, [])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -87,6 +98,7 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
   }, [tab, search, page])
 
   useEffect(() => { load() }, [load])
+  useEffect(() => { loadStats() }, [loadStats])
 
   function openCreate() {
     setForm(EMPTY_FORM); setFormErr(''); setCreating(true); setEditing(false); setSelected(null)
@@ -120,7 +132,7 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
       } else if (selected) {
         await api.put(`/users/${selected._id}`, body)
       }
-      closePanel(); load()
+      closePanel(); load(); loadStats()
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } }
       setFormErr(err.response?.data?.message ?? 'Erro ao guardar')
@@ -137,7 +149,7 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
       if (selected?._id === u._id) {
         setSelected(prev => prev ? { ...prev, ativo: !prev.ativo } : null)
       }
-      load()
+      load(); loadStats()
     } catch { /* */ }
   }
 
@@ -155,19 +167,39 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
         </div>
         <div className="uz-kpis">
           <div className="uz-kpi">
-            <span className="uz-kpi-val">{total}</span>
+            <span className="uz-kpi-val">{stats?.total ?? '—'}</span>
             <span className="uz-kpi-lbl">total</span>
           </div>
           <div className="uz-kpi uz-kpi--ok">
-            <span className="uz-kpi-val">{activeCount}</span>
+            <span className="uz-kpi-val">{stats?.ativos ?? '—'}</span>
             <span className="uz-kpi-lbl">ativos</span>
           </div>
           <div className="uz-kpi uz-kpi--off">
-            <span className="uz-kpi-val">{inactiveCount}</span>
+            <span className="uz-kpi-val">{stats?.inativos ?? '—'}</span>
             <span className="uz-kpi-lbl">inativos</span>
           </div>
         </div>
       </div>
+
+      {/* distribuição por role */}
+      {stats && stats.porRole.length > 0 && (
+        <div className="uz-roles-dist">
+          {stats.porRole.map(r => (
+            <button
+              key={r._id}
+              className={`uz-role-dist-item${tab === r._id ? ' uz-role-dist-item--on' : ''}`}
+              onClick={() => { setTab(r._id as Role); setPage(1) }}
+              style={{ '--role-color': ROLE_COLORS[r._id as Role] ?? '#888' } as React.CSSProperties}
+            >
+              <span className="uz-role-dist-dot" />
+              <span className="uz-role-dist-name">{r._id}</span>
+              <span className="uz-role-dist-count">{r.total}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="uz-top-spacer" />
 
       <div className="uz-toolbar">
         <div className="uz-tabs">
@@ -202,7 +234,12 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
                   <span style={{ color: ROLE_COLORS[u.role] }}>{initials(u.nome)}</span>
                 </div>
                 <div className="uz-row-info">
-                  <div className="uz-row-nome">{u.nome}</div>
+                  <div className="uz-row-nome">
+                    {u.nome}
+                    {u._id === (me as unknown as { _id: string })?._id && (
+                      <span className="uz-tu-badge">tu</span>
+                    )}
+                  </div>
                   <div className="uz-row-email">{u.email}</div>
                 </div>
                 <div className="uz-row-mid">
@@ -260,6 +297,9 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
                   <span className={`uz-status uz-status--${selected.ativo ? 'ativo' : 'inativo'}`}>
                     {selected.ativo ? 'ativo' : 'inativo'}
                   </span>
+                  {selected._id === (me as unknown as { _id: string })?._id && (
+                    <span className="uz-tu-badge uz-tu-badge--lg">este és tu</span>
+                  )}
                 </div>
                 <div className="uz-detail-grid">
                   <div className="uz-detail-field">

@@ -96,6 +96,23 @@ export const deactivateUser = async (req: AuthRequest, res: Response) => {
   }
 }
 
+// GET /api/users/stats — totais por role e estado
+export const getStats = async (_req: AuthRequest, res: Response) => {
+  try {
+    const [porRole, ativos, inativos] = await Promise.all([
+      User.aggregate([
+        { $group: { _id: '$role', total: { $sum: 1 }, ativos: { $sum: { $cond: ['$ativo', 1, 0] } } } },
+        { $sort: { total: -1 } },
+      ]),
+      User.countDocuments({ ativo: true }),
+      User.countDocuments({ ativo: false }),
+    ])
+    res.json({ total: ativos + inativos, ativos, inativos, porRole })
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter estatísticas' })
+  }
+}
+
 // GET /api/users/permissions — devolve mapa de permissões do utilizador actual
 export const getMyPermissions = async (req: AuthRequest, res: Response) => {
   if (!req.user) return res.status(401).json({ message: 'Não autenticado' })

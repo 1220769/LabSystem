@@ -38,6 +38,8 @@ export const login = async (req: Request, res: Response) => {
     if (!user.ativo) {
       return res.status(403).json({ message: 'Conta desactivada' })
     }
+    user.ultimoLogin = new Date()
+    await user.save()
     res.json({
       _id: user._id,
       nome: user.nome,

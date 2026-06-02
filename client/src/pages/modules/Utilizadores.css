@@ -1,4 +1,39 @@
 /* ── layout ── */
+.uz-top-spacer { height: 8px; }
+
+.uz-roles-dist {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 0 60px 18px;
+}
+.uz-role-dist-item {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(240,235,225,0.06); border: 1px solid rgba(240,235,225,0.1);
+  border-radius: 3px; padding: 6px 12px; cursor: pointer; transition: all 0.15s;
+}
+.uz-role-dist-item:hover { background: rgba(240,235,225,0.12); }
+.uz-role-dist-item--on   { background: rgba(240,235,225,0.16); border-color: rgba(240,235,225,0.3); }
+.uz-role-dist-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: var(--role-color, #888);
+}
+.uz-role-dist-name {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase; color: rgba(240,235,225,0.6);
+}
+.uz-role-dist-count {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 12px; font-weight: 600;
+  color: rgba(240,235,225,0.88);
+}
+
+.uz-tu-badge {
+  display: inline-block; margin-left: 8px;
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 8px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(200,168,32,0.2); color: #C8A820;
+  border-radius: 2px; padding: 2px 6px; vertical-align: middle;
+}
+.uz-tu-badge--lg { font-size: 9px; padding: 3px 8px; margin-left: 0; }
+
 .uz-page {
   min-height: 100vh;
   display: flex; flex-direction: column;
