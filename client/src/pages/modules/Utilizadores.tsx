@@ -129,9 +129,10 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
     setSaving(true); setFormErr('')
     try {
       const body: Partial<IForm> = { nome: form.nome, email: form.email, role: form.role }
-      if (form.telefone)    body.telefone    = form.telefone
+      if (form.telefone)     body.telefone     = form.telefone
       if (form.departamento) body.departamento = form.departamento
-      if (form.password)    body.password    = form.password
+      if (form.password)     body.password     = form.password
+      if (form.utenteRef)    body.utenteRef    = form.utenteRef
 
       if (creating) {
         await api.post('/users', body)
