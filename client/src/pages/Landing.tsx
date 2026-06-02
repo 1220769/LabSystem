@@ -148,8 +148,18 @@ export default function Landing() {
 
       <motion.div
         className="tube-scene"
-        animate={diving ? { scale: 6, opacity: 0 } : { scale: 1, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.4, 0, 1, 1], delay: diving ? 0.2 : 0 }}
+        animate={
+          diving
+            ? { scale: 6, opacity: 0 }
+            : hovered !== null
+              ? { scale: 1.07, opacity: 1 }
+              : { scale: 1,    opacity: 1 }
+        }
+        transition={
+          diving
+            ? { duration: 0.6, ease: [0.4, 0, 1, 1], delay: 0.2 }
+            : { type: 'spring', stiffness: 260, damping: 24 }
+        }
       >
         <svg
           className="tube-svg"
