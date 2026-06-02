@@ -87,6 +87,11 @@ export default function Portal() {
   const [summary,   setSummary]   = useState<ISummary | null>(null)
   const [perfil,    setPerfil]    = useState<IPerfil | null>(null)
   const [noLink,    setNoLink]    = useState(false)
+  const [linkNif,   setLinkNif]   = useState('')
+  const [linkSns,   setLinkSns]   = useState('')
+  const [linkErr,   setLinkErr]   = useState('')
+  const [linkOk,    setLinkOk]    = useState('')
+  const [linking,   setLinking]   = useState(false)
   const [reqs,      setReqs]      = useState<IReq[]>([])
   const [resultados,setResultados]= useState<IRes[]>([])
   const [faturas,   setFaturas]   = useState<IFat[]>([])
@@ -143,8 +148,57 @@ export default function Portal() {
 
       {noLink ? (
         <div className="portal-no-link">
-          <div className="portal-no-link-title">Conta não associada a nenhum registo clínico</div>
-          <div className="portal-no-link-sub">Contacte o laboratório para associar a sua conta ao seu processo.</div>
+          <div className="portal-no-link-title">Associar ao registo clínico</div>
+          <div className="portal-no-link-sub">Introduza o seu NIF ou Nº SNS para ligar a conta ao seu processo clínico.</div>
+
+          <div style={{ marginTop: 32, width: '100%', maxWidth: 360 }}>
+            {linkErr && (
+              <div style={{ fontFamily: "'GFS Didot',Georgia,serif", fontSize: 13, color: '#C8001A', background: 'rgba(200,0,26,0.07)', border: '1px solid rgba(200,0,26,0.2)', borderRadius: 4, padding: '10px 14px', marginBottom: 14 }}>
+                {linkErr}
+              </div>
+            )}
+            {linkOk && (
+              <div style={{ fontFamily: "'GFS Didot',Georgia,serif", fontSize: 13, color: '#2E7A50', background: 'rgba(46,122,80,0.08)', border: '1px solid rgba(46,122,80,0.2)', borderRadius: 4, padding: '10px 14px', marginBottom: 14 }}>
+                {linkOk}
+              </div>
+            )}
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ display: 'block', fontFamily: "'GFS Didot',Georgia,serif", fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(26,18,8,0.35)', marginBottom: 5 }}>NIF</label>
+              <input
+                style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(26,18,8,0.04)', border: '1px solid rgba(26,18,8,0.1)', borderRadius: 3, padding: '9px 12px', fontFamily: "'GFS Didot',Georgia,serif", fontSize: 13, color: 'rgba(26,18,8,0.82)', outline: 'none' }}
+                placeholder="ex: 268332436"
+                value={linkNif}
+                onChange={e => setLinkNif(e.target.value)}
+              />
+            </div>
+            <div style={{ textAlign: 'center', fontFamily: "'GFS Didot',Georgia,serif", fontStyle: 'italic', fontSize: 12, color: 'rgba(26,18,8,0.3)', margin: '8px 0' }}>ou</div>
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontFamily: "'GFS Didot',Georgia,serif", fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(26,18,8,0.35)', marginBottom: 5 }}>Nº SNS</label>
+              <input
+                style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(26,18,8,0.04)', border: '1px solid rgba(26,18,8,0.1)', borderRadius: 3, padding: '9px 12px', fontFamily: "'GFS Didot',Georgia,serif", fontSize: 13, color: 'rgba(26,18,8,0.82)', outline: 'none' }}
+                placeholder="ex: 123456789"
+                value={linkSns}
+                onChange={e => setLinkSns(e.target.value)}
+              />
+            </div>
+            <button
+              disabled={linking || (!linkNif.trim() && !linkSns.trim())}
+              onClick={async () => {
+                setLinkErr(''); setLinkOk(''); setLinking(true)
+                try {
+                  const r = await api.post('/portal/link', { nif: linkNif || undefined, sns: linkSns || undefined })
+                  setLinkOk(`Ligado com sucesso a ${r.data.utente.nome}. A recarregar…`)
+                  setTimeout(() => window.location.reload(), 1500)
+                } catch (e: unknown) {
+                  const err = e as { response?: { data?: { message?: string } } }
+                  setLinkErr(err.response?.data?.message ?? 'Erro ao ligar conta')
+                } finally { setLinking(false) }
+              }}
+              style={{ width: '100%', fontFamily: "'GFS Didot',Georgia,serif", fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', padding: '12px', background: 'rgba(26,18,8,0.85)', color: '#F0EDE4', border: 'none', borderRadius: 3, cursor: 'pointer', opacity: linking ? 0.6 : 1 }}
+            >
+              {linking ? 'a verificar…' : 'associar conta'}
+            </button>
+          </div>
         </div>
       ) : (
         <>

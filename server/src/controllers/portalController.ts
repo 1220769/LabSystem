@@ -4,6 +4,7 @@ import Utente     from '../models/Utente'
 import Requisicao from '../models/Requisicao'
 import Resultado  from '../models/Resultado'
 import Fatura     from '../models/Fatura'
+import User       from '../models/User'
 
 function utenteId(req: AuthRequest) {
   return req.user?.utenteRef
@@ -67,6 +68,25 @@ export async function getFaturas(req: AuthRequest, res: Response) {
     res.json({ data, total })
   } catch {
     res.status(500).json({ message: 'Erro ao obter faturas' })
+  }
+}
+
+export async function linkUtente(req: AuthRequest, res: Response) {
+  try {
+    const { nif, sns } = req.body
+    if (!nif && !sns) return res.status(400).json({ message: 'Indique NIF ou Nº SNS' })
+
+    const filter: Record<string, string> = {}
+    if (nif) filter.nif = nif.trim()
+    else if (sns) filter.sns = sns.trim()
+
+    const utente = await Utente.findOne(filter)
+    if (!utente) return res.status(404).json({ message: 'Nenhum registo clínico encontrado com esses dados' })
+
+    await User.findByIdAndUpdate(req.user!._id, { utenteRef: utente._id })
+    res.json({ message: 'Conta ligada com sucesso', utente: { nome: utente.nome, sns: utente.sns } })
+  } catch {
+    res.status(500).json({ message: 'Erro ao ligar conta' })
   }
 }
 
