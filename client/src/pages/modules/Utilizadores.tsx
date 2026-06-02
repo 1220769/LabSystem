@@ -37,6 +37,7 @@ interface IUser {
   telefone?: string
   departamento?: string
   ultimoLogin?: string
+  utenteRef?: string
   createdAt: string
 }
 
@@ -111,15 +112,22 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
   }
 
   function openEdit(u: IUser) {
-    setForm({ nome: u.nome, email: u.email, password: '', role: u.role, telefone: u.telefone ?? '', departamento: u.departamento ?? '' })
+    setForm({ nome: u.nome, email: u.email, password: '', role: u.role, telefone: u.telefone ?? '', departamento: u.departamento ?? '', utenteRef: u.utenteRef ?? '' })
+    setUtenteLinked(null)
     setFormErr(''); setEditing(true); setCreating(false); setSelected(u)
+    // se já tem utente ligado, carrega o nome para mostrar no form
+    if (u.utenteRef) {
+      api.get(`/utentes/${u.utenteRef}`)
+        .then(r => setUtenteLinked({ _id: r.data._id, nome: r.data.nome, numeroProcesso: r.data.numeroProcesso, nif: r.data.nif }))
+        .catch(() => {})
+    }
   }
 
   function openDetail(u: IUser) {
     setSelected(u); setCreating(false); setEditing(false)
   }
 
-  function closePanel() { setSelected(null); setCreating(false); setEditing(false) }
+  function closePanel() { setSelected(null); setCreating(false); setEditing(false); setUtenteLinked(null); setUtenteSearch('') }
 
   function setField(k: keyof IForm, v: string) { setForm(f => ({ ...f, [k]: v })) }
 
