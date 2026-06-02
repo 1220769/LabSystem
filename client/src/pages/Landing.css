@@ -36,6 +36,7 @@
   transform: translateY(-50%);
   pointer-events: none;
   animation: labelIn 0.18s ease both;
+  z-index: 10;
 }
 
 @keyframes labelIn {
