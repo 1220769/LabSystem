@@ -57,6 +57,35 @@ export async function getResultados(req: AuthRequest, res: Response) {
   }
 }
 
+export async function updatePerfil(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.status(404).json({ message: 'Sem registo clínico associado' })
+    const allowed = ['contacto', 'email', 'morada', 'medico']
+    const update  = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)))
+    const utente  = await Utente.findByIdAndUpdate(id, update, { new: true, runValidators: true })
+    if (!utente) return res.status(404).json({ message: 'Utente não encontrado' })
+    res.json(utente)
+  } catch {
+    res.status(500).json({ message: 'Erro ao actualizar perfil' })
+  }
+}
+
+export async function getResultadosByRequisicao(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.json({ data: [] })
+    const data = await Resultado.find({
+      utente: id,
+      requisicaoNumero: req.params.reqNumero,
+      estado: 'validado_medico',
+    }).sort({ 'analise.categoria': 1 })
+    res.json({ data })
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter resultados' })
+  }
+}
+
 export async function getFaturas(req: AuthRequest, res: Response) {
   try {
     const id = utenteId(req)
