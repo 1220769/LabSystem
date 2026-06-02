@@ -1,11 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../../api/axios'
 import './Financeiro.css'
-
-const API = 'http://localhost:4000/api'
-const tok = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
 
 // ── preços catálogo ──
 const PRECOS: Record<string, { nome: string; preco: number }> = {
@@ -132,7 +129,7 @@ export default function Financeiro({ seg }: { seg: { color: string; name: string
       const params: Record<string, string | number> = { page, limit: 20 }
       if (tab !== 'todas') params.estado = tab
       if (search) params.search = search
-      const r = await axios.get(`${API}/faturas`, { ...tok(), params })
+      const r = await api.get('/faturas', { params })
       setFaturas(r.data.data)
       setTotal(r.data.total)
     } catch { /* silêncio */ } finally { setLoading(false) }
@@ -141,7 +138,7 @@ export default function Financeiro({ seg }: { seg: { color: string; name: string
   useEffect(() => { load() }, [load])
 
   useEffect(() => {
-    axios.get(`${API}/faturas/stats`, tok()).then(r => setStats(r.data)).catch(() => {})
+    api.get('/faturas/stats').then(r => setStats(r.data)).catch(() => {})
   }, [faturas])
 
   // req typeahead
@@ -150,7 +147,7 @@ export default function Financeiro({ seg }: { seg: { color: string; name: string
     setReqLoading(true)
     const t = setTimeout(async () => {
       try {
-        const r = await axios.get(`${API}/faturas/requisicoes-livres`, tok())
+        const r = await api.get('/faturas/requisicoes-livres')
         const q = reqSearch.toLowerCase()
         setReqOptions((r.data.data as IReq[]).filter(x =>
           x.numeroRequisicao.toLowerCase().includes(q) || x.utenteNome.toLowerCase().includes(q)
@@ -210,7 +207,7 @@ export default function Financeiro({ seg }: { seg: { color: string; name: string
         valorLiquido:           liquid,
         observacoes:            obs,
       }
-      await axios.post(`${API}/faturas`, body, tok())
+      await api.post('/faturas', body)
       setCreating(false); resetForm(); load()
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } }
@@ -222,7 +219,7 @@ export default function Financeiro({ seg }: { seg: { color: string; name: string
     if (!selected) return
     const map = { emitir: 'emitida', pagar: 'paga', anular: 'anulada' }
     try {
-      const r = await axios.patch(`${API}/faturas/${selected._id}`, { estado: map[action] }, tok())
+      const r = await api.patch(`/faturas/${selected._id}`, { estado: map[action] })
       setSelected(r.data)
       load()
     } catch { /* */ }

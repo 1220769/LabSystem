@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../../api/axios'
 import './Analytics.css'
-
-const API = 'http://localhost:4000/api'
-const tok = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
 
 function fmtEur(v: number) {
   return v.toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' })
@@ -68,7 +65,7 @@ export default function Analytics({ seg }: { seg: { color: string; name: string 
 
   useEffect(() => {
     setLoading(true)
-    axios.get(`${API}/analytics/dashboard`, tok())
+    api.get('/analytics/dashboard')
       .then(r => { setData(r.data); setLoading(false) })
       .catch(() => { setErr('Não foi possível carregar os dados.'); setLoading(false) })
   }, [])
