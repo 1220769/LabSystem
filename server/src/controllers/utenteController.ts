@@ -46,9 +46,17 @@ export const createUtente = async (req: AuthRequest, res: Response) => {
   } catch (err: any) {
     if (err.code === 11000) {
       const campo = Object.keys(err.keyPattern)[0]
-      return res.status(400).json({ message: `${campo} já existe` })
+      const label: Record<string, string> = { nif: 'NIF', sns: 'Nº SNS', numeroProcesso: 'Nº processo' }
+      return res.status(400).json({ message: `${label[campo] ?? campo} já existe na base de dados` })
     }
-    res.status(500).json({ message: 'Erro ao criar utente', error: err })
+    if (err.name === 'ValidationError') {
+      const msgs = Object.values(err.errors).map((e: any) => e.message).join('; ')
+      return res.status(400).json({ message: msgs })
+    }
+    if (err.name === 'CastError') {
+      return res.status(400).json({ message: `Campo inválido: ${err.path}` })
+    }
+    res.status(500).json({ message: 'Erro ao criar utente' })
   }
 }
 

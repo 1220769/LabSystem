@@ -124,6 +124,17 @@ export default function Utentes({ seg }: { seg: Seg }) {
   const closePanel = () => { setPanel(null); setSelected(null); setFormError('') }
 
   const handleSave = async () => {
+    // validação local
+    if (!form.nome.trim())                  return setFormError('Nome é obrigatório')
+    if (!form.dataNascimento)               return setFormError('Data de nascimento é obrigatória')
+    if (!form.nif.trim())                   return setFormError('NIF é obrigatório')
+    if (!form.sns.trim())                   return setFormError('Nº SNS é obrigatório')
+    if (!form.contacto.trim())              return setFormError('Telemóvel é obrigatório')
+    if (!form.numeroProcesso.trim())        return setFormError('Nº processo é obrigatório')
+    if (!form.morada.rua.trim())            return setFormError('Rua é obrigatória')
+    if (!form.morada.codigoPostal.trim())   return setFormError('Código postal é obrigatório')
+    if (!form.morada.localidade.trim())     return setFormError('Localidade é obrigatória')
+
     setSaving(true)
     setFormError('')
     try {
