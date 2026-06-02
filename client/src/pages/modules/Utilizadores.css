@@ -8,7 +8,7 @@
 /* ── back ── */
 .uz-back {
   position: absolute; top: 26px; left: 28px;
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase;
   background: none; border: none; cursor: pointer;
   color: rgba(240,235,225,0.35); transition: color 0.15s; padding: 0;
@@ -23,27 +23,27 @@
 }
 .uz-identity { flex: 1; padding-top: 48px; }
 .uz-num {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.22em; color: rgba(240,235,225,0.25); display: block; margin-bottom: 6px;
 }
 .uz-title {
-  font-family: 'Oswald', sans-serif; font-weight: 700;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700;
   font-size: clamp(44px, 8vw, 110px); text-transform: uppercase;
   color: rgba(240,235,225,0.88); line-height: 1; margin: 0 0 10px;
 }
 .uz-sub {
-  font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-style: italic; font-weight: 300;
   font-size: 15px; color: rgba(240,235,225,0.38); margin: 0;
 }
 
 .uz-kpis { display: flex; gap: 28px; padding-bottom: 10px; flex-shrink: 0; }
 .uz-kpi { display: flex; flex-direction: column; align-items: flex-end; }
 .uz-kpi-val {
-  font-family: 'Oswald', sans-serif; font-weight: 700;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700;
   font-size: 32px; line-height: 1; color: rgba(240,235,225,0.88);
 }
 .uz-kpi-lbl {
-  font-family: 'DM Mono', monospace; font-size: 9px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: rgba(240,235,225,0.28); margin-top: 3px;
 }
@@ -60,7 +60,7 @@
   background: rgba(0,0,0,0.2); border-radius: 4px; padding: 3px;
 }
 .uz-tab {
-  font-family: 'DM Mono', monospace; font-size: 9px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.1em; text-transform: uppercase;
   padding: 6px 12px; background: none; border: none;
   border-radius: 3px; cursor: pointer;
@@ -73,14 +73,14 @@
   flex: 1; min-width: 180px;
   background: rgba(0,0,0,0.15); border: 1px solid rgba(240,235,225,0.13);
   border-radius: 3px; padding: 9px 14px;
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.04em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px; letter-spacing: 0.04em;
   color: rgba(240,235,225,0.82); outline: none; transition: border-color 0.15s;
 }
 .uz-search::placeholder { color: rgba(240,235,225,0.25); }
 .uz-search:focus         { border-color: rgba(240,235,225,0.32); }
 
 .uz-btn-new {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase; padding: 9px 20px;
   background: rgba(240,235,225,0.13); color: rgba(240,235,225,0.88);
   border: 1px solid rgba(240,235,225,0.2); border-radius: 3px;
@@ -91,7 +91,7 @@
 /* ── list ── */
 .uz-list-area { flex: 1; padding: 0 60px 60px; overflow-y: auto; }
 .uz-msg {
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px; letter-spacing: 0.08em;
   color: rgba(240,235,225,0.28); padding: 48px 0; text-align: center;
 }
 .uz-list { border-top: 1px solid rgba(240,235,225,0.08); }
@@ -107,24 +107,24 @@
 .uz-avatar {
   width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 13px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700; font-size: 13px;
   color: rgba(240,235,225,0.85);
 }
 
 .uz-row-info { flex: 1; min-width: 0; }
 .uz-row-nome {
-  font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 500;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 14px; font-weight: 500;
   color: rgba(240,235,225,0.88); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .uz-row-email {
-  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px; letter-spacing: 0.06em;
   color: rgba(240,235,225,0.35); margin-top: 2px;
 }
 
 .uz-row-mid { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 .uz-role {
-  font-family: 'DM Mono', monospace; font-size: 8px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 8px;
   letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px;
 }
 .uz-role--administrador { background: rgba(240,208,128,0.2); color: #F0D080; }
@@ -135,24 +135,24 @@
 .uz-role--utente        { background: rgba(240,235,225,0.1); color: rgba(240,235,225,0.5); }
 
 .uz-dept {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.06em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.06em;
   color: rgba(240,235,225,0.3);
 }
 
 .uz-row-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .uz-status {
-  font-family: 'DM Mono', monospace; font-size: 8px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 8px;
   letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px;
 }
 .uz-status--ativo   { background: rgba(168,212,176,0.15); color: #A8D4B0; }
 .uz-status--inativo { background: rgba(200,0,26,0.12);    color: rgba(255,140,140,0.8); }
 
 .uz-last {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.06em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.06em;
   color: rgba(240,235,225,0.22);
 }
 .uz-arr {
-  font-family: 'DM Mono', monospace; font-size: 14px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 14px;
   color: rgba(240,235,225,0.16); transition: color 0.12s, transform 0.12s;
 }
 .uz-row:hover .uz-arr { color: rgba(240,235,225,0.55); transform: translateX(3px); }
@@ -160,7 +160,7 @@
 /* pagination */
 .uz-pag { display: flex; align-items: center; gap: 16px; justify-content: center; padding: 28px 0 0; }
 .uz-pag-btn {
-  font-family: 'DM Mono', monospace; font-size: 18px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 18px;
   background: none; border: 1px solid rgba(240,235,225,0.15);
   border-radius: 2px; width: 34px; height: 34px;
   display: flex; align-items: center; justify-content: center;
@@ -169,7 +169,7 @@
 .uz-pag-btn:hover:not(:disabled) { color: rgba(240,235,225,0.82); border-color: rgba(240,235,225,0.38); }
 .uz-pag-btn:disabled { opacity: 0.2; cursor: default; }
 .uz-pag-info {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; color: rgba(240,235,225,0.28);
 }
 
@@ -188,7 +188,7 @@
 .uz-panel-hd .uz-back { position: static; color: rgba(26,18,8,0.32); }
 .uz-panel-hd .uz-back:hover { color: rgba(26,18,8,0.7); }
 .uz-panel-label {
-  font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 20px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 600; font-size: 20px;
   text-transform: uppercase; color: rgba(26,18,8,0.82); letter-spacing: 0.04em;
 }
 
@@ -198,16 +198,16 @@
 .uz-detail-avatar {
   width: 56px; height: 56px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 22px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700; font-size: 22px;
   color: rgba(240,235,225,0.9); margin-bottom: 16px;
 }
 
 .uz-detail-nome {
-  font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 20px; font-weight: 600;
   color: rgba(26,18,8,0.85); margin-bottom: 4px;
 }
 .uz-detail-email {
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px; letter-spacing: 0.08em;
   color: rgba(26,18,8,0.45); margin-bottom: 16px;
 }
 .uz-detail-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -218,24 +218,24 @@
 }
 .uz-detail-field {}
 .uz-detail-field-label {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.14em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.14em;
   text-transform: uppercase; color: rgba(26,18,8,0.3); margin-bottom: 3px;
 }
 .uz-detail-field-val {
-  font-family: 'Space Grotesk', sans-serif; font-size: 13px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 13px;
   color: rgba(26,18,8,0.75);
 }
 
 .uz-detail-actions { display: flex; gap: 10px; }
 .uz-btn-edit {
-  flex: 1; font-family: 'DM Mono', monospace; font-size: 10px;
+  flex: 1; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 18px;
   background: rgba(26,18,8,0.85); color: #F0EDE4;
   border: none; border-radius: 3px; cursor: pointer; transition: background 0.15s;
 }
 .uz-btn-edit:hover { background: #1A1208; }
 .uz-btn-toggle {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 18px;
   background: none; border: 1px solid rgba(200,0,26,0.25); border-radius: 3px;
   cursor: pointer; color: rgba(200,0,26,0.65); transition: all 0.15s;
@@ -247,19 +247,19 @@
 /* form */
 .uz-form { padding: 20px 36px 60px; display: flex; flex-direction: column; gap: 0; }
 .uz-form-err {
-  font-family: 'Space Grotesk', sans-serif; font-size: 12px; color: #C8001A;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px; color: #C8001A;
   background: rgba(200,0,26,0.07); border: 1px solid rgba(200,0,26,0.18);
   border-radius: 3px; padding: 10px 14px; margin-bottom: 18px;
 }
 .uz-fsection { margin-bottom: 22px; }
 .uz-fsection-title {
-  font-family: 'DM Mono', monospace; font-size: 9px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.2em; text-transform: uppercase; color: rgba(26,18,8,0.28);
   margin-bottom: 12px; padding-bottom: 7px; border-bottom: 1px solid rgba(26,18,8,0.07);
 }
 .uz-ff { margin-bottom: 12px; }
 .uz-ff-label {
-  display: block; font-family: 'DM Mono', monospace; font-size: 9px;
+  display: block; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: rgba(26,18,8,0.35); margin-bottom: 5px;
 }
@@ -267,7 +267,7 @@
   width: 100%; box-sizing: border-box;
   background: rgba(26,18,8,0.04); border: 1px solid rgba(26,18,8,0.10);
   border-radius: 3px; padding: 9px 12px;
-  font-family: 'Space Grotesk', sans-serif; font-size: 13px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 13px;
   color: rgba(26,18,8,0.82); outline: none; transition: border-color 0.15s;
 }
 .uz-input:focus { border-color: rgba(26,18,8,0.28); }
@@ -278,7 +278,7 @@ select.uz-input { cursor: pointer; }
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
 }
 .uz-role-btn {
-  font-family: 'DM Mono', monospace; font-size: 9px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.1em; text-transform: uppercase; padding: 8px;
   background: none; border: 1px solid rgba(26,18,8,0.1); border-radius: 3px;
   cursor: pointer; color: rgba(26,18,8,0.45); transition: all 0.15s; text-align: center;
@@ -288,14 +288,14 @@ select.uz-input { cursor: pointer; }
 
 .uz-form-actions { display: flex; gap: 10px; margin-top: 8px; }
 .uz-btn-cancel {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 18px;
   background: none; border: 1px solid rgba(26,18,8,0.14); border-radius: 3px;
   cursor: pointer; color: rgba(26,18,8,0.42); transition: all 0.15s;
 }
 .uz-btn-cancel:hover { border-color: rgba(26,18,8,0.32); color: rgba(26,18,8,0.78); }
 .uz-btn-save {
-  flex: 1; font-family: 'DM Mono', monospace; font-size: 10px;
+  flex: 1; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 18px;
   background: rgba(26,18,8,0.85); color: #F0EDE4;
   border: none; border-radius: 3px; cursor: pointer; transition: background 0.15s;

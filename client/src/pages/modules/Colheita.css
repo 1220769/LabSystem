@@ -19,7 +19,7 @@
 .col-back {
   position: absolute;
   top: 26px; left: 28px;
-  font-family: 'DM Mono', monospace;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
   background: none; border: none; cursor: pointer;
   color: rgba(255,240,235,0.4); transition: color 0.15s; padding: 0;
@@ -30,28 +30,28 @@
 .col-identity { flex: 1; padding-top: 48px; }
 
 .col-num {
-  font-family: 'DM Mono', monospace;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 10px; letter-spacing: 0.22em;
   color: rgba(255,240,235,0.35); display: block; margin-bottom: 6px;
 }
 .col-title {
-  font-family: 'Oswald', sans-serif; font-weight: 700;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700;
   font-size: clamp(44px, 8vw, 110px); text-transform: uppercase;
   color: rgba(255,240,235,0.92); line-height: 1; margin: 0 0 10px;
 }
 .col-sub {
-  font-family: 'Fraunces', serif; font-style: italic; font-weight: 300;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-style: italic; font-weight: 300;
   font-size: 15px; color: rgba(255,240,235,0.45); margin: 0;
 }
 
 .col-kpis { display: flex; gap: 28px; padding-bottom: 10px; flex-shrink: 0; }
 .col-kpi  { display: flex; flex-direction: column; align-items: flex-end; }
 .col-kpi-val {
-  font-family: 'Oswald', sans-serif; font-weight: 700;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700;
   font-size: 38px; line-height: 1; color: rgba(255,240,235,0.88);
 }
 .col-kpi-lbl {
-  font-family: 'DM Mono', monospace; font-size: 9px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: rgba(255,240,235,0.35); margin-top: 3px;
 }
@@ -69,7 +69,7 @@
   background: rgba(0,0,0,0.15); border-radius: 4px; padding: 3px;
 }
 .col-tab {
-  font-family: 'DM Mono', monospace; font-size: 9px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.1em; text-transform: uppercase;
   padding: 6px 11px; background: none; border: none;
   border-radius: 3px; cursor: pointer;
@@ -82,14 +82,14 @@
   flex: 1; min-width: 180px;
   background: rgba(0,0,0,0.12); border: 1px solid rgba(255,240,235,0.15);
   border-radius: 3px; padding: 9px 14px;
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.04em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px; letter-spacing: 0.04em;
   color: rgba(255,240,235,0.85); outline: none; transition: border-color 0.15s;
 }
 .col-search::placeholder { color: rgba(255,240,235,0.3); }
 .col-search:focus         { border-color: rgba(255,240,235,0.35); }
 
 .col-btn-new {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase;
   padding: 9px 20px;
   background: rgba(255,240,235,0.15); color: rgba(255,240,235,0.9);
@@ -102,7 +102,7 @@
 .col-list-area { flex: 1; padding: 0 60px 60px; overflow-y: auto; }
 
 .col-msg {
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px; letter-spacing: 0.08em;
   color: rgba(255,240,235,0.35); padding: 48px 0; text-align: center;
 }
 
@@ -117,16 +117,16 @@
 
 .col-row-left { min-width: 190px; flex-shrink: 0; }
 .col-row-cod {
-  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px; letter-spacing: 0.12em;
   color: rgba(255,240,235,0.9); font-weight: 500;
 }
 .col-row-utente {
-  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 13px; font-weight: 500;
   color: rgba(255,240,235,0.75); margin-top: 2px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;
 }
 .col-row-req {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.08em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.08em;
   color: rgba(255,240,235,0.35); margin-top: 2px;
 }
 
@@ -140,7 +140,7 @@
 }
 
 .col-dom-badge {
-  font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.12em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 8px; letter-spacing: 0.12em;
   text-transform: uppercase; padding: 3px 7px; border-radius: 2px;
   background: rgba(255,213,128,0.2); color: #FFD580;
 }
@@ -150,7 +150,7 @@
 
 /* badges */
 .col-badge {
-  font-family: 'DM Mono', monospace; font-size: 8px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 8px;
   letter-spacing: 0.14em; text-transform: uppercase;
   padding: 3px 8px; border-radius: 2px;
 }
@@ -162,7 +162,7 @@
 .col-badge--lg               { font-size: 10px; padding: 5px 12px; }
 
 .col-arr {
-  font-family: 'DM Mono', monospace; font-size: 14px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 14px;
   color: rgba(255,240,235,0.2); transition: color 0.12s, transform 0.12s;
 }
 .col-row:hover .col-arr { color: rgba(255,240,235,0.6); transform: translateX(3px); }
@@ -170,7 +170,7 @@
 /* pagination */
 .col-pag { display: flex; align-items: center; gap: 16px; justify-content: center; padding: 28px 0 0; }
 .col-pag-btn {
-  font-family: 'DM Mono', monospace; font-size: 18px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 18px;
   background: none; border: 1px solid rgba(255,240,235,0.18);
   border-radius: 2px; width: 34px; height: 34px;
   display: flex; align-items: center; justify-content: center;
@@ -179,7 +179,7 @@
 .col-pag-btn:hover:not(:disabled) { color: rgba(255,240,235,0.85); border-color: rgba(255,240,235,0.4); }
 .col-pag-btn:disabled { opacity: 0.25; cursor: default; }
 .col-pag-info {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; color: rgba(255,240,235,0.3);
 }
 
@@ -201,7 +201,7 @@
 .col-panel-hd .col-back:hover { color: rgba(26,18,8,0.75); }
 
 .col-panel-label {
-  font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 20px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 600; font-size: 20px;
   text-transform: uppercase; color: rgba(26,18,8,0.85); letter-spacing: 0.04em;
 }
 
@@ -215,7 +215,7 @@
   box-shadow: 0 2px 12px rgba(26,18,8,0.06);
 }
 .col-etiqueta-code {
-  font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 16px; font-weight: 500;
   letter-spacing: 0.18em; color: #1A1208; margin-bottom: 10px;
 }
 .col-barcode {
@@ -225,11 +225,11 @@
   width: 2px; background: #1A1208; border-radius: 1px; flex-shrink: 0;
 }
 .col-etiqueta-utente {
-  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 13px; font-weight: 500;
   color: rgba(26,18,8,0.82);
 }
 .col-etiqueta-meta {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.1em;
   color: rgba(26,18,8,0.35); margin-top: 3px;
 }
 
@@ -237,11 +237,11 @@
 
 .col-dsection { margin-bottom: 20px; }
 .col-dsection-title {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.16em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.16em;
   text-transform: uppercase; color: rgba(26,18,8,0.3); margin-bottom: 8px;
 }
 .col-dval {
-  font-family: 'Space Grotesk', sans-serif; font-size: 14px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 14px;
   color: rgba(26,18,8,0.8);
 }
 .col-dval--reject { color: #C8001A; }
@@ -257,15 +257,15 @@
 }
 .col-tube-info { flex: 1; }
 .col-tube-label {
-  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 13px; font-weight: 500;
   color: rgba(26,18,8,0.82);
 }
 .col-tube-desc {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.06em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.06em;
   color: rgba(26,18,8,0.3); margin-top: 1px;
 }
 .col-tube-analises {
-  font-family: 'Space Grotesk', sans-serif; font-size: 11px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px;
   color: rgba(26,18,8,0.5); margin-top: 3px;
 }
 .col-tube-ok {
@@ -275,7 +275,7 @@
 .col-detail-actions { display: flex; gap: 10px; margin-top: 32px; }
 
 .col-btn-advance {
-  flex: 1; font-family: 'DM Mono', monospace; font-size: 10px;
+  flex: 1; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.1em; text-transform: uppercase; padding: 11px 18px;
   background: #C8001A; color: #F0EDE4;
   border: none; border-radius: 3px; cursor: pointer; transition: background 0.15s;
@@ -283,7 +283,7 @@
 .col-btn-advance:hover { background: #a80016; }
 
 .col-btn-reject {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.1em; text-transform: uppercase; padding: 11px 18px;
   background: none; color: rgba(26,18,8,0.4);
   border: 1px solid rgba(26,18,8,0.15); border-radius: 3px; cursor: pointer; transition: all 0.15s;
@@ -297,7 +297,7 @@
 .col-form { padding: 20px 36px 60px; display: flex; flex-direction: column; gap: 0; }
 
 .col-form-err {
-  font-family: 'Space Grotesk', sans-serif; font-size: 12px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px;
   color: #C8001A; background: rgba(200,0,26,0.07);
   border: 1px solid rgba(200,0,26,0.2); border-radius: 3px;
   padding: 10px 14px; margin-bottom: 18px;
@@ -305,7 +305,7 @@
 
 .col-fsection { margin-bottom: 24px; }
 .col-fsection-title {
-  font-family: 'DM Mono', monospace; font-size: 9px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.2em; text-transform: uppercase; color: rgba(26,18,8,0.3);
   margin-bottom: 12px; padding-bottom: 7px; border-bottom: 1px solid rgba(26,18,8,0.08);
 }
@@ -319,7 +319,7 @@
   z-index: 50; max-height: 200px; overflow-y: auto;
 }
 .col-req-loading {
-  padding: 12px 14px; font-family: 'DM Mono', monospace; font-size: 10px;
+  padding: 12px 14px; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   color: rgba(26,18,8,0.35);
 }
 .col-req-opt {
@@ -330,11 +330,11 @@
 .col-req-opt:last-child { border-bottom: none; }
 .col-req-opt:hover { background: rgba(26,18,8,0.04); }
 .col-req-opt-num {
-  font-family: 'DM Mono', monospace; font-size: 11px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px;
   letter-spacing: 0.1em; color: rgba(26,18,8,0.7);
 }
 .col-req-opt-utente {
-  font-family: 'Space Grotesk', sans-serif; font-size: 12px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px;
   color: rgba(26,18,8,0.5);
 }
 .col-req-selected {
@@ -342,15 +342,15 @@
   border-radius: 3px; padding: 12px 14px;
 }
 .col-req-num {
-  font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.12em;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px; letter-spacing: 0.12em;
   color: rgba(26,18,8,0.7);
 }
 .col-req-utente {
-  font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 500;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 14px; font-weight: 500;
   color: rgba(26,18,8,0.82); margin-top: 3px;
 }
 .col-req-clear {
-  margin-top: 8px; font-family: 'DM Mono', monospace; font-size: 9px;
+  margin-top: 8px; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.1em; text-transform: uppercase;
   background: none; border: none; cursor: pointer;
   color: rgba(26,18,8,0.35); padding: 0; transition: color 0.15s;
@@ -376,7 +376,7 @@
 /* tipo colheita */
 .col-tipo-row { display: flex; gap: 8px; margin-bottom: 12px; }
 .col-tipo-btn {
-  flex: 1; font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 500;
+  flex: 1; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px; font-weight: 500;
   padding: 10px; border: 1px solid rgba(26,18,8,0.12);
   border-radius: 3px; cursor: pointer; background: none;
   color: rgba(26,18,8,0.5); transition: all 0.15s;
@@ -390,7 +390,7 @@
 /* ff */
 .col-ff { margin-bottom: 12px; }
 .col-ff-label {
-  display: block; font-family: 'DM Mono', monospace; font-size: 9px;
+  display: block; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: rgba(26,18,8,0.35); margin-bottom: 5px;
 }
@@ -399,7 +399,7 @@
   width: 100%; box-sizing: border-box;
   background: rgba(26,18,8,0.04); border: 1px solid rgba(26,18,8,0.10);
   border-radius: 3px; padding: 9px 12px;
-  font-family: 'Space Grotesk', sans-serif; font-size: 13px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 13px;
   color: rgba(26,18,8,0.82); outline: none; transition: border-color 0.15s;
 }
 .col-input:focus { border-color: rgba(26,18,8,0.28); }
@@ -409,7 +409,7 @@ textarea.col-input { resize: vertical; }
 /* form actions */
 .col-form-actions { display: flex; gap: 10px; margin-top: 8px; }
 .col-btn-cancel-form {
-  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 18px;
   background: none; border: 1px solid rgba(26,18,8,0.15); border-radius: 3px;
   cursor: pointer; color: rgba(26,18,8,0.45); transition: all 0.15s;
@@ -417,7 +417,7 @@ textarea.col-input { resize: vertical; }
 .col-btn-cancel-form:hover { border-color: rgba(26,18,8,0.35); color: rgba(26,18,8,0.8); }
 
 .col-btn-save {
-  flex: 1; font-family: 'DM Mono', monospace; font-size: 10px;
+  flex: 1; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
   letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 18px;
   background: #C8001A; color: #F0EDE4; border: none; border-radius: 3px;
   cursor: pointer; transition: background 0.15s;
