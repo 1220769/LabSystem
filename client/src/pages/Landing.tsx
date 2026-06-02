@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import DiveCanvas from '../components/DiveCanvas'
 import api from '../api/axios'
+import { useAuthStore } from '../store/authStore'
 import './Landing.css'
 
 interface Segment {
@@ -117,12 +118,19 @@ export default function Landing() {
   const [activeSegId, setActiveSegId] = useState<number | null>(null)
   const [criticos,   setCriticos]   = useState(0)
   const [emCurso,    setEmCurso]    = useState(0)
+  const [tipHover,   setTipHover]   = useState(false)
   const navigate = useNavigate()
+  const { logout } = useAuthStore()
 
   useEffect(() => {
     api.get('/resultados/stats').then(r => setCriticos(r.data.criticosPorValidar ?? 0)).catch(() => {})
     api.get('/requisicoes/stats').then(r => setEmCurso(r.data.em_curso ?? 0)).catch(() => {})
   }, [])
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
 
   const handleSegClick = (seg: Segment) => {
     setActiveSegId(seg.id)
@@ -220,9 +228,10 @@ export default function Landing() {
             />
           ))}
 
-          <polygon points="14,500 74,500 57,534 31,534" fill="#111110"
+          <polygon points="14,500 74,500 57,534 31,534"
+            fill={tipHover ? '#3A2A2A' : '#111110'}
             opacity={diving ? 0 : 1}
-            style={{ transition: 'opacity 0.2s' }}
+            style={{ transition: 'opacity 0.2s, fill 0.18s' }}
           />
           <polygon points="14,500 74,500 57,534 31,534"
             fill="rgba(255,255,255,0.03)"
@@ -231,9 +240,26 @@ export default function Landing() {
             style={{ transition: 'opacity 0.2s' }}
           />
           <ellipse cx="44" cy="534" rx="13" ry="4"
-            fill="#0A0A08" stroke="rgba(10,10,8,0.3)" strokeWidth="1"
+            fill={tipHover ? '#3A2A2A' : '#0A0A08'}
+            stroke="rgba(10,10,8,0.3)" strokeWidth="1"
             opacity={diving ? 0 : 1}
-            style={{ transition: 'opacity 0.2s' }}
+            style={{ transition: 'opacity 0.2s, fill 0.18s' }}
+          />
+          {/* hit area logout */}
+          <polygon
+            points="14,500 74,500 57,534 31,534"
+            fill="transparent"
+            style={{ cursor: diving ? 'default' : 'pointer' }}
+            onMouseEnter={() => !diving && setTipHover(true)}
+            onMouseLeave={() => setTipHover(false)}
+            onClick={() => !diving && handleLogout()}
+          />
+          <ellipse cx="44" cy="534" rx="13" ry="4"
+            fill="transparent"
+            style={{ cursor: diving ? 'default' : 'pointer' }}
+            onMouseEnter={() => !diving && setTipHover(true)}
+            onMouseLeave={() => setTipHover(false)}
+            onClick={() => !diving && handleLogout()}
           />
 
           <rect x="14" y="40" width="60" height="460" rx="2"
@@ -334,6 +360,14 @@ export default function Landing() {
             </div>
           )
         })()}
+
+        {tipHover && !diving && (
+          <div className="seg-label seg-label--logout" style={{ top: `${(517 / 540) * 100}%` }}>
+            <div className="seg-label-line" />
+            <div className="seg-label-name" style={{ fontSize: 20, color: 'rgba(200,0,26,0.75)' }}>sair</div>
+            <div className="seg-label-desc">terminar sessão</div>
+          </div>
+        )}
 
         {/* badge críticos persistente — segmento Validação */}
         {criticos > 0 && !diving && (
