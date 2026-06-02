@@ -1,7 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose'
 
-export type FlagResultado = 'pendente' | 'normal' | 'alto' | 'baixo' | 'critico_alto' | 'critico_baixo'
-export type EstadoResultado = 'pendente' | 'em_processamento' | 'resultado_disponivel'
+export type FlagResultado    = 'pendente' | 'normal' | 'alto' | 'baixo' | 'critico_alto' | 'critico_baixo'
+export type EstadoResultado  = 'pendente' | 'em_processamento' | 'resultado_disponivel' | 'validado_tecnico' | 'validado_medico'
+
+export interface IAssinatura {
+  userId: mongoose.Types.ObjectId
+  nome: string
+  dataHora: Date
+  observacoes?: string
+}
 
 export interface IResultado extends Document {
   codigoResultado: string
@@ -20,10 +27,21 @@ export interface IResultado extends Document {
   flag: FlagResultado
   estado: EstadoResultado
   observacoes?: string
+  validacaoTecnica?: IAssinatura
+  validacaoMedica?: IAssinatura
+  relatorioEmitido: boolean
+  relatorioDataHora?: Date
   createdBy: mongoose.Types.ObjectId
   createdAt: Date
   updatedAt: Date
 }
+
+const AssinaturaSchema = new Schema<IAssinatura>({
+  userId:      { type: Schema.Types.ObjectId, ref: 'User' },
+  nome:        { type: String, required: true },
+  dataHora:    { type: Date, required: true },
+  observacoes: { type: String },
+}, { _id: false })
 
 const ResultadoSchema = new Schema<IResultado>(
   {
@@ -39,15 +57,19 @@ const ResultadoSchema = new Schema<IResultado>(
       nome:      { type: String, required: true },
       categoria: { type: String, required: true },
     },
-    equipamento: { type: String },
-    valor:       { type: String },
-    unidade:     { type: String },
-    refMin:      { type: Number },
-    refMax:      { type: Number },
-    flag:        { type: String, enum: ['pendente','normal','alto','baixo','critico_alto','critico_baixo'], default: 'pendente' },
-    estado:      { type: String, enum: ['pendente','em_processamento','resultado_disponivel'], default: 'pendente' },
-    observacoes: { type: String },
-    createdBy:   { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    equipamento:      { type: String },
+    valor:            { type: String },
+    unidade:          { type: String },
+    refMin:           { type: Number },
+    refMax:           { type: Number },
+    flag:             { type: String, enum: ['pendente','normal','alto','baixo','critico_alto','critico_baixo'], default: 'pendente' },
+    estado:           { type: String, enum: ['pendente','em_processamento','resultado_disponivel','validado_tecnico','validado_medico'], default: 'pendente' },
+    observacoes:      { type: String },
+    validacaoTecnica: { type: AssinaturaSchema },
+    validacaoMedica:  { type: AssinaturaSchema },
+    relatorioEmitido: { type: Boolean, default: false },
+    relatorioDataHora:{ type: Date },
+    createdBy:        { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true }
 )

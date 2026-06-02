@@ -1,9 +1,12 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Utentes     from './modules/Utentes'
-import Requisicoes  from './modules/Requisicoes'
-import Colheita     from './modules/Colheita'
-import Analise      from './modules/Analise'
+import Requisicoes from './modules/Requisicoes'
+import Colheita    from './modules/Colheita'
+import Analise     from './modules/Analise'
+import Validacao   from './modules/Validacao'
+import Financeiro  from './modules/Financeiro'
+import Analytics   from './modules/Analytics'
 import './Modulo.css'
 
 export default function Modulo() {
@@ -17,6 +20,9 @@ export default function Modulo() {
   if (seg.id === 2) return <Requisicoes seg={seg} />
   if (seg.id === 3) return <Colheita   seg={seg} />
   if (seg.id === 4) return <Analise    seg={seg} />
+  if (seg.id === 5) return <Validacao  seg={seg} />
+  if (seg.id === 6) return <Financeiro seg={seg} />
+  if (seg.id === 7) return <Analytics  seg={seg} />
 
   return (
     <motion.div

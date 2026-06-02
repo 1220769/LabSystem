@@ -8,6 +8,8 @@ import userRoutes       from './routes/userRoutes'
 import requisicaoRoutes from './routes/requisicaoRoutes'
 import amostraRoutes    from './routes/amostraRoutes'
 import resultadoRoutes  from './routes/resultadoRoutes'
+import faturaRoutes     from './routes/faturaRoutes'
+import analyticsRoutes  from './routes/analyticsRoutes'
 
 dotenv.config()
 connectDB()
@@ -24,6 +26,8 @@ app.use('/api/users',       userRoutes)
 app.use('/api/requisicoes', requisicaoRoutes)
 app.use('/api/amostras',    amostraRoutes)
 app.use('/api/resultados',  resultadoRoutes)
+app.use('/api/faturas',     faturaRoutes)
+app.use('/api/analytics',   analyticsRoutes)
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
@@ -31,7 +35,4 @@ app.get('/api/health', (_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🧪 LabSystem API → http://localhost:${PORT}`)
-})
-connectDB().catch(() => {
-  console.log('MongoDB ainda não disponível — servidor continua à espera...')
 })

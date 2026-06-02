@@ -84,6 +84,66 @@ export const getResultadoById = async (req: AuthRequest, res: Response) => {
   }
 }
 
+export const validarTecnico = async (req: AuthRequest, res: Response) => {
+  try {
+    const { observacoes } = req.body
+    const resultado = await Resultado.findById(req.params.id)
+    if (!resultado) return res.status(404).json({ message: 'Resultado não encontrado' })
+    if (resultado.estado !== 'resultado_disponivel') return res.status(400).json({ message: 'Resultado não está disponível para validação técnica' })
+
+    resultado.estado = 'validado_tecnico'
+    resultado.validacaoTecnica = {
+      userId: req.user!._id as any,
+      nome:   req.user!.nome,
+      dataHora: new Date(),
+      observacoes,
+    }
+    await resultado.save()
+    res.json(resultado)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao validar tecnicamente', error: err })
+  }
+}
+
+export const validarMedico = async (req: AuthRequest, res: Response) => {
+  try {
+    const { observacoes, emitirRelatorio } = req.body
+    const resultado = await Resultado.findById(req.params.id)
+    if (!resultado) return res.status(404).json({ message: 'Resultado não encontrado' })
+    if (resultado.estado !== 'validado_tecnico') return res.status(400).json({ message: 'Resultado não está validado tecnicamente' })
+
+    resultado.estado = 'validado_medico'
+    resultado.validacaoMedica = {
+      userId: req.user!._id as any,
+      nome:   req.user!.nome,
+      dataHora: new Date(),
+      observacoes,
+    }
+    if (emitirRelatorio) {
+      resultado.relatorioEmitido  = true
+      resultado.relatorioDataHora = new Date()
+    }
+    await resultado.save()
+    res.json(resultado)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao validar médicamente', error: err })
+  }
+}
+
+export const emitirRelatorio = async (req: AuthRequest, res: Response) => {
+  try {
+    const resultado = await Resultado.findByIdAndUpdate(
+      req.params.id,
+      { relatorioEmitido: true, relatorioDataHora: new Date() },
+      { new: true }
+    )
+    if (!resultado) return res.status(404).json({ message: 'Resultado não encontrado' })
+    res.json(resultado)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao emitir relatório', error: err })
+  }
+}
+
 export const updateResultado = async (req: AuthRequest, res: Response) => {
   try {
     const allowed = ['valor','unidade','refMin','refMax','flag','estado','equipamento','observacoes']
@@ -101,13 +161,16 @@ export const updateResultado = async (req: AuthRequest, res: Response) => {
 
 export const getStats = async (_req: AuthRequest, res: Response) => {
   try {
-    const [pendente, em_processamento, disponivel, criticos] = await Promise.all([
+    const [pendente, em_processamento, disponivel, validado_tecnico, validado_medico, criticos, criticosPorValidar] = await Promise.all([
       Resultado.countDocuments({ estado: 'pendente' }),
       Resultado.countDocuments({ estado: 'em_processamento' }),
       Resultado.countDocuments({ estado: 'resultado_disponivel' }),
+      Resultado.countDocuments({ estado: 'validado_tecnico' }),
+      Resultado.countDocuments({ estado: 'validado_medico' }),
       Resultado.countDocuments({ flag: { $in: ['critico_alto','critico_baixo'] }, estado: 'resultado_disponivel' }),
+      Resultado.countDocuments({ flag: { $in: ['critico_alto','critico_baixo'] }, estado: { $in: ['resultado_disponivel','validado_tecnico'] } }),
     ])
-    res.json({ pendente, em_processamento, disponivel, criticos })
+    res.json({ pendente, em_processamento, disponivel, validado_tecnico, validado_medico, criticos, criticosPorValidar })
   } catch (err) {
     res.status(500).json({ message: 'Erro ao obter estatísticas', error: err })
   }
