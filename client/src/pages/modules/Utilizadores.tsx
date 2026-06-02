@@ -40,6 +40,8 @@ interface IUser {
   createdAt: string
 }
 
+interface IUtenteOpt { _id: string; nome: string; numeroProcesso: string; nif: string }
+
 interface IForm {
   nome: string
   email: string
@@ -47,10 +49,11 @@ interface IForm {
   role: Role
   telefone: string
   departamento: string
+  utenteRef: string
 }
 
 const EMPTY_FORM: IForm = {
-  nome: '', email: '', password: '', role: 'tecnico', telefone: '', departamento: '',
+  nome: '', email: '', password: '', role: 'tecnico', telefone: '', departamento: '', utenteRef: '',
 }
 
 interface IStats {
@@ -72,10 +75,13 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
   const [stats,    setStats]    = useState<IStats | null>(null)
   const [selected, setSelected] = useState<IUser | null>(null)
   const [editing,  setEditing]  = useState(false)
-  const [creating, setCreating] = useState(false)
-  const [form,     setForm]     = useState<IForm>(EMPTY_FORM)
-  const [saving,   setSaving]   = useState(false)
-  const [formErr,  setFormErr]  = useState('')
+  const [creating, setCreating]   = useState(false)
+  const [form,     setForm]       = useState<IForm>(EMPTY_FORM)
+  const [saving,   setSaving]     = useState(false)
+  const [formErr,  setFormErr]    = useState('')
+  const [utenteSearch, setUtenteSearch] = useState('')
+  const [utenteOpts,   setUtenteOpts]   = useState<IUtenteOpt[]>([])
+  const [utenteLinked, setUtenteLinked] = useState<IUtenteOpt | null>(null)
 
   const PAGES = Math.max(1, Math.ceil(total / 20))
 
@@ -379,6 +385,47 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
                     <input className="uz-input" value={form.telefone} onChange={e => setField('telefone', e.target.value)} placeholder="+351 912 345 678" />
                   </div>
                 </div>
+
+                {form.role === 'utente' && (
+                  <div className="uz-fsection">
+                    <div className="uz-fsection-title">Registo Clínico (obrigatório para utente)</div>
+                    {utenteLinked ? (
+                      <div className="uz-utente-linked">
+                        <div className="uz-utente-linked-nome">{utenteLinked.nome}</div>
+                        <div className="uz-utente-linked-meta">{utenteLinked.numeroProcesso} · NIF {utenteLinked.nif}</div>
+                        <button className="uz-req-clear" onClick={() => { setUtenteLinked(null); setField('utenteRef', '') }}>× remover ligação</button>
+                      </div>
+                    ) : (
+                      <div className="uz-ff" style={{ position: 'relative' }}>
+                        <label className="uz-ff-label">Pesquisar utente</label>
+                        <input
+                          className="uz-input"
+                          placeholder="nome ou nº processo…"
+                          value={utenteSearch}
+                          onChange={e => {
+                            setUtenteSearch(e.target.value)
+                            if (e.target.value.length >= 2) {
+                              api.get('/utentes', { params: { search: e.target.value, limit: 6 } })
+                                .then(r => setUtenteOpts(r.data.data)).catch(() => {})
+                            } else setUtenteOpts([])
+                          }}
+                        />
+                        {utenteOpts.length > 0 && (
+                          <div className="uz-utente-drop">
+                            {utenteOpts.map(u => (
+                              <div key={u._id} className="uz-utente-opt" onClick={() => {
+                                setUtenteLinked(u); setField('utenteRef', u._id); setUtenteOpts([]); setUtenteSearch('')
+                              }}>
+                                <span className="uz-utente-opt-nome">{u.nome}</span>
+                                <span className="uz-utente-opt-meta">{u.numeroProcesso}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="uz-form-actions">
                   <button className="uz-btn-cancel" onClick={closePanel}>cancelar</button>

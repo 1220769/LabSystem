@@ -41,7 +41,7 @@ export const getUserById = async (req: AuthRequest, res: Response) => {
 // POST /api/users — só admin
 export const createUser = async (req: AuthRequest, res: Response) => {
   try {
-    const { nome, email, password, role, telefone, departamento } = req.body
+    const { nome, email, password, role, telefone, departamento, utenteRef } = req.body
     const existe = await User.findOne({ email })
     if (existe) return res.status(400).json({ message: 'Email já registado' })
     const salt           = await bcrypt.genSalt(10)
@@ -49,6 +49,7 @@ export const createUser = async (req: AuthRequest, res: Response) => {
     const user = await User.create({
       nome, email, password: hashedPassword,
       role, telefone, departamento,
+      ...(utenteRef ? { utenteRef } : {}),
     })
     const { password: _, ...userWithoutPassword } = user.toObject()
     res.status(201).json(userWithoutPassword)

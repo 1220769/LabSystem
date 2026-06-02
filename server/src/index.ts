@@ -10,6 +10,7 @@ import amostraRoutes    from './routes/amostraRoutes'
 import resultadoRoutes  from './routes/resultadoRoutes'
 import faturaRoutes     from './routes/faturaRoutes'
 import analyticsRoutes  from './routes/analyticsRoutes'
+import portalRoutes     from './routes/portalRoutes'
 
 dotenv.config()
 connectDB()
@@ -28,6 +29,7 @@ app.use('/api/amostras',    amostraRoutes)
 app.use('/api/resultados',  resultadoRoutes)
 app.use('/api/faturas',     faturaRoutes)
 app.use('/api/analytics',   analyticsRoutes)
+app.use('/api/portal',      portalRoutes)
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })

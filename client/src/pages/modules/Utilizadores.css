@@ -337,3 +337,44 @@ select.uz-input { cursor: pointer; }
 }
 .uz-btn-save:hover    { background: #1A1208; }
 .uz-btn-save:disabled { opacity: 0.4; cursor: default; }
+
+/* ── utente link ── */
+.uz-utente-linked {
+  background: rgba(26,18,8,0.04); border: 1px solid rgba(26,18,8,0.1);
+  border-radius: 3px; padding: 12px 14px;
+}
+.uz-utente-linked-nome {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 14px; font-weight: 500;
+  color: rgba(26,18,8,0.82);
+}
+.uz-utente-linked-meta {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 10px; letter-spacing: 0.08em;
+  color: rgba(26,18,8,0.38); margin-top: 3px;
+}
+.uz-req-clear {
+  margin-top: 8px; font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: none; border: none; cursor: pointer;
+  color: rgba(26,18,8,0.35); padding: 0; transition: color 0.15s;
+}
+.uz-req-clear:hover { color: rgba(26,18,8,0.7); }
+.uz-utente-drop {
+  position: absolute; top: calc(100% + 2px); left: 0; right: 0; z-index: 50;
+  background: #F0EDE4; border: 1px solid rgba(26,18,8,0.12);
+  border-radius: 3px; box-shadow: 0 8px 24px rgba(26,18,8,0.1);
+  max-height: 200px; overflow-y: auto;
+}
+.uz-utente-opt {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; cursor: pointer; border-bottom: 1px solid rgba(26,18,8,0.06);
+  transition: background 0.1s;
+}
+.uz-utente-opt:last-child { border-bottom: none; }
+.uz-utente-opt:hover { background: rgba(26,18,8,0.04); }
+.uz-utente-opt-nome {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 13px; color: rgba(26,18,8,0.75);
+}
+.uz-utente-opt-meta {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 10px; letter-spacing: 0.06em;
+  color: rgba(26,18,8,0.38);
+}
