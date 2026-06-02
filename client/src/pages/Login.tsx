@@ -4,6 +4,29 @@ import { useAuthStore } from '../store/authStore'
 import api from '../api/axios'
 import './Login.css'
 
+const TEST_LOGINS: Record<string, { email: string; password: string }> = {
+  medico: {
+    email: 'medico@labsystem.pt',
+    password: 'medico123',
+  },
+  tecnico: {
+    email: 'tecnico@labsystem.pt',
+    password: 'tecnico123',
+  },
+  enfermeiro: {
+    email: 'enfermeiro@labsystem.pt',
+    password: 'enfermeiro123',
+  },
+  utente: {
+    email: 'utente@labsystem.pt',
+    password: 'utente123',
+  },
+  administrador: {
+    email: 'admin@labsystem.pt',
+    password: 'admin123',
+  },
+}
+
 export default function Login() {
   const canvasRef                   = useRef<HTMLCanvasElement>(null)
   const pageRef                     = useRef<HTMLDivElement>(null)
@@ -114,12 +137,21 @@ export default function Login() {
     try {
       const { data } = await api.post('/auth/login', { email, password })
       setAuth(data, data.token)
-      navigate('/')
+      navigate('/private')
     } catch (err: any) {
       setError(err.response?.data?.message || 'Erro ao autenticar')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleRoleSelect = (role: string) => {
+    setSelectedRole(role)
+    setError('')
+    const credentials = TEST_LOGINS[role]
+    if (!credentials) return
+    setEmail(credentials.email)
+    setPassword(credentials.password)
   }
 
   return (
@@ -197,14 +229,13 @@ export default function Login() {
             { icon: 'ti-stethoscope',        label: 'Médico',     role: 'medico'       },
             { icon: 'ti-flask',              label: 'Técnico',    role: 'tecnico'      },
             { icon: 'ti-heart-rate-monitor', label: 'Enfermeiro', role: 'enfermeiro'   },
-            { icon: 'ti-report-money',       label: 'Financeiro', role: 'financeiro'   },
             { icon: 'ti-user',               label: 'Utente',     role: 'utente'       },
             { icon: 'ti-shield-lock',        label: 'Admin',      role: 'administrador'},
           ].map(r => (
             <div
               className={`login-chip ${selectedRole === r.role ? 'login-chip--active' : ''}`}
               key={r.label}
-              onClick={() => setSelectedRole(r.role)}
+              onClick={() => handleRoleSelect(r.role)}
             >
               <i className={`ti ${r.icon}`} aria-hidden="true" />
               <span>{r.label}</span>

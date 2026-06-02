@@ -35,6 +35,9 @@ export const login = async (req: Request, res: Response) => {
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Credenciais inválidas' })
     }
+    if (String(user.role) === 'financeiro') {
+      return res.status(403).json({ message: 'O financeiro e gerido pelo administrador' })
+    }
     if (!user.ativo) {
       return res.status(403).json({ message: 'Conta desactivada' })
     }

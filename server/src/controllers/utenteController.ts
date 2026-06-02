@@ -1,6 +1,6 @@
 import { Response } from 'express'
 import Utente from '../models/Utente'
-import { AuthRequest } from '../middleware/authMiddleware'
+import { AuthRequest } from '../middleWare/authMiddleware'
 
 // GET /api/utentes
 export const getUtentes = async (req: AuthRequest, res: Response) => {

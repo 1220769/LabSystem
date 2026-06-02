@@ -7,7 +7,7 @@ import {
   deactivateUser,
   getMyPermissions,
 } from '../controllers/userController'
-import { protect, authorize } from '../middleware/authMiddleware'
+import { protect, authorize } from '../middleWare/authMiddleware'
 
 const router = Router()
 

@@ -1,0 +1,29 @@
+.private-placeholder {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: rgba(240, 237, 228, 0.74);
+  border: 1px solid rgba(10, 10, 8, 0.12);
+  border-radius: 6px;
+  box-shadow: 0 18px 54px rgba(10, 10, 8, 0.07);
+  backdrop-filter: blur(14px);
+}
+
+.private-placeholder span {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(10, 10, 8, 0.36);
+}
+
+.private-placeholder h2 {
+  max-width: 900px;
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(46px, 7vw, 104px);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
