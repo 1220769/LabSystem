@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import Utilizadores from './modules/Utilizadores'
 import Utentes     from './modules/Utentes'
 import Requisicoes from './modules/Requisicoes'
 import Colheita    from './modules/Colheita'
@@ -16,6 +17,7 @@ export default function Modulo() {
 
   if (!seg) return null
 
+  if (seg.id === 0) return <Utilizadores seg={seg} />
   if (seg.id === 1) return <Utentes    seg={seg} />
   if (seg.id === 2) return <Requisicoes seg={seg} />
   if (seg.id === 3) return <Colheita   seg={seg} />

@@ -128,11 +128,72 @@ export default function Validacao({ seg }: { seg: Seg }) {
     } finally { setSaving(false) }
   }
 
+  const printRelatorio = (r: Resultado) => {
+    const flagColor: Record<Flag, string> = {
+      normal: '#2E7A50', alto: '#C87830', baixo: '#3A7AB0',
+      critico_alto: '#C8001A', critico_baixo: '#C8001A', pendente: '#888',
+    }
+    const html = `<!DOCTYPE html>
+<html lang="pt"><head><meta charset="UTF-8"/>
+<title>Relatório ${r.codigoResultado}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Space+Grotesk:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Space Grotesk',sans-serif;color:#1A1208;background:#fff;padding:40px 60px;max-width:700px;margin:0 auto}
+  .logo{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;letter-spacing:0.1em;color:#1A1208;text-transform:uppercase;margin-bottom:4px}
+  .logo-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;color:#888;text-transform:uppercase;margin-bottom:28px}
+  hr{border:none;border-top:1px solid #e8e4dc;margin:20px 0}
+  .sec-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  .patient{font-size:18px;font-weight:600;color:#1A1208;margin-bottom:2px}
+  .meta{font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:16px}
+  .analise-box{background:#F8F5EF;border-radius:6px;padding:20px 24px;margin:20px 0}
+  .analise-name{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+  .result-row{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .result-val{font-family:'Oswald',sans-serif;font-size:36px;font-weight:700}
+  .result-unit{font-size:16px;color:#666}
+  .result-flag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;padding:3px 10px;border-radius:3px;background:rgba(200,0,26,0.08);color:${flagColor[r.flag]};font-weight:600}
+  .ref{font-family:'DM Mono',monospace;font-size:11px;color:#888;margin-top:4px}
+  .val-block{margin:6px 0;padding:10px 14px;border-left:3px solid #e8e4dc;background:#faf8f4}
+  .val-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#aaa;margin-bottom:3px}
+  .val-signer{font-size:13px;font-weight:500;color:#333}
+  .val-when{font-family:'DM Mono',monospace;font-size:10px;color:#aaa}
+  .obs{font-style:italic;font-size:12px;color:#888;margin-top:6px}
+  .footer{margin-top:32px;padding-top:16px;border-top:1px solid #e8e4dc;font-family:'DM Mono',monospace;font-size:9px;color:#bbb;letter-spacing:0.1em}
+  @media print{body{padding:20px 30px}}
+</style></head><body>
+<div class="logo">LabSystem Pro</div>
+<div class="logo-sub">Sistema de Gestão Laboratorial</div>
+<div class="sec-label">Utente</div>
+<div class="patient">${r.utenteNome}</div>
+<div class="meta">${r.requisicaoNumero} · ${r.codigoAmostra} · ${new Date(r.createdAt).toLocaleDateString('pt-PT')}</div>
+<hr/>
+<div class="sec-label">Resultado</div>
+<div class="analise-box">
+  <div class="analise-name">${r.analise.nome} <span style="font-size:12px;color:#999;font-weight:400">${r.analise.codigo}</span></div>
+  ${r.valor ? `<div class="result-row"><span class="result-val" style="color:${flagColor[r.flag]}">${r.valor}</span><span class="result-unit">${r.unidade ?? ''}</span><span class="result-flag">${r.flag.replace(/_/g,' ')}</span></div>` : '<div style="color:#aaa;font-style:italic">Valor não registado</div>'}
+  ${(r.refMin !== undefined || r.refMax !== undefined) ? `<div class="ref">Ref: ${r.refMin ?? '?'} – ${r.refMax ?? '?'} ${r.unidade ?? ''}</div>` : ''}
+  ${r.equipamento ? `<div class="ref" style="margin-top:6px">Equipamento: ${r.equipamento}</div>` : ''}
+</div>
+${r.observacoes ? `<div class="obs">Obs: ${r.observacoes}</div>` : ''}
+<hr/>
+<div class="sec-label">Validações</div>
+${r.validacaoTecnica ? `<div class="val-block"><div class="val-label">Validação Técnica</div><div class="val-signer">${r.validacaoTecnica.nome}</div><div class="val-when">${new Date(r.validacaoTecnica.dataHora).toLocaleString('pt-PT')}</div>${r.validacaoTecnica.observacoes ? `<div class="obs">${r.validacaoTecnica.observacoes}</div>` : ''}</div>` : ''}
+${r.validacaoMedica ? `<div class="val-block"><div class="val-label">Validação Médica</div><div class="val-signer">${r.validacaoMedica.nome}</div><div class="val-when">${new Date(r.validacaoMedica.dataHora).toLocaleString('pt-PT')}</div>${r.validacaoMedica.observacoes ? `<div class="obs">${r.validacaoMedica.observacoes}</div>` : ''}</div>` : ''}
+<div class="footer">
+  ${r.codigoResultado} · Emitido em ${new Date().toLocaleString('pt-PT')} · LabSystem Pro
+</div>
+<script>window.onload=()=>window.print()</script>
+</body></html>`
+    const w = window.open('', '_blank', 'width=760,height=900')
+    if (w) { w.document.write(html); w.document.close() }
+  }
+
   const handleEmitirRelatorio = async (r: Resultado) => {
     try {
       await api.post(`/resultados/${r._id}/emitir-relatorio`)
       setSelected(prev => prev ? { ...prev, relatorioEmitido: true } : prev)
       fetchResultados()
+      printRelatorio(r)
     } catch {}
   }
 
@@ -327,6 +388,9 @@ export default function Validacao({ seg }: { seg: Seg }) {
                 <div className="val-history-item val-history-item--rel">
                   <div className="val-history-label">✓ Relatório emitido</div>
                   <div className="val-history-when">{fmtHour(selected.relatorioDataHora)}</div>
+                  <button className="val-btn-reimprimir" onClick={() => printRelatorio(selected)}>
+                    ↓ reimprimir
+                  </button>
                 </div>
               )}
 

@@ -57,6 +57,30 @@ function BarFill({ pct, color }: { pct: number; color: string }) {
   )
 }
 
+function exportCSV(data: IDash) {
+  const rows: string[][] = [
+    ['Secção', 'Item', 'Valor'],
+    ['Requisições', 'Hoje',   String(data.requisicoes.hoje)],
+    ['Requisições', '7 dias', String(data.requisicoes.semana)],
+    ['Requisições', 'Mês',    String(data.requisicoes.mes)],
+    ['Amostras',    'Hoje',   String(data.amostras.hoje)],
+    ...data.resultados.porFlag.map(f => ['Flags', f._id, String(f.count)]),
+    ...data.resultados.porCategoria.map(c => ['Categoria', c._id || 'Sem categoria', String(c.count)]),
+    ['Resultados', 'Validados hoje',       String(data.resultados.validadosHoje)],
+    ['Resultados', 'Críticos por validar', String(data.resultados.criticosPorValidar)],
+    ...data.topAnalises.map(a => ['Top Análises', `${a._id} – ${a.nome}`, String(a.count)]),
+    ...data.financeiro.map(f => ['Financeiro', f._id, `${f.count} fatura(s) / ${fmtEur(f.valor)}`]),
+  ]
+  const csv  = rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\n')
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
+  const url  = URL.createObjectURL(blob)
+  const a    = document.createElement('a')
+  a.href = url
+  a.download = `labsystem_analytics_${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export default function Analytics({ seg }: { seg: { color: string; name: string } }) {
   const navigate = useNavigate()
   const [data,    setData]    = useState<IDash | null>(null)
@@ -78,6 +102,9 @@ export default function Analytics({ seg }: { seg: { color: string; name: string 
   return (
     <div className="an7-page">
       <button className="an7-back" onClick={() => navigate('/')}>← voltar</button>
+      {data && (
+        <button className="an7-export" onClick={() => exportCSV(data)}>↓ exportar CSV</button>
+      )}
 
       <div className="an7-hd">
         <span className="an7-num">07</span>
