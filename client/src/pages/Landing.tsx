@@ -341,11 +341,11 @@ export default function Landing() {
         )}
       </motion.div>
 
-      <div className="slogan slogan-left">
+      <div className={`slogan slogan-left${hovered !== null ? ' slogan--hide' : ''}`}>
         <div style={{ marginBottom: '0.15em' }}>Análises</div>
         <div style={{ textAlign: 'center' }}>que falam</div>
       </div>
-      <div className="slogan slogan-right">Contigo</div>
+      <div className={`slogan slogan-right${hovered !== null ? ' slogan--hide' : ''}`}>Contigo</div>
 
     </div>
   )
