@@ -1,13 +1,22 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import Utentes     from './modules/Utentes'
+import Requisicoes  from './modules/Requisicoes'
+import Colheita     from './modules/Colheita'
+import Analise      from './modules/Analise'
 import './Modulo.css'
 
 export default function Modulo() {
   const { state } = useLocation()
-  const navigate = useNavigate()
-  const seg = state?.seg
+  const navigate  = useNavigate()
+  const seg       = state?.seg
 
   if (!seg) return null
+
+  if (seg.id === 1) return <Utentes    seg={seg} />
+  if (seg.id === 2) return <Requisicoes seg={seg} />
+  if (seg.id === 3) return <Colheita   seg={seg} />
+  if (seg.id === 4) return <Analise    seg={seg} />
 
   return (
     <motion.div
@@ -17,9 +26,7 @@ export default function Modulo() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, delay: 0.5 }}
     >
-      <button className="modulo-back" onClick={() => navigate('/')}>
-        ← voltar
-      </button>
+      <button className="modulo-back" onClick={() => navigate('/')}>← voltar</button>
       <div className="modulo-num">{String(seg.id).padStart(2, '0')}</div>
       <div className="modulo-name">{seg.name}</div>
       <div className="modulo-sub">{seg.sub}</div>
