@@ -123,8 +123,9 @@ export default function Analise({ seg }: { seg: Seg }) {
   const [stats, setStats] = useState({ pendente: 0, em_processamento: 0, disponivel: 0, criticos: 0 })
 
   /* panel */
-  const [panel, setPanel]     = useState<'entry' | 'detail' | 'worklist' | null>(null)
-  const [selected, setSelected] = useState<Resultado | null>(null)
+  const [panel, setPanel]         = useState<'entry' | 'detail' | 'worklist' | null>(null)
+  const [selected, setSelected]   = useState<Resultado | null>(null)
+  const [reqEstado, setReqEstado] = useState<string | null>(null)
 
   /* entry form */
   const [fValor, setFValor]     = useState('')
@@ -221,8 +222,13 @@ export default function Analise({ seg }: { seg: Seg }) {
     }
   }
 
-  const openDetail = (r: Resultado) => { setSelected(r); setPanel('detail') }
-  const closePanel = () => { setPanel(null); setSelected(null); setFormErr(''); setWMsg('') }
+  const fetchReqEstado = (r: Resultado) => {
+    setReqEstado(null)
+    api.get(`/requisicoes/${(r as unknown as Record<string,string>).requisicao}`)
+      .then(res => setReqEstado(res.data.estado)).catch(() => {})
+  }
+  const openDetail = (r: Resultado) => { setSelected(r); setPanel('detail'); fetchReqEstado(r) }
+  const closePanel = () => { setPanel(null); setSelected(null); setFormErr(''); setWMsg(''); setReqEstado(null) }
 
   const handleValorChange = (v: string) => {
     setFValor(v)
@@ -420,6 +426,11 @@ export default function Analise({ seg }: { seg: Seg }) {
                   <span className={`an-flag-badge an-flag-badge--${selected.flag}`}>
                     {FLAG_ICON[selected.flag]} {selected.flag.replace('_', ' ')}
                   </span>
+                  {reqEstado && (
+                    <span className={`an-req-estado an-req-estado--${reqEstado}`}>
+                      REQ {reqEstado.replace(/_/g,' ')}
+                    </span>
+                  )}
                 </div>
 
                 <div className="an-result-display">

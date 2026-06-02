@@ -124,6 +124,18 @@ export const validarMedico = async (req: AuthRequest, res: Response) => {
       resultado.relatorioDataHora = new Date()
     }
     await resultado.save()
+
+    // ponto 2: se todos os resultados da requisição estão validados → concluir requisição
+    try {
+      const porValidar = await Resultado.countDocuments({
+        requisicao: resultado.requisicao,
+        estado: { $ne: 'validado_medico' },
+      })
+      if (porValidar === 0) {
+        await Requisicao.findByIdAndUpdate(resultado.requisicao, { estado: 'concluida' })
+      }
+    } catch { /* não bloquear a validação se esta verificação falhar */ }
+
     res.json(resultado)
   } catch (err) {
     res.status(500).json({ message: 'Erro ao validar médicamente', error: err })

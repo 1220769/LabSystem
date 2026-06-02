@@ -82,6 +82,60 @@
   white-space: nowrap;
 }
 
+.seg-label-live {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #C8001A;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+/* ── live badges ── */
+.live-badge {
+  position: absolute;
+  left: calc(50% + 52px);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 2px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.live-badge--crit {
+  background: rgba(200,0,26,0.1);
+  border: 1px solid rgba(200,0,26,0.3);
+  color: #C8001A;
+}
+
+.live-badge--info {
+  background: rgba(10,10,8,0.06);
+  border: 1px solid rgba(10,10,8,0.12);
+  color: rgba(10,10,8,0.45);
+}
+
+.live-badge-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #C8001A;
+  flex-shrink: 0;
+  animation: badge-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,0,26,0.5); opacity: 1; }
+  50%       { box-shadow: 0 0 0 5px rgba(200,0,26,0); opacity: 0.8; }
+}
+
 .hint {
   position: absolute;
   bottom: 28px;

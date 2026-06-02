@@ -111,8 +111,9 @@ export default function Colheita({ seg }: { seg: Seg }) {
   const [debSearch, setDebSearch] = useState('')
   const [stats, setStats] = useState({ aguarda: 0, em_transito: 0, domiciliarias: 0 })
 
-  const [panel, setPanel]     = useState<'detail' | 'create' | null>(null)
-  const [selected, setSelected] = useState<Amostra | null>(null)
+  const [panel, setPanel]         = useState<'detail' | 'create' | null>(null)
+  const [selected, setSelected]   = useState<Amostra | null>(null)
+  const [reqEstado, setReqEstado] = useState<string | null>(null)
 
   /* create form */
   const [fReq, setFReq]       = useState<RequisicaoOpt | null>(null)
@@ -183,8 +184,13 @@ export default function Colheita({ seg }: { seg: Seg }) {
     setPanel('create')
   }
 
-  const openDetail = (a: Amostra) => { setSelected(a); setPanel('detail'); setRejecting(false) }
-  const closePanel = () => { setPanel(null); setSelected(null); setFormErr(''); setRejecting(false) }
+  const openDetail = (a: Amostra) => {
+    setSelected(a); setPanel('detail'); setRejecting(false); setReqEstado(null)
+    api.get(`/requisicoes/${(a as unknown as Record<string,string>).requisicao}`)
+      .then(r => setReqEstado(r.data.estado))
+      .catch(() => {})
+  }
+  const closePanel = () => { setPanel(null); setSelected(null); setFormErr(''); setRejecting(false); setReqEstado(null) }
 
   const toggleTubo = (i: number) =>
     setFTubos(prev => prev.map((t, idx) => idx === i ? { ...t, coletado: !t.coletado } : t))
@@ -374,6 +380,11 @@ export default function Colheita({ seg }: { seg: Seg }) {
                 <div className="col-detail-row">
                   <span className={`col-badge col-badge--${selected.estado} col-badge--lg`}>{ESTADO_LABEL[selected.estado]}</span>
                   {selected.tipoColheita === 'domiciliaria' && <span className="col-dom-badge col-dom-badge--lg">domiciliária</span>}
+                  {reqEstado && (
+                    <span className={`col-req-estado col-req-estado--${reqEstado}`}>
+                      REQ {reqEstado.replace('_',' ')}
+                    </span>
+                  )}
                 </div>
 
                 {/* tubes */}

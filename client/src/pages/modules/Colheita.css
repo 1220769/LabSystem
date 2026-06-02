@@ -426,3 +426,12 @@ textarea.col-input { resize: vertical; }
 .col-btn-save:disabled          { opacity: 0.4; cursor: default; }
 .col-btn-save--reject           { background: #C8001A; }
 .col-btn-save--reject:disabled  { opacity: 0.3; }
+
+.col-req-estado {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 8px;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px;
+}
+.col-req-estado--pendente   { background: rgba(26,18,8,0.07);  color: rgba(26,18,8,0.45); }
+.col-req-estado--em_curso   { background: rgba(90,100,200,0.1); color: #5A64C8; }
+.col-req-estado--concluida  { background: rgba(46,122,80,0.1); color: #2E7A50; }
+.col-req-estado--cancelada  { background: rgba(200,0,26,0.1);  color: #C8001A; }

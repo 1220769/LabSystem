@@ -362,3 +362,13 @@ textarea.val-input { resize: vertical; }
   background: rgba(200,0,26,0.07); border: 1px solid rgba(200,0,26,0.2);
   border-radius: 3px; padding: 10px 14px; margin-top: 14px;
 }
+
+.val-req-estado {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 8px;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px;
+  margin-top: 4px; display: inline-block;
+}
+.val-req-estado--pendente  { background: rgba(10,30,15,0.07);  color: rgba(10,30,15,0.45); }
+.val-req-estado--em_curso  { background: rgba(90,100,200,0.1); color: #5A64C8; }
+.val-req-estado--concluida { background: rgba(46,122,80,0.12); color: #1E5A38; }
+.val-req-estado--cancelada { background: rgba(200,0,26,0.1);   color: #C8001A; }

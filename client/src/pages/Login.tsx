@@ -137,17 +137,7 @@ export default function Login() {
       <div className="login-card">
 
         <div className="login-logo-wrap">
-          <div className="login-logo-mark">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <rect x="13" y="2" width="6" height="8" rx="1.5" fill="#C8001A" opacity=".9"/>
-              <rect x="13" y="2" width="6" height="28" rx="1.5" fill="none" stroke="#C8001A" strokeWidth="1.5" opacity=".3"/>
-              <rect x="11" y="8" width="10" height="5" fill="#E8D5B0" opacity=".8"/>
-              <rect x="11" y="13" width="10" height="5" fill="#B8CDE0" opacity=".8"/>
-              <rect x="11" y="18" width="10" height="5" fill="#C8001A" opacity=".7"/>
-              <rect x="11" y="23" width="10" height="5" fill="#D4920A" opacity=".7"/>
-              <polygon points="11,28 21,28 19,31 13,31" fill="#0A0A08" opacity=".6"/>
-            </svg>
-          </div>
+        
           <div>
             <div className="login-logo-text">Lab<em>System</em></div>
             <div className="login-logo-sub">Gestão clínica · Porto</div>

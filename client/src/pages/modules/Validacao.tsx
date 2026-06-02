@@ -59,8 +59,9 @@ export default function Validacao({ seg }: { seg: Seg }) {
   const [debSearch, setDebSearch] = useState('')
   const [stats, setStats] = useState({ disponivel: 0, validado_tecnico: 0, validado_medico: 0, criticosPorValidar: 0 })
 
-  const [panel, setPanel]       = useState<'detail' | null>(null)
-  const [selected, setSelected] = useState<Resultado | null>(null)
+  const [panel, setPanel]         = useState<'detail' | null>(null)
+  const [selected, setSelected]   = useState<Resultado | null>(null)
+  const [reqEstado, setReqEstado] = useState<string | null>(null)
   const [fObs, setFObs]         = useState('')
   const [fEmitir, setFEmitir]   = useState(false)
   const [saving, setSaving]     = useState(false)
@@ -100,8 +101,11 @@ export default function Validacao({ seg }: { seg: Seg }) {
 
   const openDetail = (r: Resultado) => {
     setSelected(r); setFObs(''); setFEmitir(false); setFormErr(''); setPanel('detail')
+    setReqEstado(null)
+    api.get(`/requisicoes/${(r as unknown as Record<string,string>).requisicao}`)
+      .then(res => setReqEstado(res.data.estado)).catch(() => {})
   }
-  const closePanel = () => { setPanel(null); setSelected(null); setFormErr('') }
+  const closePanel = () => { setPanel(null); setSelected(null); setFormErr(''); setReqEstado(null) }
 
   const handleValidarTecnico = async () => {
     if (!selected) return
@@ -330,6 +334,11 @@ ${r.validacaoMedica ? `<div class="val-block"><div class="val-label">Validação
               <div className="val-panel-label">{selected.analise.nome}</div>
               {isCritico(selected.flag) && (
                 <div className="val-panel-crit">{FLAG_LABEL[selected.flag]}</div>
+              )}
+              {reqEstado && (
+                <div className={`val-req-estado val-req-estado--${reqEstado}`}>
+                  REQ {reqEstado.replace(/_/g,' ')}
+                </div>
               )}
             </div>
 

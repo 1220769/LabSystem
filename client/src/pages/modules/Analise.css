@@ -396,3 +396,12 @@ select.an-input  { cursor: pointer; }
 }
 .an-btn-save:hover    { background: #281400; }
 .an-btn-save:disabled { opacity: 0.4; cursor: default; }
+
+.an-req-estado {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 8px;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px;
+}
+.an-req-estado--pendente  { background: rgba(26,18,8,0.07);  color: rgba(26,18,8,0.45); }
+.an-req-estado--em_curso  { background: rgba(90,100,200,0.1); color: #5A64C8; }
+.an-req-estado--concluida { background: rgba(46,122,80,0.1);  color: #2E7A50; }
+.an-req-estado--cancelada { background: rgba(200,0,26,0.1);   color: #C8001A; }
