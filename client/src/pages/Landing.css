@@ -319,14 +319,10 @@ color: #0A0A08;
 }
 .badge-ok   { background: rgba(0,200,150,0.12);  color: #00C896; }
 .badge-pend { background: rgba(232,160,32,0.12); color: #E8A020; }
-.badge-crit { background: rgba(200,0,26,0.15);   color: #C8001A; }@keyframes rainbow {
-  0%   { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
-}
+.badge-crit { background: rgba(200,0,26,0.15); color: #C8001A; }
 
 .tube-svg {
   filter: drop-shadow(0 8px 40px rgba(10,10,8,0.10));
-  animation: rainbow 2s linear infinite;
 }
 .dive-overlay {
   position: absolute;
