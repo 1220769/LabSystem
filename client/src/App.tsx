@@ -7,6 +7,7 @@ import PortalMedico            from './pages/PortalMedico'
 import ProtectedRoute          from './components/ProtectedRoute'
 import EnfermeiromainComponent from './app/components/enfermeirmain/enfermeirmain.component'
 import FinanceiromainComponent from './app/components/financeiromain/financeiromain.component'
+import TecnicomainComponent    from './app/components/tecnicomain/tecnicomain.component'
 import { useAuthStore }        from './store/authStore'
 
 /* /private → dashboard por perfil */
@@ -17,6 +18,7 @@ function PrivateDashboard() {
   if (user.role === 'medico')        return <Navigate to="/medico"  replace />
   if (user.role === 'enfermeiro')    return <EnfermeiromainComponent />
   if (user.role === 'financeiro')    return <FinanceiromainComponent />
+  if (user.role === 'tecnico')       return <Navigate to="/tecnico" replace />
   if (user.role === 'administrador') return <Navigate to="/" replace />
   return <Landing />
 }
@@ -24,8 +26,9 @@ function PrivateDashboard() {
 /* / → utente vai para /portal, médico para /medico, resto Landing */
 function RootRedirect() {
   const { user } = useAuthStore()
-  if (user?.role === 'utente') return <Navigate to="/portal" replace />
-  if (user?.role === 'medico') return <Navigate to="/medico" replace />
+  if (user?.role === 'utente')  return <Navigate to="/portal"  replace />
+  if (user?.role === 'medico')  return <Navigate to="/medico"  replace />
+  if (user?.role === 'tecnico') return <Navigate to="/tecnico" replace />
   return (
     <ProtectedRoute>
       <Landing />
@@ -41,6 +44,7 @@ export default function App() {
         <Route path="/"           element={<ProtectedRoute><RootRedirect /></ProtectedRoute>} />
         <Route path="/portal"     element={<ProtectedRoute roles={['utente','administrador']}><Portal /></ProtectedRoute>} />
         <Route path="/medico"     element={<ProtectedRoute roles={['medico','administrador']}><PortalMedico /></ProtectedRoute>} />
+        <Route path="/tecnico"    element={<ProtectedRoute roles={['tecnico','administrador']}><TecnicomainComponent /></ProtectedRoute>} />
         <Route path="/private"    element={<ProtectedRoute><PrivateDashboard /></ProtectedRoute>} />
         <Route path="/modulo/:id" element={<ProtectedRoute><Modulo /></ProtectedRoute>} />
       </Routes>
