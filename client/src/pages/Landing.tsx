@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import DiveCanvas from '../components/DiveCanvas'
+import NotificationBell from '../components/NotificationBell'
 import api from '../api/axios'
 import { useAuthStore } from '../store/authStore'
 import './Landing.css'
@@ -141,7 +142,9 @@ export default function Landing() {
   return (
     <div className="landing">
 
-   
+      <div className="landing-topbar">
+        <NotificationBell theme="dark" />
+      </div>
 
       {diving && (
         <DiveCanvas

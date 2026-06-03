@@ -6,7 +6,7 @@ import { useAuthStore } from '../../store/authStore'
 import './Utilizadores.css'
 
 type Role = 'administrador' | 'tecnico' | 'medico' | 'enfermeiro' | 'financeiro' | 'utente'
-type TabUz = 'todos' | 'ativos' | 'inativos' | Role
+type TabUz = 'todos' | 'ativos' | 'inativos' | Role | 'sem_registo'
 
 const ROLES: Role[] = ['administrador', 'tecnico', 'medico', 'enfermeiro', 'financeiro', 'utente']
 
@@ -28,6 +28,8 @@ function fmtDate(d?: string | null) {
   return new Date(d).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: '2-digit' })
 }
 
+interface IUtentePopulated { _id: string; nome: string; numeroProcesso: string; nif: string }
+
 interface IUser {
   _id: string
   nome: string
@@ -37,7 +39,9 @@ interface IUser {
   telefone?: string
   departamento?: string
   ultimoLogin?: string
-  utenteRef?: string
+  utenteRef?: IUtentePopulated | string
+  linkedAt?: string
+  linkedBy?: string
   createdAt: string
 }
 
@@ -62,6 +66,12 @@ interface IStats {
   ativos: number
   inativos: number
   porRole: { _id: string; total: number; ativos: number }[]
+}
+
+function utenteRefObj(u: IUser): IUtentePopulated | null {
+  if (!u.utenteRef) return null
+  if (typeof u.utenteRef === 'object') return u.utenteRef
+  return null
 }
 
 export default function Utilizadores({ seg }: { seg: { color: string; name: string } }) {
@@ -94,9 +104,10 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
     setLoading(true)
     try {
       const params: Record<string, string | number> = { page, limit: 20 }
-      if (tab === 'ativos')   params.ativo = 'true'
-      if (tab === 'inativos') params.ativo = 'false'
-      if (ROLES.includes(tab as Role)) params.role = tab
+      if (tab === 'ativos')       params.ativo = 'true'
+      if (tab === 'inativos')     params.ativo = 'false'
+      if (tab === 'sem_registo')  params.semLink = 'true'
+      else if (ROLES.includes(tab as Role)) params.role = tab
       if (search) params.search = search
       const r = await api.get('/users', { params })
       setUsers(r.data.data)
@@ -109,14 +120,16 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
 
   function openCreate() {
     setForm(EMPTY_FORM); setFormErr(''); setCreating(true); setEditing(false); setSelected(null)
+    setUtenteLinked(null); setUtenteSearch('')
   }
 
   function openEdit(u: IUser) {
-    setForm({ nome: u.nome, email: u.email, password: '', role: u.role, telefone: u.telefone ?? '', departamento: u.departamento ?? '', utenteRef: u.utenteRef ?? '' })
-    setUtenteLinked(null)
+    const utRef = utenteRefObj(u)
+    setForm({ nome: u.nome, email: u.email, password: '', role: u.role, telefone: u.telefone ?? '', departamento: u.departamento ?? '', utenteRef: utRef?._id ?? (typeof u.utenteRef === 'string' ? u.utenteRef : '') })
+    setUtenteLinked(utRef)
     setFormErr(''); setEditing(true); setCreating(false); setSelected(u)
-    // se já tem utente ligado, carrega o nome para mostrar no form
-    if (u.utenteRef) {
+    // se utenteRef é só ID (não populado), carrega o nome
+    if (u.utenteRef && typeof u.utenteRef === 'string') {
       api.get(`/utentes/${u.utenteRef}`)
         .then(r => setUtenteLinked({ _id: r.data._id, nome: r.data.nome, numeroProcesso: r.data.numeroProcesso, nif: r.data.nif }))
         .catch(() => {})
@@ -140,7 +153,7 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
       if (form.telefone)     body.telefone     = form.telefone
       if (form.departamento) body.departamento = form.departamento
       if (form.password)     body.password     = form.password
-      if (form.utenteRef)    body.utenteRef    = form.utenteRef
+      if (form.role === 'utente') body.utenteRef = form.utenteRef || ''
 
       if (creating) {
         await api.post('/users', body)
@@ -228,6 +241,13 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
               {r}
             </button>
           ))}
+          <button
+            className={`uz-tab uz-tab--warn${tab === 'sem_registo' ? ' uz-tab--on' : ''}`}
+            onClick={() => { setTab('sem_registo'); setPage(1) }}
+            title="Utentes sem registo clínico ligado"
+          >
+            sem registo
+          </button>
         </div>
         <input
           className="uz-search"
@@ -240,36 +260,51 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
 
       <div className="uz-list-area">
         {loading && <div className="uz-msg">a carregar…</div>}
-        {!loading && users.length === 0 && <div className="uz-msg">nenhum utilizador encontrado</div>}
+        {!loading && users.length === 0 && (
+          <div className="uz-msg">
+            {tab === 'sem_registo' ? 'Todos os utentes têm registo clínico ligado ✓' : 'nenhum utilizador encontrado'}
+          </div>
+        )}
         {!loading && users.length > 0 && (
           <div className="uz-list">
-            {users.map(u => (
-              <div key={u._id} className={`uz-row${!u.ativo ? ' uz-row--inactive' : ''}`} onClick={() => openDetail(u)}>
-                <div className="uz-avatar" style={{ background: ROLE_COLORS[u.role] + '33', border: `1.5px solid ${ROLE_COLORS[u.role]}55` }}>
-                  <span style={{ color: ROLE_COLORS[u.role] }}>{initials(u.nome)}</span>
-                </div>
-                <div className="uz-row-info">
-                  <div className="uz-row-nome">
-                    {u.nome}
-                    {u._id === (me as unknown as { _id: string })?._id && (
-                      <span className="uz-tu-badge">tu</span>
-                    )}
+            {users.map(u => {
+              const utente = utenteRefObj(u)
+              return (
+                <div key={u._id} className={`uz-row${!u.ativo ? ' uz-row--inactive' : ''}`} onClick={() => openDetail(u)}>
+                  <div className="uz-avatar" style={{ background: ROLE_COLORS[u.role] + '33', border: `1.5px solid ${ROLE_COLORS[u.role]}55` }}>
+                    <span style={{ color: ROLE_COLORS[u.role] }}>{initials(u.nome)}</span>
                   </div>
-                  <div className="uz-row-email">{u.email}</div>
+                  <div className="uz-row-info">
+                    <div className="uz-row-nome">
+                      {u.nome}
+                      {u._id === (me as unknown as { _id: string })?._id && (
+                        <span className="uz-tu-badge">tu</span>
+                      )}
+                    </div>
+                    <div className="uz-row-email">
+                      {u.email}
+                      {u.role === 'utente' && utente && (
+                        <span className="uz-row-utente-link"> · {utente.nome} ({utente.numeroProcesso})</span>
+                      )}
+                      {u.role === 'utente' && !utente && (
+                        <span className="uz-row-utente-sem"> · sem registo clínico</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="uz-row-mid">
+                    <span className={`uz-role uz-role--${u.role}`}>{u.role}</span>
+                    {u.departamento && <span className="uz-dept">{u.departamento}</span>}
+                  </div>
+                  <div className="uz-row-right">
+                    <span className={`uz-status uz-status--${u.ativo ? 'ativo' : 'inativo'}`}>
+                      {u.ativo ? 'ativo' : 'inativo'}
+                    </span>
+                    <span className="uz-last">{fmtDate(u.ultimoLogin)}</span>
+                    <span className="uz-arr">›</span>
+                  </div>
                 </div>
-                <div className="uz-row-mid">
-                  <span className={`uz-role uz-role--${u.role}`}>{u.role}</span>
-                  {u.departamento && <span className="uz-dept">{u.departamento}</span>}
-                </div>
-                <div className="uz-row-right">
-                  <span className={`uz-status uz-status--${u.ativo ? 'ativo' : 'inativo'}`}>
-                    {u.ativo ? 'ativo' : 'inativo'}
-                  </span>
-                  <span className="uz-last">{fmtDate(u.ultimoLogin)}</span>
-                  <span className="uz-arr">›</span>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
@@ -334,6 +369,31 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
                     <div className="uz-detail-field-val">{fmtDate(selected.createdAt)}</div>
                   </div>
                 </div>
+
+                {/* registo clínico ligado */}
+                {selected.role === 'utente' && (() => {
+                  const utente = utenteRefObj(selected)
+                  return (
+                    <div className="uz-detail-utente-box">
+                      <div className="uz-detail-field-label">Registo clínico</div>
+                      {utente ? (
+                        <div className="uz-detail-utente-linked">
+                          <div className="uz-detail-utente-nome">{utente.nome}</div>
+                          <div className="uz-detail-utente-meta">{utente.numeroProcesso} · NIF {utente.nif}</div>
+                          {selected.linkedAt && (
+                            <div className="uz-detail-utente-audit">
+                              Ligado em {fmtDate(selected.linkedAt)}
+                              {selected.linkedBy ? ' por administrador' : ' (auto-ligação)'}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="uz-detail-utente-sem">Sem registo clínico ligado</div>
+                      )}
+                    </div>
+                  )
+                })()}
+
                 <div className="uz-detail-actions">
                   <button className="uz-btn-edit" onClick={() => openEdit(selected)}>editar</button>
                   <button
@@ -406,10 +466,10 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
                       </div>
                     ) : (
                       <div className="uz-ff" style={{ position: 'relative' }}>
-                        <label className="uz-ff-label">Pesquisar utente</label>
+                        <label className="uz-ff-label">Pesquisar utente por nome, processo, NIF ou SNS</label>
                         <input
                           className="uz-input"
-                          placeholder="nome ou nº processo…"
+                          placeholder="nome, nº processo, NIF ou SNS…"
                           value={utenteSearch}
                           onChange={e => {
                             setUtenteSearch(e.target.value)
@@ -426,7 +486,7 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
                                 setUtenteLinked(u); setField('utenteRef', u._id); setUtenteOpts([]); setUtenteSearch('')
                               }}>
                                 <span className="uz-utente-opt-nome">{u.nome}</span>
-                                <span className="uz-utente-opt-meta">{u.numeroProcesso}</span>
+                                <span className="uz-utente-opt-meta">{u.numeroProcesso} · NIF {u.nif}</span>
                               </div>
                             ))}
                           </div>

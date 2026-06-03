@@ -119,7 +119,7 @@ export async function linkUtente(req: AuthRequest, res: Response) {
     const utente = await Utente.findOne(filter)
     if (!utente) return res.status(404).json({ message: 'Nenhum registo clínico encontrado com esses dados' })
 
-    await User.findByIdAndUpdate(req.user!._id, { utenteRef: utente._id })
+    await User.findByIdAndUpdate(req.user!._id, { utenteRef: utente._id, linkedAt: new Date(), linkedBy: null })
     res.json({ message: 'Conta ligada com sucesso', utente: { nome: utente.nome, sns: utente.sns } })
   } catch {
     res.status(500).json({ message: 'Erro ao ligar conta' })

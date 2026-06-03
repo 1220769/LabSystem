@@ -3,6 +3,7 @@ import Resultado from '../models/Resultado'
 import Amostra   from '../models/Amostra'
 import Requisicao from '../models/Requisicao'
 import { AuthRequest } from '../middleware/authMiddleware'
+import { notifyUtenteByRef } from '../utils/createNotification'
 
 /* auto-generated when amostra → recebida */
 export const gerarWorklist = async (req: AuthRequest, res: Response) => {
@@ -48,11 +49,13 @@ export const gerarWorklist = async (req: AuthRequest, res: Response) => {
 
 export const getResultados = async (req: AuthRequest, res: Response) => {
   try {
-    const { estado, categoria, search, page = 1, limit = 50 } = req.query
+    const { estado, categoria, search, utente, flagIn, page = 1, limit = 50 } = req.query
     const filter: any = {}
 
     if (estado && estado !== 'todas')       filter.estado = estado
     if (categoria && categoria !== 'todas') filter['analise.categoria'] = categoria
+    if (utente)  filter.utente = utente
+    if (flagIn)  filter.flag   = { $in: (flagIn as string).split(',') }
     if (search) {
       filter.$or = [
         { codigoResultado:    { $regex: search, $options: 'i' } },
@@ -125,7 +128,19 @@ export const validarMedico = async (req: AuthRequest, res: Response) => {
     }
     await resultado.save()
 
-    // ponto 2: se todos os resultados da requisição estão validados → concluir requisição
+    // notificar utente: resultado disponível
+    const isCritico = ['critico_alto','critico_baixo'].includes(resultado.flag)
+    notifyUtenteByRef(
+      resultado.utente,
+      isCritico ? 'critico' : 'resultado',
+      isCritico ? `Resultado crítico: ${resultado.analise.nome}` : `Novo resultado: ${resultado.analise.nome}`,
+      isCritico
+        ? `O resultado de ${resultado.analise.nome} requer atenção — valor crítico. Consulte o seu médico.`
+        : `O resultado de ${resultado.analise.nome} já está disponível no seu portal.`,
+      'resultados'
+    )
+
+    // se todos os resultados da requisição estão validados → concluir requisição
     try {
       const porValidar = await Resultado.countDocuments({
         requisicao: resultado.requisicao,
@@ -133,6 +148,14 @@ export const validarMedico = async (req: AuthRequest, res: Response) => {
       })
       if (porValidar === 0) {
         await Requisicao.findByIdAndUpdate(resultado.requisicao, { estado: 'concluida' })
+        // notificar utente: requisição concluída
+        notifyUtenteByRef(
+          resultado.utente,
+          'requisicao',
+          'Requisição concluída',
+          `A requisição ${resultado.requisicaoNumero} foi concluída. Pode consultar todos os resultados no portal.`,
+          'requisicoes'
+        )
       }
     } catch { /* não bloquear a validação se esta verificação falhar */ }
 

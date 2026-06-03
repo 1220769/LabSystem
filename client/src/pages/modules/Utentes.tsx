@@ -22,6 +22,15 @@ interface Utente {
   createdAt: string
 }
 
+interface PortalUser {
+  _id: string
+  nome: string
+  email: string
+  ativo: boolean
+  linkedAt?: string
+  linkedBy?: string
+}
+
 interface Seg {
   id: number; name: string; sub: string; color: string
   stat: string; statLabel: string
@@ -52,12 +61,21 @@ export default function Utentes({ seg }: { seg: Seg }) {
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState('')
 
+  // portal account state
+  const [portalUser, setPortalUser] = useState<PortalUser | null>(null)
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [showPortalForm, setShowPortalForm] = useState(false)
+  const [portalForm, setPortalForm] = useState({ email: '', password: '' })
+  const [portalSaving, setPortalSaving] = useState(false)
+  const [portalErr, setPortalErr] = useState('')
+
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [debouncedSearch, setDebouncedSearch] = useState('')
 
   const canCreate = ['administrador', 'tecnico', 'medico', 'enfermeiro'].includes(user?.role ?? '')
   const canEdit   = ['administrador', 'tecnico', 'medico'].includes(user?.role ?? '')
   const canDelete = user?.role === 'administrador'
+  const isAdmin   = user?.role === 'administrador'
 
   useEffect(() => {
     if (searchTimer.current) clearTimeout(searchTimer.current)
@@ -90,16 +108,31 @@ export default function Utentes({ seg }: { seg: Seg }) {
       .finally(() => setLoading(false))
   }
 
+  function loadPortalUser(utenteId: string) {
+    setPortalLoading(true)
+    setPortalUser(null)
+    api.get(`/users/by-utente/${utenteId}`)
+      .then(r => setPortalUser(r.data))
+      .catch(() => setPortalUser(null))
+      .finally(() => setPortalLoading(false))
+  }
+
   const openCreate = () => {
     setForm({ ...EMPTY })
     setSelected(null)
     setFormError('')
     setPanel('create')
+    setPortalUser(null)
+    setShowPortalForm(false)
   }
 
   const openDetail = (u: Utente) => {
     setSelected(u)
     setPanel('detail')
+    setShowPortalForm(false)
+    setPortalErr('')
+    setPortalForm({ email: u.email ?? '', password: '' })
+    if (isAdmin) loadPortalUser(u._id)
   }
 
   const openEdit = (u: Utente) => {
@@ -121,10 +154,9 @@ export default function Utentes({ seg }: { seg: Seg }) {
     setPanel('edit')
   }
 
-  const closePanel = () => { setPanel(null); setSelected(null); setFormError('') }
+  const closePanel = () => { setPanel(null); setSelected(null); setFormError(''); setPortalUser(null); setShowPortalForm(false) }
 
   const handleSave = async () => {
-    // validação local
     if (!form.nome.trim())                  return setFormError('Nome é obrigatório')
     if (!form.dataNascimento)               return setFormError('Data de nascimento é obrigatória')
     if (!form.nif.trim())                   return setFormError('NIF é obrigatório')
@@ -153,7 +185,7 @@ export default function Utentes({ seg }: { seg: Seg }) {
   }
 
   const handleDelete = async (u: Utente) => {
-    if (!window.confirm(`Desativar ${u.nome}?`)) return
+    if (!window.confirm(`Desativar ${u.nome}? A conta portal associada também será desativada.`)) return
     try {
       await api.delete(`/utentes/${u._id}`)
       closePanel()
@@ -163,7 +195,45 @@ export default function Utentes({ seg }: { seg: Seg }) {
     }
   }
 
+  const handleCreatePortalAccount = async () => {
+    if (!selected) return
+    if (!portalForm.email.trim()) return setPortalErr('Email é obrigatório')
+    if (!portalForm.password.trim()) return setPortalErr('Password é obrigatória')
+    setPortalSaving(true); setPortalErr('')
+    try {
+      await api.post('/users', {
+        nome:      selected.nome,
+        email:     portalForm.email,
+        password:  portalForm.password,
+        role:      'utente',
+        utenteRef: selected._id,
+      })
+      setShowPortalForm(false)
+      loadPortalUser(selected._id)
+    } catch (err: any) {
+      setPortalErr(err.response?.data?.message ?? 'Erro ao criar conta')
+    } finally {
+      setPortalSaving(false)
+    }
+  }
+
+  const handleTogglePortalUser = async () => {
+    if (!portalUser) return
+    try {
+      if (portalUser.ativo) {
+        await api.delete(`/users/${portalUser._id}`)
+      } else {
+        await api.put(`/users/${portalUser._id}`, { ativo: true })
+      }
+      if (selected) loadPortalUser(selected._id)
+    } catch { /* */ }
+  }
+
   const fmt = (d: string) => new Date(d).toLocaleDateString('pt-PT')
+  const fmtShort = (d?: string | null) => {
+    if (!d) return '—'
+    return new Date(d).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: '2-digit' })
+  }
 
   const setMorada = (k: keyof typeof form.morada, v: string) =>
     setForm(f => ({ ...f, morada: { ...f.morada, [k]: v } }))
@@ -292,6 +362,73 @@ export default function Utentes({ seg }: { seg: Seg }) {
                   {selected.medico      && <DField l="Médico"       v={selected.medico} />}
                   {selected.observacoes && <DField l="Observações"  v={selected.observacoes} />}
                 </div>
+
+                {/* ── acesso ao portal ── */}
+                {isAdmin && (
+                  <div className="ut-portal-section">
+                    <div className="ut-portal-section-title">Acesso ao Portal</div>
+                    {portalLoading ? (
+                      <div className="ut-portal-loading">a verificar…</div>
+                    ) : portalUser ? (
+                      <div className="ut-portal-account">
+                        <div className="ut-portal-account-row">
+                          <div>
+                            <div className="ut-portal-account-email">{portalUser.email}</div>
+                            <div className="ut-portal-account-meta">
+                              Conta {portalUser.ativo ? 'ativa' : 'inativa'}
+                              {portalUser.linkedAt && ` · ligada em ${fmtShort(portalUser.linkedAt)}`}
+                              {portalUser.linkedBy ? ' por admin' : ' (auto-ligação)'}
+                            </div>
+                          </div>
+                          <span className={`ut-portal-badge ${portalUser.ativo ? 'ut-portal-badge--ok' : 'ut-portal-badge--off'}`}>
+                            {portalUser.ativo ? 'ativa' : 'inativa'}
+                          </span>
+                        </div>
+                        <button
+                          className={`ut-portal-toggle ${portalUser.ativo ? 'ut-portal-toggle--deact' : 'ut-portal-toggle--act'}`}
+                          onClick={handleTogglePortalUser}
+                        >
+                          {portalUser.ativo ? 'desativar acesso portal' : 'reativar acesso portal'}
+                        </button>
+                      </div>
+                    ) : showPortalForm ? (
+                      <div className="ut-portal-form">
+                        {portalErr && <div className="ut-portal-err">{portalErr}</div>}
+                        <div className="ut-portal-form-note">
+                          Será criada uma conta com o nome <strong>{selected.nome}</strong> e role <em>utente</em>, ligada automaticamente a este registo.
+                        </div>
+                        <FF label="Email de acesso">
+                          <input
+                            value={portalForm.email}
+                            placeholder="email@exemplo.pt"
+                            onChange={e => setPortalForm(f => ({ ...f, email: e.target.value }))}
+                          />
+                        </FF>
+                        <FF label="Password inicial">
+                          <input
+                            type="password"
+                            value={portalForm.password}
+                            placeholder="••••••••"
+                            onChange={e => setPortalForm(f => ({ ...f, password: e.target.value }))}
+                          />
+                        </FF>
+                        <div className="ut-portal-form-actions">
+                          <button className="ut-btn-cancel" onClick={() => { setShowPortalForm(false); setPortalErr('') }}>cancelar</button>
+                          <button className="ut-btn-save" disabled={portalSaving} onClick={handleCreatePortalAccount}>
+                            {portalSaving ? 'a criar…' : 'criar conta'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="ut-portal-none">
+                        <div className="ut-portal-none-text">Sem conta portal — este utente não tem acesso ao portal.</div>
+                        <button className="ut-btn-portal-create" onClick={() => setShowPortalForm(true)}>
+                          + criar acesso portal
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="ut-detail-actions">
                   {canEdit   && <button className="ut-btn-edit" onClick={() => openEdit(selected)}>Editar</button>}

@@ -378,3 +378,40 @@ select.uz-input { cursor: pointer; }
   font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 10px; letter-spacing: 0.06em;
   color: rgba(26,18,8,0.38);
 }
+
+/* ── link na linha da lista ── */
+.uz-row-utente-link {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 10px; letter-spacing: 0.06em;
+  color: rgba(46,122,80,0.7);
+}
+.uz-row-utente-sem {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 10px; letter-spacing: 0.06em;
+  color: rgba(200,0,26,0.5);
+}
+
+/* ── tab sem registo ── */
+.uz-tab--warn { color: rgba(200,120,48,0.75); }
+.uz-tab--warn.uz-tab--on { color: #C87830; border-color: rgba(200,120,48,0.55); }
+
+/* ── detalhe utente box ── */
+.uz-detail-utente-box {
+  background: rgba(26,18,8,0.03); border: 1px solid rgba(26,18,8,0.08);
+  border-radius: 3px; padding: 14px; margin-bottom: 22px;
+}
+.uz-detail-utente-linked {}
+.uz-detail-utente-nome {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 14px; font-weight: 500;
+  color: rgba(26,18,8,0.82); margin-bottom: 3px;
+}
+.uz-detail-utente-meta {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 10px; letter-spacing: 0.08em;
+  color: rgba(26,18,8,0.4); margin-bottom: 6px;
+}
+.uz-detail-utente-audit {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(26,18,8,0.28);
+}
+.uz-detail-utente-sem {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 12px; font-style: italic;
+  color: rgba(200,0,26,0.5);
+}

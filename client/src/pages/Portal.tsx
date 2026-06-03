@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import { useAuthStore } from '../store/authStore'
+import NotificationBell from '../components/NotificationBell'
 import './Portal.css'
 
 /* ── utils ── */
@@ -306,12 +307,17 @@ export default function Portal() {
         <div className="portal-logo">Lab<strong>System</strong> Pro</div>
         <div className="portal-user">
           <div><div className="portal-user-name">{user?.nome}</div><div className="portal-user-role">portal de utente</div></div>
+          <NotificationBell theme="light" />
           <button className="portal-logout" onClick={handleLogout}>sair</button>
         </div>
       </header>
       <div className="portal-no-link">
         <div className="portal-no-link-title">Associar ao registo clínico</div>
-        <div className="portal-no-link-sub">Introduza o seu NIF ou Nº SNS para ligar a conta ao seu processo.</div>
+        <div className="portal-no-link-sub">
+          A sua conta ainda não está ligada ao seu processo clínico no laboratório.
+          Introduza o seu <strong>NIF</strong> ou <strong>Nº SNS</strong> para associar automaticamente.
+          Se não souber estes dados ou continuar a ter problemas, contacte o laboratório pelo telefone ou balcão — indique o seu nome completo e data de nascimento.
+        </div>
         <div className="portal-link-form">
           {linkErr && <div className="portal-link-err">{linkErr}</div>}
           {linkOk  && <div className="portal-link-ok">{linkOk}</div>}
@@ -328,7 +334,7 @@ export default function Portal() {
               setTimeout(() => window.location.reload(), 1500)
             } catch (e: unknown) {
               const err = e as { response?: { data?: { message?: string } } }
-              setLinkErr(err.response?.data?.message ?? 'Erro ao ligar')
+              setLinkErr(err.response?.data?.message ?? 'Erro ao ligar. Verifique os dados ou contacte o laboratório.')
             } finally { setLinking(false) }
           }}>{linking ? 'a verificar…' : 'associar conta'}</button>
         </div>
@@ -343,6 +349,7 @@ export default function Portal() {
         <div className="portal-logo">Lab<strong>System</strong> Pro</div>
         <div className="portal-user">
           <div><div className="portal-user-name">{user?.nome}</div><div className="portal-user-role">portal de utente</div></div>
+          <NotificationBell theme="light" />
           <button className="portal-logout" onClick={handleLogout}>sair</button>
         </div>
       </header>
@@ -473,68 +480,81 @@ export default function Portal() {
 
             {reqs.length === 0
               ? <div className="portal-empty">Sem requisições</div>
-              : reqs.map(req => (
-                <div key={req._id} className="portal-req-card">
-                  <div className="portal-req-card-main" onClick={() => setExpandedReq(expandedReq === req._id ? null : req._id)}>
-                    <div className="portal-req-card-left">
-                      <div className="portal-req-card-num">
-                        {req.numeroRequisicao}
-                        {req.urgente && <span className="portal-req-urgente">urgente</span>}
+              : reqs.map(req => {
+                const isOpen = expandedReq === req._id
+                const steps  = ['pendente','em_curso','concluida']
+                const cur    = steps.indexOf(req.estado)
+                return (
+                  <div key={req._id} className={`portal-req-card${isOpen ? ' portal-req-card--open' : ''}`}>
+                    <div className="portal-req-card-main" onClick={() => setExpandedReq(isOpen ? null : req._id)}>
+                      <div className="portal-req-card-left">
+                        <div className="portal-req-card-num">
+                          {req.numeroRequisicao}
+                          {req.urgente && <span className="portal-req-urgente">urgente</span>}
+                        </div>
+                        <div className="portal-req-card-analises">
+                          {req.analises.slice(0, 4).map(a => a.nome).join(' · ')}
+                          {req.analises.length > 4 && <span className="portal-req-mais"> +{req.analises.length - 4}</span>}
+                        </div>
                       </div>
-                      <div className="portal-req-card-analises">{req.analises.map(a => a.nome).join(' · ')}</div>
-                      <div className="portal-req-card-date">{fmtDate(req.createdAt)}</div>
+                      <div className="portal-req-card-right">
+                        <span className="portal-req-card-date">{fmtDate(req.createdAt)}</span>
+                        <span className={`portal-req-badge portal-req-badge--${req.estado}`}>{PIPELINE_LABEL[req.estado] ?? req.estado}</span>
+                        <span className="portal-res-chevron">{isOpen ? '↑' : '↓'}</span>
+                      </div>
                     </div>
-                    <div className="portal-req-card-right">
-                      <span className={`portal-req-badge portal-req-badge--${req.estado}`}>{PIPELINE_LABEL[req.estado] ?? req.estado}</span>
-                      <span className="portal-res-chevron">{expandedReq === req._id ? '↑' : '↓'}</span>
-                    </div>
-                  </div>
 
-                  {expandedReq === req._id && (
-                    <div className="portal-req-card-detail">
-                      {/* pipeline visual */}
-                      <div className="portal-pipeline">
-                        {PIPELINE.map((step, i) => {
-                          const steps = ['pendente','em_curso','concluida']
-                          const cur   = steps.indexOf(req.estado)
-                          const done  = i <= cur && req.estado !== 'cancelada'
-                          const active= i === cur && req.estado !== 'cancelada'
-                          return (
-                            <div key={step} className="portal-pipeline-step">
-                              <div className={`portal-pipeline-dot${done ? ' portal-pipeline-dot--done' : ''}${active ? ' portal-pipeline-dot--active' : ''}`} />
-                              {i < PIPELINE.length - 1 && <div className={`portal-pipeline-line${done && i < cur ? ' portal-pipeline-line--done' : ''}`} />}
-                              <span className={`portal-pipeline-lbl${active ? ' portal-pipeline-lbl--active' : ''}`}>{PIPELINE_LABEL[step]}</span>
-                            </div>
-                          )
-                        })}
-                        {req.estado === 'cancelada' && <span className="portal-req-badge portal-req-badge--cancelada" style={{ marginLeft: 12 }}>cancelada</span>}
-                      </div>
-
-                      <div className="portal-req-analises-chips">
-                        {req.analises.map(a => <span key={a.codigo} className="portal-chip">{a.nome}</span>)}
-                      </div>
-
-                      {req.observacoes && <div className="portal-res-obs">{req.observacoes}</div>}
-
-                      {req.estado === 'concluida' && (
-                        <div>
-                          <button className="portal-btn-outline" onClick={() => {
-                            const msg = (m: string) => setRelMsg(prev => ({ ...prev, [req._id]: m }))
-                            printRelatorioCompleto(req.numeroRequisicao, perfil?.nome ?? '', msg)
-                          }}>
-                            ↓ Relatório completo em PDF
-                          </button>
-                          {relMsg[req._id] && (
-                            <div className={`portal-rel-msg${relMsg[req._id].startsWith('Erro') || relMsg[req._id].startsWith('Sem') ? ' portal-rel-msg--err' : ''}`}>
-                              {relMsg[req._id]}
-                            </div>
+                    {isOpen && (
+                      <div className="portal-req-card-detail">
+                        {/* pipeline redesenhado */}
+                        <div className="portal-pipeline">
+                          {PIPELINE.map((step, i) => {
+                            const done     = i <= cur && req.estado !== 'cancelada'
+                            const active   = i === cur && req.estado !== 'cancelada'
+                            const connDone = i < cur && req.estado !== 'cancelada'
+                            return (
+                              <div key={step} className="portal-pipeline-item-wrap">
+                                <div className="portal-pipeline-item">
+                                  <div className={`portal-pipeline-dot${done ? ' portal-pipeline-dot--done' : ''}${active ? ' portal-pipeline-dot--active' : ''}`} />
+                                  <span className={`portal-pipeline-lbl${active ? ' portal-pipeline-lbl--active' : ''}`}>{PIPELINE_LABEL[step]}</span>
+                                </div>
+                                {i < PIPELINE.length - 1 && (
+                                  <div className={`portal-pipeline-conn${connDone ? ' portal-pipeline-conn--done' : ''}`} />
+                                )}
+                              </div>
+                            )
+                          })}
+                          {req.estado === 'cancelada' && (
+                            <span className="portal-req-badge portal-req-badge--cancelada" style={{ marginLeft: 16 }}>cancelada</span>
                           )}
                         </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))
+
+                        <div className="portal-req-analises-chips">
+                          {req.analises.map(a => <span key={a.codigo} className="portal-chip">{a.nome}</span>)}
+                        </div>
+
+                        {req.observacoes && <div className="portal-res-obs">{req.observacoes}</div>}
+
+                        {req.estado === 'concluida' && (
+                          <div>
+                            <button className="portal-btn-outline" onClick={() => {
+                              const msg = (m: string) => setRelMsg(prev => ({ ...prev, [req._id]: m }))
+                              printRelatorioCompleto(req.numeroRequisicao, perfil?.nome ?? '', msg)
+                            }}>
+                              ↓ Relatório completo em PDF
+                            </button>
+                            {relMsg[req._id] && (
+                              <div className={`portal-rel-msg${relMsg[req._id].startsWith('Erro') || relMsg[req._id].startsWith('Sem') ? ' portal-rel-msg--err' : ''}`}>
+                                {relMsg[req._id]}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              })
             }
 
             {Math.ceil(reqTotal / 10) > 1 && (

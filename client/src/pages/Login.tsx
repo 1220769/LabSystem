@@ -180,12 +180,8 @@ export default function Login() {
       <canvas ref={canvasRef} className="login-canvas" />
       <div className="login-overlay" />
 
-      <div className="login-stamp login-stamp-tl">
-        LabSystem Pro<br />v2.0 · 2025
-      </div>
-      <div className="login-stamp login-stamp-tr">
-        HCUL<br />Lab Central
-      </div>
+
+
 
       <div className="login-card">
 
@@ -193,13 +189,12 @@ export default function Login() {
         
           <div>
             <div className="login-logo-text">Lab<em>System</em></div>
-            <div className="login-logo-sub">Gestão clínica · Porto</div>
           </div>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="login-field">
-            <label className="login-label">Email institucional</label>
+            <label className="login-label">Email</label>
             <input
               className="login-input"
               type="email"
@@ -255,7 +250,7 @@ export default function Login() {
           ))}
         </div>
 
-        <div className="login-footer">Análises que falam contigo</div>
+        
       </div>
     </div>
   )

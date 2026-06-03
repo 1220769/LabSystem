@@ -7,7 +7,7 @@ import { PERMISSIONS } from '../models/User'
 // GET /api/users — só admin
 export const getUsers = async (req: AuthRequest, res: Response) => {
   try {
-    const { role, ativo, search, page = 1, limit = 20 } = req.query
+    const { role, ativo, search, page = 1, limit = 20, semLink } = req.query
     const filter: any = {}
     if (role)   filter.role  = role
     if (ativo !== undefined) filter.ativo = ativo === 'true'
@@ -15,9 +15,15 @@ export const getUsers = async (req: AuthRequest, res: Response) => {
       { nome:  { $regex: search, $options: 'i' } },
       { email: { $regex: search, $options: 'i' } },
     ]
+    // filtro: utentes sem registo clínico ligado
+    if (semLink === 'true') {
+      filter.role = 'utente'
+      filter.utenteRef = { $exists: false }
+    }
     const total = await User.countDocuments(filter)
     const users = await User.find(filter)
       .select('-password')
+      .populate('utenteRef', 'nome numeroProcesso nif')
       .sort({ createdAt: -1 })
       .skip((+page - 1) * +limit)
       .limit(+limit)
@@ -30,8 +36,19 @@ export const getUsers = async (req: AuthRequest, res: Response) => {
 // GET /api/users/:id
 export const getUserById = async (req: AuthRequest, res: Response) => {
   try {
-    const user = await User.findById(req.params.id).select('-password')
+    const user = await User.findById(req.params.id).select('-password').populate('utenteRef', 'nome numeroProcesso nif')
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado' })
+    res.json(user)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao obter utilizador', error: err })
+  }
+}
+
+// GET /api/users/by-utente/:utenteId — utilizador portal ligado a este utente
+export const getUserByUtente = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await User.findOne({ utenteRef: req.params.utenteId }).select('-password')
+    if (!user) return res.status(404).json({ message: 'Nenhum utilizador ligado' })
     res.json(user)
   } catch (err) {
     res.status(500).json({ message: 'Erro ao obter utilizador', error: err })
@@ -49,7 +66,7 @@ export const createUser = async (req: AuthRequest, res: Response) => {
     const user = await User.create({
       nome, email, password: hashedPassword,
       role, telefone, departamento,
-      ...(utenteRef ? { utenteRef } : {}),
+      ...(utenteRef ? { utenteRef, linkedAt: new Date(), linkedBy: req.user?._id } : {}),
     })
     const { password: _, ...userWithoutPassword } = user.toObject()
     res.status(201).json(userWithoutPassword)
@@ -61,17 +78,28 @@ export const createUser = async (req: AuthRequest, res: Response) => {
 // PUT /api/users/:id
 export const updateUser = async (req: AuthRequest, res: Response) => {
   try {
-    const { password, ...rest } = req.body
+    const { password, utenteRef, ...rest } = req.body
     const updateData: any = { ...rest }
     if (password) {
       const salt = await bcrypt.genSalt(10)
       updateData.password = await bcrypt.hash(password, salt)
     }
+    // se está a definir/alterar utenteRef, regista quem ligou e quando
+    if (utenteRef !== undefined) {
+      updateData.utenteRef = utenteRef || undefined
+      if (utenteRef) {
+        updateData.linkedAt = new Date()
+        updateData.linkedBy = req.user?._id
+      } else {
+        updateData.linkedAt = undefined
+        updateData.linkedBy = undefined
+      }
+    }
     const user = await User.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true }
-    ).select('-password')
+    ).select('-password').populate('utenteRef', 'nome numeroProcesso nif')
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado' })
     res.json(user)
   } catch (err) {

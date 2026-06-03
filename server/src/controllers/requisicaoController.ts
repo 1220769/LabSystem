@@ -4,11 +4,14 @@ import { AuthRequest } from '../middleware/authMiddleware'
 
 export const getRequisicoes = async (req: AuthRequest, res: Response) => {
   try {
-    const { estado, search, urgente, page = 1, limit = 20 } = req.query
+    const { estado, search, urgente, medicoId, page = 1, limit = 20 } = req.query
     const filter: any = {}
 
     if (estado && estado !== 'todas') filter.estado = estado
     if (urgente === 'true')           filter.urgente = true
+    // medicoId=mine → requisições criadas pelo médico autenticado
+    if (medicoId === 'mine') filter.createdBy = req.user!._id
+    else if (medicoId)       filter.createdBy = medicoId
     if (search) {
       filter.$or = [
         { numeroRequisicao:  { $regex: search, $options: 'i' } },

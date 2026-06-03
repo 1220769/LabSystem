@@ -2,6 +2,7 @@ import { Response } from 'express'
 import Fatura from '../models/Fatura'
 import Requisicao from '../models/Requisicao'
 import { AuthRequest as Request } from '../middleware/authMiddleware'
+import { notifyUtenteByRef } from '../utils/createNotification'
 
 function nextNumero(last: string | null, prefix: string): string {
   if (!last) return `${prefix}-${new Date().getFullYear()}-0001`
@@ -78,6 +79,17 @@ export async function updateFatura(req: Request, res: Response) {
     if (estado === 'emitida' && fatura.estado === 'rascunho') {
       fatura.estado      = 'emitida'
       fatura.dataEmissao = new Date()
+      // notificar utente: nova fatura
+      if (fatura.utente) {
+        const valor = fatura.valorLiquido?.toFixed(2) ?? '—'
+        notifyUtenteByRef(
+          fatura.utente as any,
+          'fatura',
+          `Nova fatura: ${fatura.numeroFatura}`,
+          `Foi emitida uma fatura no valor de €${valor}. Consulte os detalhes e a referência de pagamento no portal.`,
+          'faturas'
+        )
+      }
     } else if (estado === 'paga' && fatura.estado === 'emitida') {
       fatura.estado        = 'paga'
       fatura.dataPagamento = new Date()

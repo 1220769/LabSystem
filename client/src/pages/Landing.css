@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=GFS+Didot&display=swap');
+
+.landing-topbar {
+  position: fixed; top: 16px; right: 20px; z-index: 300;
+}
+
 .landing {
   min-height: 100vh;
   display: flex;

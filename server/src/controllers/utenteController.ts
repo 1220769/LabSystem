@@ -1,5 +1,6 @@
 import { Response } from 'express'
 import Utente from '../models/Utente'
+import User from '../models/User'
 import { AuthRequest } from '../middleWare/authMiddleware'
 
 // GET /api/utentes
@@ -84,6 +85,8 @@ export const deleteUtente = async (req: AuthRequest, res: Response) => {
       { new: true }
     )
     if (!utente) return res.status(404).json({ message: 'Utente não encontrado' })
+    // cascade: desativar utilizadores portal ligados a este utente
+    await User.updateMany({ utenteRef: req.params.id, ativo: true }, { ativo: false })
     res.json({ message: 'Utente desactivado com sucesso' })
   } catch (err) {
     res.status(500).json({ message: 'Erro ao desactivar utente', error: err })

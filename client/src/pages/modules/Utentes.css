@@ -470,3 +470,70 @@
 }
 .ut-btn-save:hover    { background: #1A1208; }
 .ut-btn-save:disabled { opacity: 0.4; cursor: default; }
+
+/* ── portal section ── */
+.ut-portal-section {
+  margin: 20px 0; padding: 16px;
+  background: rgba(26,18,8,0.03); border: 1px solid rgba(26,18,8,0.08);
+  border-radius: 4px;
+}
+.ut-portal-section-title {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.18em; text-transform: uppercase; color: rgba(26,18,8,0.3);
+  margin-bottom: 12px;
+}
+.ut-portal-loading {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 12px;
+  color: rgba(26,18,8,0.35); font-style: italic;
+}
+.ut-portal-account {}
+.ut-portal-account-row {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  margin-bottom: 10px;
+}
+.ut-portal-account-email {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 13px;
+  color: rgba(26,18,8,0.78); margin-bottom: 3px;
+}
+.ut-portal-account-meta {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 10px; letter-spacing: 0.06em;
+  color: rgba(26,18,8,0.38);
+}
+.ut-portal-badge {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 8px; letter-spacing: 0.12em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 2px; flex-shrink: 0;
+}
+.ut-portal-badge--ok  { background: rgba(46,122,80,0.12); color: #2E7A50; }
+.ut-portal-badge--off { background: rgba(200,0,26,0.08);  color: #C8001A; }
+.ut-portal-toggle {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 12px;
+  background: none; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+}
+.ut-portal-toggle--deact { border: 1px solid rgba(200,0,26,0.25); color: rgba(200,0,26,0.65); }
+.ut-portal-toggle--deact:hover { background: rgba(200,0,26,0.06); }
+.ut-portal-toggle--act  { border: 1px solid rgba(46,122,80,0.25); color: rgba(46,122,80,0.75); }
+.ut-portal-toggle--act:hover  { background: rgba(46,122,80,0.06); }
+.ut-portal-none {}
+.ut-portal-none-text {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 12px; font-style: italic;
+  color: rgba(26,18,8,0.4); margin-bottom: 10px;
+}
+.ut-btn-portal-create {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase; padding: 8px 14px;
+  background: rgba(26,18,8,0.82); color: #E8D5B0;
+  border: none; border-radius: 3px; cursor: pointer; transition: background 0.15s;
+}
+.ut-btn-portal-create:hover { background: #1A1208; }
+.ut-portal-form {}
+.ut-portal-form-note {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 11px;
+  color: rgba(26,18,8,0.5); margin-bottom: 12px; line-height: 1.5;
+}
+.ut-portal-err {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 11px; color: #C8001A;
+  background: rgba(200,0,26,0.07); border: 1px solid rgba(200,0,26,0.18);
+  border-radius: 3px; padding: 8px 12px; margin-bottom: 10px;
+}
+.ut-portal-form-actions { display: flex; gap: 8px; margin-top: 8px; }

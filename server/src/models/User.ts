@@ -88,6 +88,8 @@ export interface IUser extends Document {
   departamento?: string
   ultimoLogin?: Date
   utenteRef?: mongoose.Types.ObjectId
+  linkedAt?: Date
+  linkedBy?: mongoose.Types.ObjectId
   createdAt: Date
   updatedAt: Date
   matchPassword(enteredPassword: string): Promise<boolean>
@@ -110,6 +112,8 @@ const UserSchema = new Schema<IUser>(
     departamento: { type: String },
     ultimoLogin:  { type: Date },
     utenteRef:    { type: Schema.Types.ObjectId, ref: 'Utente' },
+    linkedAt:     { type: Date },
+    linkedBy:     { type: Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true }
 )
