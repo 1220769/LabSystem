@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const utente_controller_1 = require("../controllers/utente.controller");
+const verifyToken_1 = require("../auth/verifyToken");
+const checkRole_1 = require("../middleWare/checkRole");
+const router = (0, express_1.Router)();
+router.use(verifyToken_1.verifyToken);
+router.get('/', (0, checkRole_1.checkRole)('administrador', 'tecnico', 'medico', 'enfermeiro', 'utente'), utente_controller_1.getUtentes);
+router.get('/:id', (0, checkRole_1.checkRole)('administrador', 'tecnico', 'medico', 'enfermeiro', 'utente'), utente_controller_1.getUtenteById);
+router.post('/', (0, checkRole_1.checkRole)('administrador', 'tecnico', 'medico'), utente_controller_1.createUtente);
+router.put('/:id', (0, checkRole_1.checkRole)('administrador', 'tecnico', 'medico', 'enfermeiro'), utente_controller_1.updateUtente);
+router.delete('/:id', (0, checkRole_1.checkRole)('administrador'), utente_controller_1.deleteUtente);
+exports.default = router;

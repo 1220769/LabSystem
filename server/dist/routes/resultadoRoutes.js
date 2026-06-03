@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const resultadoController_1 = require("../controllers/resultadoController");
+const router = (0, express_1.Router)();
+router.use(authMiddleware_1.protect);
+router.get('/stats', resultadoController_1.getStats);
+router.get('/categorias', resultadoController_1.getCategorias);
+router.get('/', resultadoController_1.getResultados);
+router.get('/:id', resultadoController_1.getResultadoById);
+router.post('/worklist/:amostraId', (0, authMiddleware_1.authorize)('administrador', 'tecnico'), resultadoController_1.gerarWorklist);
+router.put('/:id', (0, authMiddleware_1.authorize)('administrador', 'tecnico'), resultadoController_1.updateResultado);
+router.post('/:id/validar-tecnico', (0, authMiddleware_1.authorize)('administrador', 'tecnico'), resultadoController_1.validarTecnico);
+router.post('/:id/validar-medico', (0, authMiddleware_1.authorize)('administrador', 'medico'), resultadoController_1.validarMedico);
+router.post('/:id/emitir-relatorio', (0, authMiddleware_1.authorize)('administrador', 'medico', 'tecnico'), resultadoController_1.emitirRelatorio);
+exports.default = router;

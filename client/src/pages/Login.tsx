@@ -17,6 +17,10 @@ const TEST_LOGINS: Record<string, { email: string; password: string }> = {
     email: 'enfermeiro@labsystem.pt',
     password: 'enfermeiro123',
   },
+  financeiro: {
+    email: 'financeiro@labsystem.pt',
+    password: 'financeiro123',
+  },
   utente: {
     email: 'utente@labsystem.pt',
     password: 'utente123',
@@ -130,6 +134,13 @@ export default function Login() {
     }
   }, [])
 
+  function destino(role: string) {
+    if (role === 'utente')        return '/portal'
+    if (role === 'medico')        return '/medico'
+    if (role === 'administrador') return '/'        /* tubo directo */
+    return '/private'
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -137,7 +148,7 @@ export default function Login() {
     try {
       const { data } = await api.post('/auth/login', { email, password })
       setAuth(data, data.token)
-      navigate('/private')
+      navigate(destino(data.role))
     } catch (err: any) {
       setError(err.response?.data?.message || 'Erro ao autenticar')
     } finally {
@@ -145,13 +156,23 @@ export default function Login() {
     }
   }
 
-  const handleRoleSelect = (role: string) => {
+  const handleRoleSelect = async (role: string) => {
     setSelectedRole(role)
     setError('')
     const credentials = TEST_LOGINS[role]
     if (!credentials) return
     setEmail(credentials.email)
     setPassword(credentials.password)
+    setLoading(true)
+    try {
+      const { data } = await api.post('/auth/login', credentials)
+      setAuth(data, data.token)
+      navigate(destino(data.role))
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Erro ao autenticar')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -216,11 +237,12 @@ export default function Login() {
 
         <div className="login-roles">
           {[
-            { icon: 'ti-stethoscope',        label: 'Médico',     role: 'medico'       },
-            { icon: 'ti-flask',              label: 'Técnico',    role: 'tecnico'      },
-            { icon: 'ti-heart-rate-monitor', label: 'Enfermeiro', role: 'enfermeiro'   },
-            { icon: 'ti-user',               label: 'Utente',     role: 'utente'       },
-            { icon: 'ti-shield-lock',        label: 'Admin',      role: 'administrador'},
+            { icon: 'ti-stethoscope',        label: 'Médico',      role: 'medico'       },
+            { icon: 'ti-flask',              label: 'Técnico',     role: 'tecnico'      },
+            { icon: 'ti-heart-rate-monitor', label: 'Enfermeiro',  role: 'enfermeiro'   },
+            { icon: 'ti-receipt',            label: 'Financeiro',  role: 'financeiro'   },
+            { icon: 'ti-user',               label: 'Utente',      role: 'utente'       },
+            { icon: 'ti-shield-lock',        label: 'Admin',       role: 'administrador'},
           ].map(r => (
             <div
               className={`login-chip ${selectedRole === r.role ? 'login-chip--active' : ''}`}

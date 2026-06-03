@@ -369,3 +369,41 @@
     flex-direction: column;
   }
 }
+
+/* ── Enfermeiro — azul claro ── */
+.private-area--enfermeiro .private-logo-icon,
+.private-area--enfermeiro .private-brand-icon,
+.private-area--enfermeiro .private-user-pill span {
+  background: #1A7CB5;
+  box-shadow: 0 0 0 5px rgba(26,124,181,0.12), 0 14px 36px rgba(26,124,181,0.22);
+}
+.private-area--enfermeiro .private-sidebar {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(26,124,181,0.22), transparent 24%),
+    linear-gradient(180deg, #10100E 0%, #0A0A08 100%);
+}
+.private-area--enfermeiro .private-menu a::before,
+.private-area--enfermeiro .private-menu button::before { background: #1A7CB5; }
+.private-area--enfermeiro .private-menu a:hover,
+.private-area--enfermeiro .private-menu a.active,
+.private-area--enfermeiro .private-menu button:hover { border-color: rgba(26,124,181,0.5); }
+.private-area--enfermeiro .private-topbar-actions button:hover { background: #1A7CB5; }
+
+/* ── Financeiro — azul ardósia ── */
+.private-area--financeiro .private-logo-icon,
+.private-area--financeiro .private-brand-icon,
+.private-area--financeiro .private-user-pill span {
+  background: #3A4F78;
+  box-shadow: 0 0 0 5px rgba(58,79,120,0.12), 0 14px 36px rgba(58,79,120,0.22);
+}
+.private-area--financeiro .private-sidebar {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(58,79,120,0.22), transparent 24%),
+    linear-gradient(180deg, #10100E 0%, #0A0A08 100%);
+}
+.private-area--financeiro .private-menu a::before,
+.private-area--financeiro .private-menu button::before { background: #3A4F78; }
+.private-area--financeiro .private-menu a:hover,
+.private-area--financeiro .private-menu a.active,
+.private-area--financeiro .private-menu button:hover { border-color: rgba(58,79,120,0.5); }
+.private-area--financeiro .private-topbar-actions button:hover { background: #3A4F78; }

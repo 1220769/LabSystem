@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const portalController_1 = require("../controllers/portalController");
+const router = (0, express_1.Router)();
+router.use(authMiddleware_1.protect);
+router.use((0, authMiddleware_1.authorize)('utente', 'administrador'));
+router.get('/summary', portalController_1.getSummary);
+router.post('/link', portalController_1.linkUtente);
+router.get('/perfil', portalController_1.getPerfil);
+router.put('/perfil', portalController_1.updatePerfil);
+router.get('/requisicoes', portalController_1.getRequisicoes);
+router.get('/resultados', portalController_1.getResultados);
+router.get('/resultados/req/:reqNumero', portalController_1.getResultadosByRequisicao);
+router.get('/faturas', portalController_1.getFaturas);
+exports.default = router;

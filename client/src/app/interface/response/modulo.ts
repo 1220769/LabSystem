@@ -3,6 +3,7 @@ export type Perfil =
   | 'tecnico'
   | 'medico'
   | 'enfermeiro'
+  | 'financeiro'
   | 'utente'
 
 export interface Modulo {
@@ -29,6 +30,7 @@ export const nomesPerfis: Record<Perfil, string> = {
   tecnico: 'Tecnico',
   medico: 'Medico',
   enfermeiro: 'Enfermeiro',
+  financeiro: 'Financeiro',
   utente: 'Utente',
 }
 
@@ -103,7 +105,7 @@ export const modulos: Modulo[] = [
     area: 'Backoffice',
     descricao: 'Facturacao electronica, SNS, seguradoras, pagamentos e integracao SAP.',
     estado: 'restrito',
-    perfis: ['administrador', 'utente'],
+    perfis: ['administrador', 'financeiro', 'utente'],
   },
   {
     id: 'equipamentos',
@@ -319,6 +321,14 @@ export const paginasPrivadas: PaginaPrivada[] = [
     area: 'Enfermeiro',
     descricao: 'Etiquetagem por codigo de barras/QR e controlo de temperatura.',
     perfis: ['enfermeiro'],
+  },
+  {
+    id: 'financeiro-faturas',
+    rota: '/private/financeiro/faturas',
+    titulo: 'Faturas & Faturacao',
+    area: 'Financeiro',
+    descricao: 'Gestao de faturas, emissao, cobranças e controlo de pagamentos.',
+    perfis: ['financeiro'],
   },
   {
     id: 'utente-portal',

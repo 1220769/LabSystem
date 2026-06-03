@@ -30,7 +30,7 @@ export default function HeaderComponent({ children, titulo, subtitulo }: HeaderC
   }
 
   return (
-    <main className="private-area">
+    <main className={`private-area${perfil ? ` private-area--${perfil}` : ''}`}>
       <aside className="private-sidebar">
         <div className="private-logo">
           <span className="private-logo-icon" aria-hidden="true">

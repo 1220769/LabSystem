@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const requisicaoController_1 = require("../controllers/requisicaoController");
+const router = (0, express_1.Router)();
+router.use(authMiddleware_1.protect);
+router.get('/stats', requisicaoController_1.getStats);
+router.get('/', requisicaoController_1.getRequisicoes);
+router.get('/:id', requisicaoController_1.getRequisicaoById);
+router.post('/', (0, authMiddleware_1.authorize)('administrador', 'tecnico', 'medico', 'enfermeiro'), requisicaoController_1.createRequisicao);
+router.put('/:id', (0, authMiddleware_1.authorize)('administrador', 'tecnico', 'medico'), requisicaoController_1.updateRequisicao);
+router.delete('/:id', (0, authMiddleware_1.authorize)('administrador', 'medico'), requisicaoController_1.cancelRequisicao);
+exports.default = router;

@@ -1,0 +1,67 @@
+.staff-portal--financeiro {
+  --staff-accent: #655C86;
+  --staff-accent-soft: rgba(101,92,134,0.11);
+}
+
+.staff-portal--financeiro .staff-kpi--ok span { color: #2E7A50; }
+
+.fin-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 15px 22px;
+  border-bottom: 1px solid rgba(26,18,8,0.05);
+}
+
+.fin-row:last-child { border-bottom: none; }
+.fin-row:hover { background: rgba(26,18,8,0.02); }
+
+.fin-row strong {
+  display: block;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(26,18,8,0.82);
+}
+
+.fin-row span {
+  display: block;
+  margin-top: 3px;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(26,18,8,0.35);
+}
+
+.fin-estado,
+.fin-valor {
+  padding: 4px 9px;
+  border-radius: 3px;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.fin-estado--rascunho { background: rgba(26,18,8,0.07); color: rgba(26,18,8,0.55); }
+.fin-estado--emitida  { background: rgba(101,92,134,0.11); color: #655C86; }
+.fin-estado--paga     { background: rgba(46,122,80,0.1); color: #2E7A50; }
+.fin-estado--anulada  { background: rgba(200,0,26,0.08); color: #C8001A; }
+
+.fin-valor {
+  background: rgba(101,92,134,0.09);
+  color: #655C86;
+  font-size: 11px;
+  text-transform: none;
+}
+
+@media (max-width: 720px) {
+  .fin-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
