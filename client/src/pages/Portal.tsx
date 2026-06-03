@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import { useAuthStore } from '../store/authStore'
@@ -45,6 +45,7 @@ interface IFat {
   _id: string; numeroFatura: string; tipo: string; seguradora?: string
   valorBruto: number; percentComparticipacao: number; valorLiquido: number
   estado: string; dataEmissao?: string; dataPagamento?: string
+  referenciaPagamento?: string
   linhas: { codigo: string; descricao: string; preco: number }[]
 }
 interface ISummary { requisicoes: number; resultados: number; faturasPendentes: number; criticos: number }
@@ -111,10 +112,13 @@ ${r.validacaoMedica ? `<div class="sec">Validado por</div><p>${r.validacaoMedica
   if (w) { w.document.write(html); w.document.close() }
 }
 
-async function printRelatorioCompleto(reqNumero: string, utenteNome: string) {
-  const r = await api.get(`/portal/resultados/req/${reqNumero}`)
-  const resultados: IRes[] = r.data.data
-  if (!resultados.length) return
+async function printRelatorioCompleto(reqNumero: string, utenteNome: string, setMsg: (m: string) => void) {
+  setMsg('A gerar relatório…')
+  try {
+    const r = await api.get(`/portal/resultados/req/${reqNumero}`)
+    const resultados: IRes[] = r.data.data
+    if (!resultados.length) { setMsg('Sem resultados validados para esta requisição.'); return }
+    setMsg('')
 
   const flagColor: Record<string, string> = {
     normal: '#2E7A50', alto: '#C87830', baixo: '#3A7AB0',
@@ -158,6 +162,7 @@ async function printRelatorioCompleto(reqNumero: string, utenteNome: string) {
 </body></html>`
   const w = window.open('', '_blank', 'width=800,height=900')
   if (w) { w.document.write(html); w.document.close() }
+  } catch { setMsg('Erro ao gerar relatório. Tente de novo.') }
 }
 
 /* ══════════════════════════════════════════ */
@@ -177,14 +182,17 @@ export default function Portal() {
   const [reqPage,    setReqPage]    = useState(1)
   const [resPage,    setResPage]    = useState(1)
   const [loading,    setLoading]    = useState(true)
+  const [resLoading, setResLoading] = useState(false)
 
   /* resultado estado */
   const [flagFilter,   setFlagFilter]   = useState<FlagFilter>('todos')
   const [resSearch,    setResSearch]    = useState('')
   const [expandedRes,  setExpandedRes]  = useState<string | null>(null)
+  const [novosCount,   setNovosCount]   = useState(0)
 
   /* requisição estado */
-  const [expandedReq,  setExpandedReq]  = useState<string | null>(null)
+  const [expandedReq,    setExpandedReq]    = useState<string | null>(null)
+  const [relMsg,         setRelMsg]         = useState<Record<string, string>>({})
 
   /* fatura estado */
   const [expandedFat,  setExpandedFat]  = useState<string | null>(null)
@@ -202,6 +210,9 @@ export default function Portal() {
   const [linkOk,   setLinkOk]   = useState('')
   const [linking,  setLinking]  = useState(false)
 
+  /* chave localStorage para última visita */
+  const lastVisitKey = `portal_last_visit_${user?._id}`
+
   useEffect(() => {
     Promise.all([
       api.get('/portal/summary'),
@@ -215,35 +226,55 @@ export default function Portal() {
         setPerfil(p.data)
         setPerfilForm({ contacto: p.data.contacto, email: p.data.email ?? '', morada_rua: p.data.morada.rua, morada_cp: p.data.morada.codigoPostal, morada_loc: p.data.morada.localidade, medico: p.data.medico ?? '' })
       } else { setNoLink(true) }
+
+      // #4 — contar resultados novos desde a última visita
+      const lastVisit = localStorage.getItem(lastVisitKey)
+      if (lastVisit) {
+        const since = new Date(lastVisit).getTime()
+        const novos = (res.data.data as IRes[]).filter(r => new Date(r.createdAt).getTime() > since).length
+        setNovosCount(novos)
+      }
+
       setResultados(res.data.data); setResTotal(res.data.total)
       setReqs(req.data.data);       setReqTotal(req.data.total)
       setFaturas(fat.data.data)
     }).finally(() => setLoading(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  /* #2 — load resultados server-side por flagFilter */
+  const loadRes = useCallback((p: number, filter: FlagFilter = flagFilter) => {
+    setResLoading(true)
+    const params: Record<string, string | number> = { page: p }
+    if (filter !== 'todos') params.flagFilter = filter
+    api.get('/portal/resultados', { params }).then(r => {
+      setResultados(r.data.data); setResTotal(r.data.total); setResPage(p)
+    }).finally(() => setResLoading(false))
+  }, [flagFilter])
 
   const loadReqs = (p: number) => {
     api.get('/portal/requisicoes', { params: { page: p } }).then(r => {
       setReqs(r.data.data); setReqTotal(r.data.total); setReqPage(p)
     })
   }
-  const loadRes = (p: number) => {
-    api.get('/portal/resultados', { params: { page: p } }).then(r => {
-      setResultados(r.data.data); setResTotal(r.data.total); setResPage(p)
-    })
+
+  /* mudar filtro → fetch server */
+  const handleFlagFilter = (f: FlagFilter) => {
+    setFlagFilter(f); setResPage(1); setExpandedRes(null)
+    loadRes(1, f)
   }
 
-  /* filtro local de resultados */
-  const filteredRes = useMemo(() => {
-    let r = resultados
-    if (flagFilter === 'normal')   r = r.filter(x => x.flag === 'normal')
-    if (flagFilter === 'alterado') r = r.filter(x => ['alto','baixo'].includes(x.flag))
-    if (flagFilter === 'critico')  r = r.filter(x => ['critico_alto','critico_baixo'].includes(x.flag))
-    if (resSearch) {
-      const q = resSearch.toLowerCase()
-      r = r.filter(x => x.analise.nome.toLowerCase().includes(q) || x.requisicaoNumero.toLowerCase().includes(q))
-    }
-    return r
-  }, [resultados, flagFilter, resSearch])
+  /* pesquisa local (sobre resultados carregados) */
+  const filteredRes = resSearch
+    ? resultados.filter(r => r.analise.nome.toLowerCase().includes(resSearch.toLowerCase()) || r.requisicaoNumero.toLowerCase().includes(resSearch.toLowerCase()))
+    : resultados
+
+  /* marcar visita quando abre tab resultados */
+  const handleTabResultados = () => {
+    setTab('resultados')
+    setNovosCount(0)
+    localStorage.setItem(lastVisitKey, new Date().toISOString())
+  }
 
   const totalPendente = faturas.filter(f => f.estado === 'emitida').reduce((s, f) => s + f.valorLiquido, 0)
 
@@ -322,15 +353,19 @@ export default function Portal() {
       </div>
 
       <div className="portal-kpis">
-        <div className="portal-kpi" onClick={() => setTab('resultados')}>
-          <div className="portal-kpi-val">{summary?.resultados ?? 0}</div>
+        <div className="portal-kpi" onClick={handleTabResultados}>
+          <div className="portal-kpi-val">
+            {summary?.resultados ?? 0}
+            {novosCount > 0 && <span className="portal-kpi-novos">{novosCount} novo{novosCount !== 1 ? 's' : ''}</span>}
+          </div>
           <div className="portal-kpi-lbl">resultados disponíveis</div>
         </div>
         <div className="portal-kpi" onClick={() => setTab('requisicoes')}>
           <div className="portal-kpi-val">{summary?.requisicoes ?? 0}</div>
           <div className="portal-kpi-lbl">requisições</div>
         </div>
-        <div className={`portal-kpi${(summary?.criticos ?? 0) > 0 ? ' portal-kpi--alert' : ''}`} onClick={() => { setTab('resultados'); setFlagFilter('critico') }}>
+        <div className={`portal-kpi${(summary?.criticos ?? 0) > 0 ? ' portal-kpi--alert' : ''}`}
+          onClick={() => { handleTabResultados(); handleFlagFilter('critico') }}>
           <div className="portal-kpi-val">{summary?.criticos ?? 0}</div>
           <div className="portal-kpi-lbl">resultados críticos</div>
         </div>
@@ -343,7 +378,13 @@ export default function Portal() {
 
       <div className="portal-tabs">
         {(['resultados','requisicoes','faturas','perfil'] as Tab[]).map(t => (
-          <button key={t} className={`portal-tab${tab === t ? ' portal-tab--on' : ''}`} onClick={() => setTab(t)}>{t}</button>
+          <button key={t} className={`portal-tab${tab === t ? ' portal-tab--on' : ''}`}
+            onClick={() => t === 'resultados' ? handleTabResultados() : setTab(t)}>
+            {t}
+            {t === 'resultados' && novosCount > 0 && tab !== 'resultados' && (
+              <span className="portal-tab-badge">{novosCount}</span>
+            )}
+          </button>
         ))}
       </div>
 
@@ -355,14 +396,17 @@ export default function Portal() {
             <div className="portal-section-toolbar">
               <div className="portal-flag-filters">
                 {(['todos','normal','alterado','critico'] as FlagFilter[]).map(f => (
-                  <button key={f} className={`portal-flag-btn portal-flag-btn--${f}${flagFilter === f ? ' portal-flag-btn--on' : ''}`} onClick={() => setFlagFilter(f)}>{f}</button>
+                  <button key={f} className={`portal-flag-btn portal-flag-btn--${f}${flagFilter === f ? ' portal-flag-btn--on' : ''}`}
+                    onClick={() => handleFlagFilter(f)}>{f}</button>
                 ))}
               </div>
               <input className="portal-search" placeholder="pesquisar análise…" value={resSearch} onChange={e => setResSearch(e.target.value)} />
-              <span className="portal-count">{filteredRes.length} resultado{filteredRes.length !== 1 ? 's' : ''}</span>
+              <span className="portal-count">{resLoading ? '…' : `${resTotal} resultado${resTotal !== 1 ? 's' : ''}`}</span>
             </div>
 
-            {filteredRes.length === 0
+            {resLoading
+              ? <div className="portal-empty">a carregar…</div>
+              : filteredRes.length === 0
               ? <div className="portal-empty">Sem resultados{flagFilter !== 'todos' ? ' neste filtro' : ''}</div>
               : filteredRes.map(r => (
                 <div key={r._id} className={`portal-res-card portal-res-card--${r.flag}`}>
@@ -473,9 +517,19 @@ export default function Portal() {
                       {req.observacoes && <div className="portal-res-obs">{req.observacoes}</div>}
 
                       {req.estado === 'concluida' && (
-                        <button className="portal-btn-outline" onClick={() => printRelatorioCompleto(req.numeroRequisicao, perfil?.nome ?? '')}>
-                          ↓ Relatório completo em PDF
-                        </button>
+                        <div>
+                          <button className="portal-btn-outline" onClick={() => {
+                            const msg = (m: string) => setRelMsg(prev => ({ ...prev, [req._id]: m }))
+                            printRelatorioCompleto(req.numeroRequisicao, perfil?.nome ?? '', msg)
+                          }}>
+                            ↓ Relatório completo em PDF
+                          </button>
+                          {relMsg[req._id] && (
+                            <div className={`portal-rel-msg${relMsg[req._id].startsWith('Erro') || relMsg[req._id].startsWith('Sem') ? ' portal-rel-msg--err' : ''}`}>
+                              {relMsg[req._id]}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
@@ -544,6 +598,14 @@ export default function Portal() {
                       </div>
                       {f.dataPagamento && (
                         <div className="portal-fat-meta" style={{ marginTop: 8 }}>Pago em {fmtDate(f.dataPagamento)}</div>
+                      )}
+                      {f.estado === 'emitida' && (
+                        <div className="portal-fat-pagamento">
+                          {f.referenciaPagamento
+                            ? <><span className="portal-fat-pagamento-lbl">Referência MB</span><span className="portal-fat-pagamento-val">{f.referenciaPagamento}</span></>
+                            : <span className="portal-fat-pagamento-sem">Referência de pagamento não disponível — contacte o laboratório</span>
+                          }
+                        </div>
                       )}
                     </div>
                   )}

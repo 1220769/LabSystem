@@ -43,10 +43,17 @@
 .portal-kpi-val { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 38px; line-height: 1; color: rgba(26,18,8,0.82); }
 .portal-kpi--alert .portal-kpi-val { color: #C8001A; }
 .portal-kpi-lbl { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26,18,8,0.35); margin-top: 5px; }
-.portal-kpi-sub { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: rgba(26,18,8,0.5); margin-top: 3px; }
+.portal-kpi-sub   { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: rgba(26,18,8,0.5); margin-top: 3px; }
+.portal-kpi-novos { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-left: 8px; color: #2E7A50; vertical-align: middle; }
 
 /* ── tabs ── */
 .portal-tabs { display: flex; gap: 0; padding: 20px 60px 0; border-bottom: 1px solid rgba(26,18,8,0.08); }
+.portal-tab-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #2E7A50; color: #fff;
+  font-size: 9px; margin-left: 5px; vertical-align: middle;
+}
 .portal-tab {
   font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
   padding: 10px 20px; background: none; border: none; border-bottom: 2px solid transparent;
@@ -277,3 +284,26 @@
 .portal-link-ok  { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: #2E7A50; background: rgba(46,122,80,0.08); border: 1px solid rgba(46,122,80,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 12px; }
 .portal-link-form .portal-btn-primary { width: 100%; }
 .portal-link-form .portal-input { width: 100%; box-sizing: border-box; }
+
+/* ── relatório msg ── */
+.portal-rel-msg { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 12px; color: #2E7A50; margin-top: 6px; }
+.portal-rel-msg--err { color: #C8001A; }
+
+/* ── referência de pagamento ── */
+.portal-fat-pagamento {
+  margin-top: 12px; padding: 10px 14px;
+  background: rgba(200,120,0,0.06); border: 1px solid rgba(200,120,0,0.2); border-radius: 4px;
+  display: flex; align-items: center; gap: 12px;
+}
+.portal-fat-pagamento-lbl {
+  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(26,18,8,0.4); flex-shrink: 0;
+}
+.portal-fat-pagamento-val {
+  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 15px; font-style: italic;
+  color: rgba(26,18,8,0.8); letter-spacing: 0.06em;
+}
+.portal-fat-pagamento-sem {
+  font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 12px;
+  color: rgba(26,18,8,0.4);
+}

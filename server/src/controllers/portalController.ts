@@ -43,9 +43,16 @@ export async function getResultados(req: AuthRequest, res: Response) {
   try {
     const id = utenteId(req)
     if (!id) return res.json({ data: [], total: 0 })
-    const page  = Math.max(1, parseInt(req.query.page as string) || 1)
-    const limit = 20
-    const filter = { utente: id, estado: 'validado_medico' as const }
+    const page       = Math.max(1, parseInt(req.query.page as string) || 1)
+    const limit      = 20
+    const flagFilter = req.query.flagFilter as string | undefined
+
+    const flagCondition: Record<string, unknown> = { estado: 'validado_medico' as const }
+    if (flagFilter === 'normal')   flagCondition.flag = 'normal'
+    if (flagFilter === 'alterado') flagCondition.flag = { $in: ['alto', 'baixo'] }
+    if (flagFilter === 'critico')  flagCondition.flag = { $in: ['critico_alto', 'critico_baixo'] }
+
+    const filter = { utente: id, ...flagCondition }
     const total  = await Resultado.countDocuments(filter)
     const data   = await Resultado.find(filter)
       .sort({ createdAt: -1 })
