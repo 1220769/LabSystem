@@ -1,41 +1,29 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Landing from './pages/Landing'
-import Login from './pages/Login'
-import Modulo from './pages/Modulo'
+import Login   from './pages/Login'
+import Modulo  from './pages/Modulo'
+import Portal  from './pages/Portal'
 import ProtectedRoute from './components/ProtectedRoute'
-import AdminmainComponent from './app/components/adminmain/adminmain.component'
-import UtentemainComponent from './app/components/utentemain/utentemain.component'
-import ModuloprivadoComponent from './app/components/moduloprivado/moduloprivado.component'
-import { paginasPrivadas } from './app/interface/response/modulo'
+import { useAuthStore } from './store/authStore'
+
+function RootRedirect() {
+  const { user } = useAuthStore()
+  if (user?.role === 'utente') return <Navigate to="/portal" replace />
+  return (
+    <ProtectedRoute>
+      <Landing />
+    </ProtectedRoute>
+  )
+}
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Landing />} />
-        <Route path="/modulo/:id" element={<Modulo />} />
-        <Route path="/private" element={
-          <ProtectedRoute>
-            <AdminmainComponent />
-          </ProtectedRoute>
-        } />
-        <Route path="/private/utentes" element={
-          <ProtectedRoute roles={['administrador', 'tecnico', 'medico', 'enfermeiro', 'utente']}>
-            <UtentemainComponent />
-          </ProtectedRoute>
-        } />
-        {paginasPrivadas.map((pagina) => (
-          <Route
-            key={pagina.id}
-            path={pagina.rota}
-            element={
-              <ProtectedRoute roles={pagina.perfis}>
-                <ModuloprivadoComponent modulo={pagina} />
-              </ProtectedRoute>
-            }
-          />
-        ))}
+        <Route path="/login"  element={<Login />} />
+        <Route path="/"       element={<ProtectedRoute><RootRedirect /></ProtectedRoute>} />
+        <Route path="/portal" element={<ProtectedRoute roles={['utente','administrador']}><Portal /></ProtectedRoute>} />
+        <Route path="/modulo/:id" element={<ProtectedRoute><Modulo /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )

@@ -1,0 +1,627 @@
+/* ── layout ── */
+.rq-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── top ── */
+.rq-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 36px 60px 0;
+  gap: 24px;
+}
+
+.rq-back {
+  position: absolute;
+  top: 26px;
+  left: 28px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(12, 24, 40, 0.32);
+  transition: color 0.15s;
+  padding: 0;
+}
+.rq-back:hover { color: rgba(12, 24, 40, 0.8); }
+.rq-back--panel { position: static; display: block; margin-bottom: 12px; }
+
+.rq-identity { flex: 1; padding-top: 48px; }
+
+.rq-num {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: rgba(12, 24, 40, 0.28);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.rq-title {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(44px, 8vw, 110px);
+  text-transform: uppercase;
+  color: rgba(12, 24, 40, 0.85);
+  line-height: 1;
+  margin: 0 0 10px;
+}
+
+.rq-sub {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 15px;
+  color: rgba(12, 24, 40, 0.38);
+  margin: 0;
+}
+
+.rq-kpis {
+  display: flex;
+  gap: 28px;
+  padding-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.rq-kpi { display: flex; flex-direction: column; align-items: flex-end; }
+.rq-kpi-val {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-weight: 700;
+  font-size: 38px;
+  line-height: 1;
+  color: rgba(12, 24, 40, 0.82);
+}
+.rq-kpi-lbl {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(12, 24, 40, 0.3);
+  margin-top: 3px;
+}
+.rq-kpi--urg .rq-kpi-val { color: #C8001A; }
+.rq-kpi--urg .rq-kpi-lbl { color: rgba(200,0,26,0.5); }
+
+/* ── toolbar ── */
+.rq-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 60px 14px;
+  flex-wrap: wrap;
+}
+
+.rq-tabs {
+  display: flex;
+  gap: 2px;
+  background: rgba(12, 24, 40, 0.06);
+  border-radius: 4px;
+  padding: 3px;
+}
+
+.rq-tab {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  color: rgba(12, 24, 40, 0.45);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.rq-tab:hover  { color: rgba(12, 24, 40, 0.75); }
+.rq-tab--on    { background: rgba(12, 24, 40, 0.88); color: #B8CDE0; }
+
+.rq-search {
+  flex: 1;
+  min-width: 180px;
+  background: rgba(12, 24, 40, 0.05);
+  border: 1px solid rgba(12, 24, 40, 0.10);
+  border-radius: 3px;
+  padding: 9px 14px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(12, 24, 40, 0.8);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.rq-search::placeholder { color: rgba(12, 24, 40, 0.25); }
+.rq-search:focus         { border-color: rgba(12, 24, 40, 0.25); }
+
+.rq-btn-new {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 9px 20px;
+  background: rgba(12, 24, 40, 0.85);
+  color: #B8CDE0;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.rq-btn-new:hover { background: #0C1828; }
+
+/* ── list ── */
+.rq-list-area {
+  flex: 1;
+  padding: 0 60px 60px;
+  overflow-y: auto;
+}
+
+.rq-msg {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(12, 24, 40, 0.28);
+  padding: 48px 0;
+  text-align: center;
+}
+
+.rq-list { border-top: 1px solid rgba(12, 24, 40, 0.09); }
+
+.rq-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(12, 24, 40, 0.06);
+  cursor: pointer;
+  transition: background 0.12s, padding 0.12s;
+  border-radius: 2px;
+}
+.rq-row:hover { background: rgba(12, 24, 40, 0.04); padding-left: 8px; padding-right: 8px; }
+
+.rq-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 180px;
+}
+
+.rq-urg-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #C8001A;
+  flex-shrink: 0;
+  animation: rq-pulse 1.6s ease-in-out infinite;
+}
+@keyframes rq-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(200,0,26,0.4); }
+  50%      { box-shadow: 0 0 0 5px rgba(200,0,26,0); }
+}
+
+.rq-row-num {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(12, 24, 40, 0.55);
+}
+.rq-row-utente {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(12, 24, 40, 0.85);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.rq-row-mid {
+  flex: 1;
+  min-width: 0;
+}
+.rq-row-analises {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 13px;
+  color: rgba(12, 24, 40, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rq-more {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 10px;
+  color: rgba(12, 24, 40, 0.38);
+}
+.rq-row-meta {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: rgba(12, 24, 40, 0.32);
+  margin-top: 3px;
+}
+
+.rq-row-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* badges */
+.rq-badge {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+.rq-badge--pendente  { background: rgba(212,146,10,0.12);  color: #8A5E00; }
+.rq-badge--em_curso  { background: rgba(12,24,40,0.10);    color: rgba(12,24,40,0.6); }
+.rq-badge--concluida { background: rgba(74,158,106,0.12);  color: #2E7A50; }
+.rq-badge--cancelada { background: rgba(200,0,26,0.08);    color: #C8001A; }
+.rq-badge--lg        { font-size: 10px; padding: 5px 12px; }
+
+.rq-arr {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 14px;
+  color: rgba(12, 24, 40, 0.18);
+  transition: color 0.12s, transform 0.12s;
+}
+.rq-row:hover .rq-arr { color: rgba(12, 24, 40, 0.55); transform: translateX(3px); }
+
+/* pagination */
+.rq-pag {
+  display: flex; align-items: center; gap: 16px;
+  justify-content: center; padding: 28px 0 0;
+}
+.rq-pag-btn {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 18px;
+  background: none; border: 1px solid rgba(12,24,40,0.14);
+  border-radius: 2px; width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: rgba(12,24,40,0.45); transition: all 0.15s;
+}
+.rq-pag-btn:hover:not(:disabled) { color: rgba(12,24,40,0.85); border-color: rgba(12,24,40,0.35); }
+.rq-pag-btn:disabled { opacity: 0.3; cursor: default; }
+.rq-pag-info {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  letter-spacing: 0.12em; color: rgba(12,24,40,0.32);
+}
+
+/* ── panel ── */
+.rq-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(520px, 100vw);
+  background: #D4E4F0;
+  box-shadow: -24px 0 80px rgba(12,24,40,0.14);
+  display: flex; flex-direction: column;
+  z-index: 200; overflow-y: auto;
+}
+
+.rq-panel-hd {
+  position: sticky; top: 0;
+  background: #D4E4F0;
+  padding: 28px 36px 18px;
+  border-bottom: 1px solid rgba(12,24,40,0.08);
+  z-index: 10;
+}
+
+.rq-panel-label {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-weight: 600; font-size: 20px;
+  text-transform: uppercase;
+  color: rgba(12,24,40,0.85);
+  letter-spacing: 0.04em;
+}
+
+.rq-panel-urg {
+  display: inline-block;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 8px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+  background: rgba(200,0,26,0.1); color: #C8001A;
+  margin-left: 10px;
+}
+
+/* ── detail ── */
+.rq-detail { padding: 24px 36px 60px; }
+
+.rq-detail-top { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+
+.rq-prio-badge {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 8px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 2px;
+  background: rgba(212,146,10,0.15); color: #8A5E00;
+}
+
+.rq-detail-section { margin-bottom: 22px; }
+
+.rq-detail-lbl {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(12,24,40,0.3); margin-bottom: 5px;
+}
+.rq-detail-val {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 14px; font-weight: 500;
+  color: rgba(12,24,40,0.82);
+}
+.rq-detail-sub {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  color: rgba(12,24,40,0.35); margin-top: 2px;
+}
+
+.rq-detail-cat { margin-top: 10px; }
+.rq-detail-cat-title {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 8px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(12,24,40,0.28); margin-bottom: 6px; margin-top: 12px;
+}
+.rq-detail-analise {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(12,24,40,0.05);
+}
+.rq-detail-cod {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.1em; color: rgba(12,24,40,0.35);
+  min-width: 48px;
+}
+
+.rq-detail-actions { display: flex; gap: 10px; margin-top: 36px; }
+
+.rq-btn-advance {
+  flex: 1;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 20px;
+  background: rgba(12,24,40,0.85); color: #B8CDE0;
+  border: none; border-radius: 3px; cursor: pointer;
+  transition: background 0.15s;
+}
+.rq-btn-advance:hover { background: #0C1828; }
+
+.rq-btn-cancel-req {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 20px;
+  background: none; color: #C8001A;
+  border: 1px solid rgba(200,0,26,0.3);
+  border-radius: 3px; cursor: pointer; transition: all 0.15s;
+}
+.rq-btn-cancel-req:hover { background: rgba(200,0,26,0.06); border-color: rgba(200,0,26,0.6); }
+
+/* ── form ── */
+.rq-form { padding: 20px 36px 60px; display: flex; flex-direction: column; gap: 0; }
+
+.rq-form-err {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px;
+  color: #C8001A; background: rgba(200,0,26,0.07);
+  border: 1px solid rgba(200,0,26,0.2); border-radius: 3px;
+  padding: 10px 14px; margin-bottom: 18px;
+}
+
+.rq-fsection { margin-bottom: 24px; }
+
+.rq-fsection-title {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(12,24,40,0.3);
+  margin-bottom: 12px; padding-bottom: 7px;
+  border-bottom: 1px solid rgba(12,24,40,0.08);
+}
+
+.rq-count { color: rgba(12,24,40,0.55); }
+
+/* utente selector */
+.rq-utente-search-wrap { position: relative; }
+
+.rq-utente-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: #D4E4F0;
+  border: 1px solid rgba(12,24,40,0.12);
+  border-radius: 3px;
+  box-shadow: 0 8px 24px rgba(12,24,40,0.12);
+  z-index: 50; max-height: 220px; overflow-y: auto;
+}
+
+.rq-utente-loading {
+  padding: 12px 14px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  color: rgba(12,24,40,0.35);
+}
+
+.rq-utente-opt {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; cursor: pointer;
+  border-bottom: 1px solid rgba(12,24,40,0.06);
+  transition: background 0.1s;
+}
+.rq-utente-opt:last-child { border-bottom: none; }
+.rq-utente-opt:hover { background: rgba(12,24,40,0.06); }
+
+.rq-utente-opt-nome {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 13px;
+  font-weight: 500; color: rgba(12,24,40,0.82);
+}
+.rq-utente-opt-meta {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.1em; color: rgba(12,24,40,0.35);
+}
+
+.rq-utente-selected {
+  background: rgba(12,24,40,0.06); border-radius: 3px;
+  padding: 12px 14px;
+  border: 1px solid rgba(12,24,40,0.1);
+}
+.rq-utente-nome {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 14px;
+  font-weight: 500; color: rgba(12,24,40,0.85);
+}
+.rq-utente-meta {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.1em; color: rgba(12,24,40,0.38);
+  margin-top: 3px;
+}
+.rq-utente-clear {
+  margin-top: 8px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: none; border: none; cursor: pointer;
+  color: rgba(12,24,40,0.38); padding: 0;
+  transition: color 0.15s;
+}
+.rq-utente-clear:hover { color: rgba(12,24,40,0.7); }
+
+/* perfis */
+.rq-perfis { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.rq-perfil-btn {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 6px 12px;
+  background: rgba(12,24,40,0.07);
+  border: 1px solid rgba(12,24,40,0.12);
+  border-radius: 3px; cursor: pointer;
+  color: rgba(12,24,40,0.6);
+  transition: all 0.15s;
+}
+.rq-perfil-btn:hover { background: rgba(12,24,40,0.13); color: rgba(12,24,40,0.85); }
+
+/* selected chips */
+.rq-selected-chips {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;
+}
+.rq-chip {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.06em;
+  padding: 4px 10px; border-radius: 2px;
+  background: rgba(12,24,40,0.85); color: #B8CDE0;
+  cursor: pointer; transition: background 0.12s;
+}
+.rq-chip:hover { background: #C8001A; }
+
+/* catalog */
+.rq-catalog {
+  max-height: 260px; overflow-y: auto;
+  border: 1px solid rgba(12,24,40,0.09);
+  border-radius: 3px; margin-top: 8px;
+  background: rgba(12,24,40,0.03);
+}
+
+.rq-cat-group { padding: 0 0 4px; }
+
+.rq-cat-title {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 8px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(12,24,40,0.28); padding: 8px 12px 4px;
+  position: sticky; top: 0;
+  background: rgba(212,228,240,0.95);
+  backdrop-filter: blur(4px);
+}
+
+.rq-cat-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 12px; cursor: pointer;
+  transition: background 0.1s; border-radius: 2px;
+}
+.rq-cat-item:hover      { background: rgba(12,24,40,0.06); }
+.rq-cat-item--on        { background: rgba(12,24,40,0.09); }
+
+.rq-cat-cod {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.1em; color: rgba(12,24,40,0.35);
+  min-width: 46px; flex-shrink: 0;
+}
+.rq-cat-nome {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px;
+  color: rgba(12,24,40,0.75); flex: 1;
+}
+.rq-cat-check {
+  font-size: 12px; color: rgba(12,24,40,0.7); width: 14px; text-align: right;
+}
+
+/* options */
+.rq-opts-row { display: flex; align-items: center; gap: 20px; margin-bottom: 12px; }
+
+.rq-toggle-wrap { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.rq-toggle-label {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(12,24,40,0.38);
+}
+.rq-toggle {
+  width: 38px; height: 20px; border-radius: 10px;
+  background: rgba(12,24,40,0.14);
+  border: none; cursor: pointer; position: relative;
+  transition: background 0.2s; padding: 0;
+}
+.rq-toggle--on { background: rgba(12,24,40,0.8); }
+.rq-toggle-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #B8CDE0; transition: transform 0.2s;
+  display: block;
+}
+.rq-toggle--on .rq-toggle-knob { transform: translateX(18px); }
+
+.rq-ff { margin-bottom: 12px; }
+.rq-ff--inline { display: flex; flex-direction: column; }
+.rq-ff-label {
+  display: block; font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(12,24,40,0.35); margin-bottom: 5px;
+}
+
+/* inputs */
+.rq-input {
+  width: 100%; box-sizing: border-box;
+  background: rgba(12,24,40,0.05);
+  border: 1px solid rgba(12,24,40,0.10);
+  border-radius: 3px; padding: 9px 12px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 13px;
+  color: rgba(12,24,40,0.82); outline: none;
+  transition: border-color 0.15s;
+}
+.rq-input:focus      { border-color: rgba(12,24,40,0.28); }
+.rq-input--sm        { padding: 7px 10px; font-size: 12px; }
+.rq-input::placeholder { color: rgba(12,24,40,0.25); }
+textarea.rq-input    { resize: vertical; }
+select.rq-input      { cursor: pointer; }
+
+/* form actions */
+.rq-form-actions { display: flex; gap: 10px; margin-top: 8px; }
+
+.rq-btn-cancel-form {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 18px; background: none;
+  border: 1px solid rgba(12,24,40,0.15); border-radius: 3px;
+  cursor: pointer; color: rgba(12,24,40,0.45); transition: all 0.15s;
+}
+.rq-btn-cancel-form:hover { border-color: rgba(12,24,40,0.35); color: rgba(12,24,40,0.8); }
+
+.rq-btn-save {
+  flex: 1;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 18px;
+  background: rgba(12,24,40,0.85); color: #B8CDE0;
+  border: none; border-radius: 3px;
+  cursor: pointer; transition: background 0.15s;
+}
+.rq-btn-save:hover    { background: #0C1828; }
+.rq-btn-save:disabled { opacity: 0.4; cursor: default; }

@@ -2,11 +2,15 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import { connectDB } from './config/db'
-import loginRoutes    from './routes/login.route'
-import utenteRoutes   from './routes/utente.route'
-import adminRoutes    from './routes/admin.route'
-import medicoRoutes   from './routes/medico.route'
-import anamneseRoutes from './routes/anamenese.route'
+import authRoutes       from './routes/authRoutes'
+import utenteRoutes     from './routes/utenteRoutes'
+import userRoutes       from './routes/userRoutes'
+import requisicaoRoutes from './routes/requisicaoRoutes'
+import amostraRoutes    from './routes/amostraRoutes'
+import resultadoRoutes  from './routes/resultadoRoutes'
+import faturaRoutes     from './routes/faturaRoutes'
+import analyticsRoutes  from './routes/analyticsRoutes'
+import portalRoutes     from './routes/portalRoutes'
 
 dotenv.config()
 connectDB()
@@ -17,11 +21,15 @@ const PORT = process.env.PORT || 4000
 app.use(cors({ origin: 'http://localhost:3000' }))
 app.use(express.json())
 
-app.use('/api/auth',      loginRoutes)
-app.use('/api/utentes',   utenteRoutes)
-app.use('/api/users',     adminRoutes)
-app.use('/api/medicos',   medicoRoutes)
-app.use('/api/anamneses', anamneseRoutes)
+app.use('/api/auth',        authRoutes)
+app.use('/api/utentes',     utenteRoutes)
+app.use('/api/users',       userRoutes)
+app.use('/api/requisicoes', requisicaoRoutes)
+app.use('/api/amostras',    amostraRoutes)
+app.use('/api/resultados',  resultadoRoutes)
+app.use('/api/faturas',     faturaRoutes)
+app.use('/api/analytics',   analyticsRoutes)
+app.use('/api/portal',      portalRoutes)
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })

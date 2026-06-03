@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import DiveCanvas from '../components/DiveCanvas'
+import api from '../api/axios'
+import { useAuthStore } from '../store/authStore'
 import './Landing.css'
 
 interface Segment {
@@ -110,11 +112,25 @@ const SEGMENTS: Segment[] = [
 ]
 
 export default function Landing() {
-  const [hovered, setHovered] = useState<number | null>(null)
-  const [diving, setDiving] = useState(false)
-  const [diveColor, setDiveColor] = useState('#000000')
+  const [hovered,    setHovered]    = useState<number | null>(null)
+  const [diving,     setDiving]     = useState(false)
+  const [diveColor,  setDiveColor]  = useState('#000000')
   const [activeSegId, setActiveSegId] = useState<number | null>(null)
+  const [criticos,   setCriticos]   = useState(0)
+  const [emCurso,    setEmCurso]    = useState(0)
+  const [tipHover,   setTipHover]   = useState(false)
   const navigate = useNavigate()
+  const { logout } = useAuthStore()
+
+  useEffect(() => {
+    api.get('/resultados/stats').then(r => setCriticos(r.data.criticosPorValidar ?? 0)).catch(() => {})
+    api.get('/requisicoes/stats').then(r => setEmCurso(r.data.em_curso ?? 0)).catch(() => {})
+  }, [])
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
 
   const handleSegClick = (seg: Segment) => {
     setActiveSegId(seg.id)
@@ -140,8 +156,18 @@ export default function Landing() {
 
       <motion.div
         className="tube-scene"
-        animate={diving ? { scale: 6, opacity: 0 } : { scale: 1, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.4, 0, 1, 1], delay: diving ? 0.2 : 0 }}
+        animate={
+          diving
+            ? { scale: 6, opacity: 0 }
+            : hovered !== null
+              ? { scale: 1.07, opacity: 1 }
+              : { scale: 1,    opacity: 1 }
+        }
+        transition={
+          diving
+            ? { duration: 0.6, ease: [0.4, 0, 1, 1], delay: 0.2 }
+            : { type: 'spring', stiffness: 260, damping: 24 }
+        }
       >
         <svg
           className="tube-svg"
@@ -202,9 +228,10 @@ export default function Landing() {
             />
           ))}
 
-          <polygon points="14,500 74,500 57,534 31,534" fill="#111110"
+          <polygon points="14,500 74,500 57,534 31,534"
+            fill={tipHover ? '#3A2A2A' : '#111110'}
             opacity={diving ? 0 : 1}
-            style={{ transition: 'opacity 0.2s' }}
+            style={{ transition: 'opacity 0.2s, fill 0.18s' }}
           />
           <polygon points="14,500 74,500 57,534 31,534"
             fill="rgba(255,255,255,0.03)"
@@ -213,9 +240,26 @@ export default function Landing() {
             style={{ transition: 'opacity 0.2s' }}
           />
           <ellipse cx="44" cy="534" rx="13" ry="4"
-            fill="#0A0A08" stroke="rgba(10,10,8,0.3)" strokeWidth="1"
+            fill={tipHover ? '#3A2A2A' : '#0A0A08'}
+            stroke="rgba(10,10,8,0.3)" strokeWidth="1"
             opacity={diving ? 0 : 1}
-            style={{ transition: 'opacity 0.2s' }}
+            style={{ transition: 'opacity 0.2s, fill 0.18s' }}
+          />
+          {/* hit area logout */}
+          <polygon
+            points="14,500 74,500 57,534 31,534"
+            fill="transparent"
+            style={{ cursor: diving ? 'default' : 'pointer' }}
+            onMouseEnter={() => !diving && setTipHover(true)}
+            onMouseLeave={() => setTipHover(false)}
+            onClick={() => !diving && handleLogout()}
+          />
+          <ellipse cx="44" cy="534" rx="13" ry="4"
+            fill="transparent"
+            style={{ cursor: diving ? 'default' : 'pointer' }}
+            onMouseEnter={() => !diving && setTipHover(true)}
+            onMouseLeave={() => setTipHover(false)}
+            onClick={() => !diving && handleLogout()}
           />
 
           <rect x="14" y="40" width="60" height="460" rx="2"
@@ -299,25 +343,53 @@ export default function Landing() {
         </svg>
 
         {hovered !== null && !diving && (() => {
-          const seg = SEGMENTS[hovered]
-          const midY = seg.svgY + seg.svgH / 2
+          const seg    = SEGMENTS[hovered]
+          const midY   = seg.svgY + seg.svgH / 2
           const topPct = (midY / 540) * 100
+          const livestat =
+            seg.id === 2 && emCurso   > 0 ? `${emCurso} em curso` :
+            seg.id === 5 && criticos  > 0 ? `${criticos} críticos` :
+            null
           return (
             <div className="seg-label" style={{ top: `${topPct}%` }}>
               <div className="seg-label-line" />
-              <div className="seg-label-num">{String(hovered).padStart(2, '0')}</div>
+              <div className="seg-label-num">{String(seg.id).padStart(2, '0')}</div>
               <div className="seg-label-name">{seg.name}</div>
               <div className="seg-label-desc">{seg.sub}</div>
+              {livestat && <div className="seg-label-live">{livestat}</div>}
             </div>
           )
         })()}
+
+        {tipHover && !diving && (
+          <div className="seg-label seg-label--logout" style={{ top: `${(517 / 540) * 100}%` }}>
+            <div className="seg-label-line" />
+            <div className="seg-label-name" style={{ fontSize: 20, color: 'rgba(200,0,26,0.75)' }}>sair</div>
+            <div className="seg-label-desc">terminar sessão</div>
+          </div>
+        )}
+
+        {/* badge críticos persistente — segmento Validação */}
+        {criticos > 0 && !diving && (
+          <div className="live-badge live-badge--crit" style={{ top: `${((344 + 29) / 540) * 100}%` }}>
+            <span className="live-badge-pulse" />
+            {criticos} crítico{criticos !== 1 ? 's' : ''}
+          </div>
+        )}
+
+        {/* badge requisições em curso — segmento Requisições */}
+        {emCurso > 0 && !diving && (
+          <div className="live-badge live-badge--info" style={{ top: `${((158 + 31) / 540) * 100}%` }}>
+            {emCurso} em curso
+          </div>
+        )}
       </motion.div>
 
-      <div className="slogan slogan-left">
+      <div className={`slogan slogan-left${hovered !== null ? ' slogan--hide' : ''}`}>
         <div style={{ marginBottom: '0.15em' }}>Análises</div>
         <div style={{ textAlign: 'center' }}>que falam</div>
       </div>
-      <div className="slogan slogan-right">Contigo</div>
+      <div className={`slogan slogan-right${hovered !== null ? ' slogan--hide' : ''}`}>Contigo</div>
 
     </div>
   )

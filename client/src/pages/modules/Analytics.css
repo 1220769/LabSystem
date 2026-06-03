@@ -1,0 +1,164 @@
+/* ── layout ── */
+.an7-page {
+  min-height: 100vh;
+  background: #1A1A18;
+  display: flex; flex-direction: column;
+  position: relative; overflow-y: auto;
+}
+
+/* ── top ── */
+.an7-export {
+  position: absolute; top: 26px; right: 28px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  background: rgba(240,235,225,0.08); border: 1px solid rgba(240,235,225,0.18);
+  border-radius: 3px; padding: 7px 14px; cursor: pointer;
+  color: rgba(240,235,225,0.5); transition: all 0.15s;
+}
+.an7-export:hover { background: rgba(240,235,225,0.16); color: rgba(240,235,225,0.88); }
+
+.an7-back {
+  position: absolute; top: 26px; left: 28px;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  background: none; border: none; cursor: pointer;
+  color: rgba(240,235,225,0.35); transition: color 0.15s; padding: 0;
+}
+.an7-back:hover { color: rgba(240,235,225,0.85); }
+
+.an7-hd {
+  padding: 72px 60px 0;
+}
+.an7-num {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px;
+  letter-spacing: 0.22em; color: rgba(240,235,225,0.22); display: block; margin-bottom: 6px;
+}
+.an7-title {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700;
+  font-size: clamp(44px, 8vw, 110px); text-transform: uppercase;
+  color: rgba(240,235,225,0.88); line-height: 1; margin: 0 0 8px;
+}
+.an7-sub {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-style: italic; font-weight: 300;
+  font-size: 14px; color: rgba(240,235,225,0.35); margin: 0 0 32px;
+}
+
+/* ── loading / err ── */
+.an7-loading, .an7-err {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px; letter-spacing: 0.1em;
+  color: rgba(240,235,225,0.3);
+}
+.an7-err { color: rgba(255,140,140,0.6); }
+
+/* ── KPI row ── */
+.an7-kpis {
+  display: flex; gap: 2px; padding: 0 60px 36px; flex-wrap: wrap;
+}
+.an7-kpi {
+  flex: 1; min-width: 140px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(240,235,225,0.06);
+  border-radius: 4px; padding: 16px 20px;
+}
+.an7-kpi-val {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700;
+  font-size: 36px; line-height: 1; color: rgba(240,235,225,0.88);
+}
+.an7-kpi-lbl {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(240,235,225,0.28); margin-top: 6px;
+}
+.an7-kpi--alert .an7-kpi-val  { color: #FF8080; }
+.an7-kpi--ok .an7-kpi-val     { color: #A8D4B0; }
+.an7-kpi--week .an7-kpi-val   { color: #90CAFF; }
+
+/* ── sections ── */
+.an7-body { padding: 0 60px 80px; display: flex; flex-direction: column; gap: 40px; }
+
+.an7-section-title {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(240,235,225,0.25); margin-bottom: 16px;
+  padding-bottom: 8px; border-bottom: 1px solid rgba(240,235,225,0.07);
+}
+
+/* pipeline */
+.an7-pipeline { display: flex; flex-direction: column; gap: 10px; }
+
+.an7-pipe-row { display: flex; align-items: center; gap: 14px; }
+.an7-pipe-label {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(240,235,225,0.45);
+  min-width: 180px; flex-shrink: 0;
+}
+.an7-pipe-track {
+  flex: 1; height: 8px; background: rgba(240,235,225,0.06); border-radius: 4px; overflow: hidden;
+}
+.an7-pipe-fill { height: 100%; border-radius: 4px; }
+.an7-pipe-count {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px; font-weight: 600;
+  color: rgba(240,235,225,0.7); min-width: 32px; text-align: right; flex-shrink: 0;
+}
+
+/* 2-col grid */
+.an7-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 900px) { .an7-grid2 { grid-template-columns: 1fr; } }
+
+.an7-card {
+  background: rgba(255,255,255,0.025); border: 1px solid rgba(240,235,225,0.06);
+  border-radius: 6px; padding: 20px 24px;
+}
+
+/* bar chart */
+.an7-bars { display: flex; flex-direction: column; gap: 8px; }
+
+.an7-bar-row { display: flex; align-items: center; gap: 10px; }
+.an7-bar-label {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 9px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(240,235,225,0.4);
+  min-width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.an7-bar-track {
+  flex: 1; height: 6px; background: rgba(240,235,225,0.06); border-radius: 3px; overflow: hidden;
+}
+.an7-bar-fill { height: 100%; border-radius: 3px; }
+.an7-bar-val {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px; font-weight: 600;
+  color: rgba(240,235,225,0.6); min-width: 28px; text-align: right; flex-shrink: 0;
+}
+
+/* flags ── dot list */
+.an7-flags { display: flex; flex-direction: column; gap: 10px; }
+.an7-flag-row { display: flex; align-items: center; gap: 12px; }
+.an7-flag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.an7-flag-name {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(240,235,225,0.55); flex: 1;
+}
+.an7-flag-count {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 600; font-size: 20px;
+  color: rgba(240,235,225,0.85);
+}
+
+/* fin cards */
+.an7-fin-cards { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+.an7-fin-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(240,235,225,0.07);
+  border-radius: 4px; padding: 14px 16px;
+}
+.an7-fin-card-estado {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 8px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(240,235,225,0.3); margin-bottom: 5px;
+}
+.an7-fin-card-count {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 700; font-size: 26px;
+  color: rgba(240,235,225,0.8); line-height: 1;
+}
+.an7-fin-card-valor {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 11px; letter-spacing: 0.06em;
+  color: rgba(240,235,225,0.4); margin-top: 4px;
+}
+.an7-fin-card--emitida .an7-fin-card-count { color: #F0D080; }
+.an7-fin-card--paga    .an7-fin-card-count { color: #A8D4B0; }
+.an7-fin-card--anulada .an7-fin-card-count { color: rgba(255,140,140,0.7); }

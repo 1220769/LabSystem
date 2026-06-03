@@ -1,11 +1,18 @@
 import mongoose from 'mongoose'
 
 export const connectDB = async (): Promise<void> => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI as string)
-    console.log(`MongoDB conectado: ${conn.connection.host}`)
-  } catch (err) {
-    console.error('Erro MongoDB:', err)
-    process.exit(1)
-  }
+  mongoose.connection.on('connected', () => {
+    console.log('MongoDB conectado!')
+  })
+  mongoose.connection.on('error', (err) => {
+    console.log('MongoDB erro:', err.message)
+  })
+  mongoose.connection.on('disconnected', () => {
+    console.log('MongoDB desligado — a reconectar...')
+  })
+
+  await mongoose.connect(process.env.MONGO_URI as string, {
+    serverSelectionTimeoutMS: 60000,
+    heartbeatFrequencyMS: 2000,
+  })
 }

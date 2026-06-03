@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap');
 
 .login-page {
   min-height: 100vh;
@@ -26,7 +25,7 @@
 .login-stamp {
   position: absolute;
   z-index: 10;
-  font-family: 'DM Mono', monospace;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 8px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -71,7 +70,7 @@
 .login-logo-mark { flex-shrink: 0; opacity: 0.9; }
 
 .login-logo-text {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -81,7 +80,7 @@
 .login-logo-text em { color: #C8001A; font-style: normal; }
 
 .login-logo-sub {
-  font-family: 'DM Mono', monospace;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 8px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -92,7 +91,7 @@
 .login-field { margin-bottom: 18px; }
 
 .login-label {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -108,7 +107,7 @@
   border: 1px solid rgba(10, 8, 6, 0.12);
   border-radius: 4px;
   padding: 11px 14px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 13px;
   font-weight: 400;
   color: #0A0A08;
@@ -119,7 +118,7 @@
 .login-input::placeholder { color: rgba(10, 8, 6, 0.25); }
 
 .login-error {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 11px;
   color: #C8001A;
   padding: 8px 12px;
@@ -135,7 +134,7 @@
   border: none;
   border-radius: 4px;
   padding: 13px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -156,7 +155,7 @@
 }
 .login-divider-line { flex: 1; height: 1px; background: rgba(10, 8, 6, 0.08); }
 .login-divider-text {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.06em;
@@ -193,7 +192,7 @@
   margin-bottom: 2px;
 }
 .login-chip span {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 9px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -205,7 +204,7 @@
 
 .login-footer {
   margin-top: 28px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.06em;

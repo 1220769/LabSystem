@@ -41,7 +41,7 @@ export const getUserById = async (req: AuthRequest, res: Response) => {
 // POST /api/users — só admin
 export const createUser = async (req: AuthRequest, res: Response) => {
   try {
-    const { nome, email, password, role, telefone, departamento } = req.body
+    const { nome, email, password, role, telefone, departamento, utenteRef } = req.body
     const existe = await User.findOne({ email })
     if (existe) return res.status(400).json({ message: 'Email já registado' })
     const salt           = await bcrypt.genSalt(10)
@@ -49,6 +49,7 @@ export const createUser = async (req: AuthRequest, res: Response) => {
     const user = await User.create({
       nome, email, password: hashedPassword,
       role, telefone, departamento,
+      ...(utenteRef ? { utenteRef } : {}),
     })
     const { password: _, ...userWithoutPassword } = user.toObject()
     res.status(201).json(userWithoutPassword)
@@ -93,6 +94,23 @@ export const deactivateUser = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Utilizador desactivado', user })
   } catch (err) {
     res.status(500).json({ message: 'Erro ao desactivar utilizador', error: err })
+  }
+}
+
+// GET /api/users/stats — totais por role e estado
+export const getStats = async (_req: AuthRequest, res: Response) => {
+  try {
+    const [porRole, ativos, inativos] = await Promise.all([
+      User.aggregate([
+        { $group: { _id: '$role', total: { $sum: 1 }, ativos: { $sum: { $cond: ['$ativo', 1, 0] } } } },
+        { $sort: { total: -1 } },
+      ]),
+      User.countDocuments({ ativo: true }),
+      User.countDocuments({ ativo: false }),
+    ])
+    res.json({ total: ativos + inativos, ativos, inativos, porRole })
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter estatísticas' })
   }
 }
 
