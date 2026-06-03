@@ -28,19 +28,19 @@ interface Row {
 const SEGMENTS: Segment[] = [
   {
     id: 0, name: 'Autenticação', sub: 'Segurança e perfis de acesso',
-    color: '#2A2A28', svgY: 40, svgH: 48, stat: '6', statLabel: 'perfis configurados',
+    color: '#2A2A28', svgY: 40, svgH: 36, stat: '6', statLabel: 'perfis configurados',
     rows: [
       { name: 'Administrador', ref: 'ROLE-01', status: 'ok' },
       { name: 'Técnico de laboratório', ref: 'ROLE-02', status: 'ok' },
       { name: 'Médico', ref: 'ROLE-03', status: 'ok' },
       { name: 'Enfermeiro', ref: 'ROLE-04', status: 'ok' },
-      { name: 'Financeiro', ref: 'ROLE-05', status: 'pending' },
-      { name: 'Utente (portal)', ref: 'ROLE-06', status: 'pending' },
+      { name: 'Financeiro', ref: 'ROLE-05', status: 'ok' },
+      { name: 'Utente (portal)', ref: 'ROLE-06', status: 'ok' },
     ],
   },
   {
     id: 1, name: 'Utentes', sub: 'Ficha clínica · portal · agendamento',
-    color: '#E8D5B0', svgY: 88, svgH: 70, stat: '1 284', statLabel: 'registos activos',
+    color: '#E8D5B0', svgY: 76, svgH: 52, stat: '1 284', statLabel: 'registos activos',
     rows: [
       { name: 'Ana Silva',       ref: 'U-00291', status: 'ok' },
       { name: 'João Costa',      ref: 'U-00290', status: 'ok' },
@@ -51,7 +51,7 @@ const SEGMENTS: Segment[] = [
   },
   {
     id: 2, name: 'Requisições', sub: 'Pedidos analíticos · urgentes · e-prescrição',
-    color: '#B8CDE0', svgY: 158, svgH: 62, stat: '47', statLabel: 'em curso agora',
+    color: '#B8CDE0', svgY: 128, svgH: 44, stat: '47', statLabel: 'em curso agora',
     rows: [
       { name: 'LAB-2847 · Hemograma, PCR', ref: 'REQ-2847', status: 'ok' },
       { name: 'LAB-2846 · TSH, T4', ref: 'REQ-2846', status: 'pending' },
@@ -62,9 +62,9 @@ const SEGMENTS: Segment[] = [
   },
   {
     id: 3, name: 'Colheita', sub: 'QR · rastreio em tempo real · domiciliária',
-    color: '#C8001A', svgY: 220, svgH: 62, stat: '284', statLabel: 'amostras hoje',
+    color: '#C8001A', svgY: 172, svgH: 44, stat: '284', statLabel: 'amostras hoje',
     rows: [
-      { name: 'Tubo EDTA · Ana Silva',    ref: 'AM-0291', status: 'ok' },
+      { name: 'Tubo EDTA · Ana Silva',     ref: 'AM-0291', status: 'ok' },
       { name: 'Tubo citrato · João Costa', ref: 'AM-0290', status: 'pending' },
       { name: 'Tubo gel · Maria Ferreira', ref: 'AM-0289', status: 'critical' },
       { name: 'Urina · Rui Mendes',        ref: 'AM-0288', status: 'ok' },
@@ -72,42 +72,72 @@ const SEGMENTS: Segment[] = [
   },
   {
     id: 4, name: 'Análise', sub: 'Worklist · hematologia · bioquímica · micro',
-    color: '#D4920A', svgY: 282, svgH: 62, stat: '89', statLabel: 'em processamento',
+    color: '#D4920A', svgY: 216, svgH: 40, stat: '89', statLabel: 'em processamento',
     rows: [
-      { name: 'XN-1000 · Hematologia', ref: 'EQ-01', status: 'ok' },
-      { name: 'AU5800 · Bioquímica', ref: 'EQ-02', status: 'ok' },
-      { name: 'Cobas · Imunologia', ref: 'EQ-03', status: 'pending' },
-      { name: 'VIDAS · Endocrinologia', ref: 'EQ-04', status: 'ok' },
+      { name: 'XN-1000 · Hematologia',   ref: 'EQ-01', status: 'ok' },
+      { name: 'AU5800 · Bioquímica',     ref: 'EQ-02', status: 'ok' },
+      { name: 'Cobas · Imunologia',      ref: 'EQ-03', status: 'pending' },
+      { name: 'VIDAS · Endocrinologia',  ref: 'EQ-04', status: 'ok' },
     ],
   },
   {
     id: 5, name: 'Validação', sub: 'Técnica · médica · alertas críticos',
-    color: '#7A9E7E', svgY: 344, svgH: 58, stat: '18', statLabel: 'pendentes validação',
+    color: '#7A9E7E', svgY: 256, svgH: 40, stat: '18', statLabel: 'pendentes validação',
     rows: [
       { name: 'D-Dímero 4.8 µg/mL', ref: 'VAL-045', status: 'critical' },
       { name: 'Hemograma LAB-2847', ref: 'VAL-044', status: 'ok' },
-      { name: 'TSH LAB-2846', ref: 'VAL-043', status: 'pending' },
-      { name: 'PCR LAB-2841', ref: 'VAL-042', status: 'ok' },
+      { name: 'TSH LAB-2846',       ref: 'VAL-043', status: 'pending' },
+      { name: 'PCR LAB-2841',       ref: 'VAL-042', status: 'ok' },
     ],
   },
   {
     id: 6, name: 'Financeiro', sub: 'Faturação · SNS · seguradoras · SAP',
-    color: '#5A6478', svgY: 402, svgH: 58, stat: '€ 12.4k', statLabel: 'faturação mensal',
+    color: '#5A6478', svgY: 296, svgH: 38, stat: '€ 12.4k', statLabel: 'faturação mensal',
     rows: [
-      { name: 'Fatura SNS · Maio', ref: 'FAT-0501', status: 'pending' },
-      { name: 'Acordo Médis · Abril', ref: 'FAT-0412', status: 'ok' },
+      { name: 'Fatura SNS · Maio',      ref: 'FAT-0501', status: 'pending' },
+      { name: 'Acordo Médis · Abril',   ref: 'FAT-0412', status: 'ok' },
       { name: 'Particular · LAB-2845', ref: 'FAT-0500', status: 'ok' },
-      { name: 'Exportação SAP', ref: 'SAP-001', status: 'pending' },
+      { name: 'Exportação SAP',         ref: 'SAP-001',  status: 'pending' },
     ],
   },
   {
     id: 7, name: 'Analytics', sub: 'BI · KPIs · relatórios agendados',
-    color: '#1A1A18', svgY: 460, svgH: 40, stat: '↑ 12%', statLabel: 'vs semana passada',
+    color: '#1A1A18', svgY: 334, svgH: 34, stat: '↑ 12%', statLabel: 'vs semana passada',
     rows: [
       { name: 'Dashboard executivo', ref: 'KPI-01', status: 'ok' },
-      { name: 'Relatório semanal', ref: 'KPI-02', status: 'ok' },
-      { name: 'Exportação Excel', ref: 'KPI-03', status: 'pending' },
-      { name: 'Alerta produtividade', ref: 'KPI-04', status: 'ok' },
+      { name: 'Relatório semanal',   ref: 'KPI-02', status: 'ok' },
+      { name: 'Exportação Excel',    ref: 'KPI-03', status: 'pending' },
+      { name: 'Alerta produtividade',ref: 'KPI-04', status: 'ok' },
+    ],
+  },
+  {
+    id: 8, name: 'Equipamentos', sub: 'Stock · manutenção · reagentes · calibrações',
+    color: '#C87800', svgY: 368, svgH: 36, stat: '12', statLabel: 'equipamentos activos',
+    rows: [
+      { name: 'XN-1000 · Hematologia',    ref: 'EQ-001', status: 'ok' },
+      { name: 'AU5800 · Bioquímica',      ref: 'EQ-002', status: 'ok' },
+      { name: 'Reagente EDTA · Lot A041', ref: 'REA-01', status: 'pending' },
+      { name: 'Calibração cobas · Jun',   ref: 'CAL-06', status: 'pending' },
+    ],
+  },
+  {
+    id: 9, name: 'Integrações', sub: 'e-Prescrição · API REST · Webhooks · SAP',
+    color: '#3A3A38', svgY: 404, svgH: 36, stat: '4', statLabel: 'integrações activas',
+    rows: [
+      { name: 'e-Prescrição SNS · SPMS',  ref: 'INT-01', status: 'ok' },
+      { name: 'API REST · v2.0',          ref: 'INT-02', status: 'ok' },
+      { name: 'Webhooks · 3 activos',     ref: 'INT-03', status: 'ok' },
+      { name: 'SAP S/4HANA · activo',     ref: 'INT-04', status: 'ok' },
+    ],
+  },
+  {
+    id: 10, name: 'Segurança', sub: 'Auditoria · RGPD · sessões · backups',
+    color: '#6B1A1A', svgY: 440, svgH: 44, stat: '100%', statLabel: 'conformidade RGPD',
+    rows: [
+      { name: 'Log de auditoria', ref: 'SEC-01', status: 'ok' },
+      { name: 'Encriptação AES-256', ref: 'SEC-02', status: 'ok' },
+      { name: 'Backup automático',   ref: 'SEC-03', status: 'ok' },
+      { name: 'Conformidade RGPD',   ref: 'SEC-04', status: 'ok' },
     ],
   },
 ]
@@ -381,7 +411,7 @@ export default function Landing() {
 
         {/* badge críticos persistente — segmento Validação */}
         {criticos > 0 && !diving && (
-          <div className="live-badge live-badge--crit" style={{ top: `${((344 + 29) / 540) * 100}%` }}>
+          <div className="live-badge live-badge--crit" style={{ top: `${((256 + 20) / 540) * 100}%` }}>
             <span className="live-badge-pulse" />
             {criticos} crítico{criticos !== 1 ? 's' : ''}
           </div>
@@ -389,7 +419,7 @@ export default function Landing() {
 
         {/* badge requisições em curso — segmento Requisições */}
         {emCurso > 0 && !diving && (
-          <div className="live-badge live-badge--info" style={{ top: `${((158 + 31) / 540) * 100}%` }}>
+          <div className="live-badge live-badge--info" style={{ top: `${((128 + 22) / 540) * 100}%` }}>
             {emCurso} em curso
           </div>
         )}

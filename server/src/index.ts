@@ -12,6 +12,8 @@ import faturaRoutes     from './routes/faturaRoutes'
 import analyticsRoutes  from './routes/analyticsRoutes'
 import portalRoutes        from './routes/portalRoutes'
 import notificationRoutes  from './routes/notificationRoutes'
+import equipamentoRoutes   from './routes/equipamentoRoutes'
+import auditRoutes         from './routes/auditRoutes'
 
 dotenv.config()
 connectDB()
@@ -32,6 +34,8 @@ app.use('/api/faturas',     faturaRoutes)
 app.use('/api/analytics',   analyticsRoutes)
 app.use('/api/portal',        portalRoutes)
 app.use('/api/notifications', notificationRoutes)
+app.use('/api/equipamentos',  equipamentoRoutes)
+app.use('/api/auditoria',     auditRoutes)
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
