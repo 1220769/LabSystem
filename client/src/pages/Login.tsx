@@ -4,32 +4,15 @@ import { useAuthStore } from '../store/authStore'
 import api from '../api/axios'
 import './Login.css'
 
-const TEST_LOGINS: Record<string, { email: string; password: string }> = {
-  medico: {
-    email: 'medico@lab.pt',
-    password: 'medico123',
-  },
-  tecnico: {
-    email: 'tecnico@lab.pt',
-    password: 'tecnico123',
-  },
-  enfermeiro: {
-    email: 'enfermeiro@lab.pt',
-    password: 'enfermeiro123',
-  },
-  financeiro: {
-    email: 'financeiro@lab.pt',
-    password: 'financeiro123',
-  },
-  utente: {
-    email: 'utente@lab.pt',
-    password: 'utente123',
-  },
-  administrador: {
-    email: 'admin2@lab.pt',
-    password: 'admin123',
-  },
-}
+const DEMO_LOGINS = [
+  { label: 'Médico',      email: 'medico@lab.pt',       password: 'medico123'      },
+  { label: 'Técnico',     email: 'tecnico@lab.pt',      password: 'tecnico123'     },
+  { label: 'Enfermeiro',  email: 'enfermeiro@lab.pt',   password: 'enfermeiro123'  },
+  { label: 'Financeiro',  email: 'financeiro@lab.pt',   password: 'financeiro123'  },
+  { label: 'Utente',      email: 'utente@lab.pt',       password: 'utente123'      },
+  { label: 'Admin',       email: 'admin2@lab.pt',       password: 'admin123'       },
+]
+
 
 export default function Login() {
   const canvasRef                   = useRef<HTMLCanvasElement>(null)
@@ -38,8 +21,7 @@ export default function Login() {
   const [password, setPassword]     = useState('')
   const [error, setError]           = useState('')
   const [loading, setLoading]       = useState(false)
-  const [selectedRole, setSelectedRole] = useState<string | null>(null)
-  const { setAuth }                 = useAuthStore()
+const { setAuth }                 = useAuthStore()
   const navigate                    = useNavigate()
 
   useEffect(() => {
@@ -157,26 +139,7 @@ export default function Login() {
     }
   }
 
-  const handleRoleSelect = async (role: string) => {
-    setSelectedRole(role)
-    setError('')
-    const credentials = TEST_LOGINS[role]
-    if (!credentials) return
-    setEmail(credentials.email)
-    setPassword(credentials.password)
-    setLoading(true)
-    try {
-      const { data } = await api.post('/auth/login', credentials)
-      setAuth(data, data.token)
-      navigate(destino(data.role))
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao autenticar')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
+return (
     <div className="login-page" ref={pageRef}>
       <canvas ref={canvasRef} className="login-canvas" />
       <div className="login-overlay" />
@@ -187,9 +150,9 @@ export default function Login() {
       <div className="login-card">
 
         <div className="login-logo-wrap">
-        
           <div>
             <div className="login-logo-text">Lab<em>System</em></div>
+            <div className="login-logo-sub">Sistema de Análises Clínicas</div>
           </div>
         </div>
 
@@ -225,33 +188,23 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="login-divider">
-          <div className="login-divider-line" />
-          <div className="login-divider-text">perfil de acesso</div>
-          <div className="login-divider-line" />
+        <div className="login-demo">
+          <div className="login-demo-label">Acesso rápido — demonstração</div>
+          <div className="login-demo-grid">
+            {DEMO_LOGINS.map(d => (
+              <button
+                key={d.label}
+                type="button"
+                className="login-demo-btn"
+                onClick={() => { setEmail(d.email); setPassword(d.password); setError('') }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="login-roles">
-          {[
-            { icon: 'ti-stethoscope',        label: 'Médico',      role: 'medico'       },
-            { icon: 'ti-flask',              label: 'Técnico',     role: 'tecnico'      },
-            { icon: 'ti-heart-rate-monitor', label: 'Enfermeiro',  role: 'enfermeiro'   },
-            { icon: 'ti-receipt',            label: 'Financeiro',  role: 'financeiro'   },
-            { icon: 'ti-user',               label: 'Utente',      role: 'utente'       },
-            { icon: 'ti-shield-lock',        label: 'Admin',       role: 'administrador'},
-          ].map(r => (
-            <div
-              className={`login-chip ${selectedRole === r.role ? 'login-chip--active' : ''}`}
-              key={r.label}
-              onClick={() => handleRoleSelect(r.role)}
-            >
-              <i className={`ti ${r.icon}`} aria-hidden="true" />
-              <span>{r.label}</span>
-            </div>
-          ))}
-        </div>
-
-        
+        <div className="login-footer">LabSystem Pro · v2.0 · SNS</div>
       </div>
     </div>
   )

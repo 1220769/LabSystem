@@ -23,12 +23,14 @@ function PrivateDashboard() {
   return <Landing />
 }
 
-/* / → utente vai para /portal, médico para /medico, resto Landing */
+/* / → cada role vai para o seu destino natural */
 function RootRedirect() {
   const { user } = useAuthStore()
-  if (user?.role === 'utente')  return <Navigate to="/portal"  replace />
-  if (user?.role === 'medico')  return <Navigate to="/medico"  replace />
-  if (user?.role === 'tecnico') return <Navigate to="/tecnico" replace />
+  if (user?.role === 'utente')     return <Navigate to="/portal"  replace />
+  if (user?.role === 'medico')     return <Navigate to="/medico"  replace />
+  if (user?.role === 'tecnico')    return <Navigate to="/tecnico" replace />
+  if (user?.role === 'enfermeiro') return <Navigate to="/private" replace />
+  if (user?.role === 'financeiro') return <Navigate to="/private" replace />
   return (
     <ProtectedRoute>
       <Landing />

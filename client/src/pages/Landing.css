@@ -1,8 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=GFS+Didot&display=swap');
 
 .landing-topbar {
-  position: fixed; top: 16px; right: 20px; z-index: 300;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  pointer-events: none;
 }
+
+.landing-user {
+  display: flex; flex-direction: column; gap: 1px;
+  pointer-events: none;
+}
+.landing-user-name {
+  font-size: 13px; font-weight: 500; color: rgba(10,10,8,0.55);
+  line-height: 1.2;
+}
+.landing-user-role {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(10,10,8,0.28);
+}
+
+.landing-topbar-right {
+  display: flex; align-items: center; gap: 10px;
+  pointer-events: all;
+}
+
+.landing-logout {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  background: none; border: 1px solid rgba(10,10,8,0.14); border-radius: 2px;
+  padding: 6px 12px; cursor: pointer; color: rgba(10,10,8,0.38);
+  transition: all 0.15s;
+}
+.landing-logout:hover { border-color: rgba(200,0,26,0.4); color: #C8001A; }
 
 .landing {
   min-height: 100vh;

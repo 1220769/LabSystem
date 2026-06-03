@@ -42,11 +42,11 @@ const SEGMENTS: Segment[] = [
     id: 1, name: 'Utentes', sub: 'Ficha clínica · portal · agendamento',
     color: '#E8D5B0', svgY: 88, svgH: 70, stat: '1 284', statLabel: 'registos activos',
     rows: [
-      { name: 'Ana Margarida Silva', ref: 'U-00291', status: 'ok' },
-      { name: 'João Augusto Costa', ref: 'U-00290', status: 'ok' },
-      { name: 'Maria Conceição Ferreira', ref: 'U-00289', status: 'critical' },
-      { name: 'Rui Alexandre Mendes', ref: 'U-00288', status: 'pending' },
-      { name: 'Inês Rodrigues Pinto', ref: 'U-00287', status: 'ok' },
+      { name: 'Ana Silva',       ref: 'U-00291', status: 'ok' },
+      { name: 'João Costa',      ref: 'U-00290', status: 'ok' },
+      { name: 'Maria Ferreira',  ref: 'U-00289', status: 'critical' },
+      { name: 'Rui Mendes',      ref: 'U-00288', status: 'pending' },
+      { name: 'Inês Pinto',      ref: 'U-00287', status: 'ok' },
     ],
   },
   {
@@ -64,10 +64,10 @@ const SEGMENTS: Segment[] = [
     id: 3, name: 'Colheita', sub: 'QR · rastreio em tempo real · domiciliária',
     color: '#C8001A', svgY: 220, svgH: 62, stat: '284', statLabel: 'amostras hoje',
     rows: [
-      { name: 'Tubo EDTA · Ana Silva', ref: 'AM-0291', status: 'ok' },
+      { name: 'Tubo EDTA · Ana Silva',    ref: 'AM-0291', status: 'ok' },
       { name: 'Tubo citrato · João Costa', ref: 'AM-0290', status: 'pending' },
-      { name: 'Tubo gel · Maria F.', ref: 'AM-0289', status: 'critical' },
-      { name: 'Urina · Rui Mendes', ref: 'AM-0288', status: 'ok' },
+      { name: 'Tubo gel · Maria Ferreira', ref: 'AM-0289', status: 'critical' },
+      { name: 'Urina · Rui Mendes',        ref: 'AM-0288', status: 'ok' },
     ],
   },
   {
@@ -121,7 +121,7 @@ export default function Landing() {
   const [emCurso,    setEmCurso]    = useState(0)
   const [tipHover,   setTipHover]   = useState(false)
   const navigate = useNavigate()
-  const { logout } = useAuthStore()
+  const { logout, user } = useAuthStore()
 
   useEffect(() => {
     api.get('/resultados/stats').then(r => setCriticos(r.data.criticosPorValidar ?? 0)).catch(() => {})
@@ -143,7 +143,14 @@ export default function Landing() {
     <div className="landing">
 
       <div className="landing-topbar">
-        <NotificationBell theme="dark" />
+        <div className="landing-user">
+          <span className="landing-user-name">{user?.nome ?? user?.email}</span>
+          <span className="landing-user-role">{user?.role}</span>
+        </div>
+        <div className="landing-topbar-right">
+          <NotificationBell theme="dark" />
+          <button className="landing-logout" onClick={handleLogout}>Sair</button>
+        </div>
       </div>
 
       {diving && (

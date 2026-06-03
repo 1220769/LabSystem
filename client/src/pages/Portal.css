@@ -14,11 +14,11 @@
 .portal-logo strong { color: rgba(26,18,8,0.75); }
 .portal-user { display: flex; align-items: center; gap: 14px; }
 .portal-user-name { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 13px; color: rgba(26,18,8,0.65); text-align: right; }
-.portal-user-role { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26,18,8,0.3); }
+.portal-user-role { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(26,18,8,0.35); }
 .portal-logout {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
   background: none; border: 1px solid rgba(26,18,8,0.15); border-radius: 2px; padding: 7px 14px;
-  cursor: pointer; color: rgba(26,18,8,0.4); transition: all 0.15s;
+  cursor: pointer; color: rgba(26,18,8,0.45); transition: all 0.15s;
 }
 .portal-logout:hover { border-color: rgba(200,0,26,0.4); color: #C8001A; }
 
@@ -29,7 +29,7 @@
   font-size: clamp(28px,4vw,52px); color: rgba(26,18,8,0.82); line-height: 1.1; margin-bottom: 4px;
 }
 .portal-greeting em { font-style: italic; color: rgba(26,18,8,0.45); }
-.portal-sns { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(26,18,8,0.3); }
+.portal-sns { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(26,18,8,0.32); }
 
 /* ── KPIs ── */
 .portal-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; padding: 24px 60px 0; }
@@ -42,24 +42,24 @@
 .portal-kpi--alert { border-color: rgba(200,0,26,0.25); background: rgba(200,0,26,0.03); }
 .portal-kpi-val { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 38px; line-height: 1; color: rgba(26,18,8,0.82); }
 .portal-kpi--alert .portal-kpi-val { color: #C8001A; }
-.portal-kpi-lbl { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26,18,8,0.35); margin-top: 5px; }
-.portal-kpi-sub   { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: rgba(26,18,8,0.5); margin-top: 3px; }
-.portal-kpi-novos { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-left: 8px; color: #2E7A50; vertical-align: middle; }
+.portal-kpi-lbl { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(26,18,8,0.4); margin-top: 6px; }
+.portal-kpi-sub   { font-size: 13px; color: rgba(26,18,8,0.5); margin-top: 3px; }
+.portal-kpi-novos { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-left: 8px; color: #2E7A50; vertical-align: middle; }
 
 /* ── tabs ── */
 .portal-tabs { display: flex; gap: 0; padding: 20px 60px 0; border-bottom: 1px solid rgba(26,18,8,0.08); }
 .portal-tab-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px; border-radius: 50%;
+  width: 17px; height: 17px; border-radius: 50%;
   background: #2E7A50; color: #fff;
-  font-size: 9px; margin-left: 5px; vertical-align: middle;
+  font-size: 10px; font-weight: 600; margin-left: 5px; vertical-align: middle;
 }
 .portal-tab {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
   padding: 10px 20px; background: none; border: none; border-bottom: 2px solid transparent;
-  cursor: pointer; color: rgba(26,18,8,0.38); transition: all 0.15s; margin-bottom: -1px;
+  cursor: pointer; color: rgba(26,18,8,0.42); transition: all 0.15s; margin-bottom: -1px;
 }
-.portal-tab:hover { color: rgba(26,18,8,0.65); }
+.portal-tab:hover { color: rgba(26,18,8,0.68); }
 .portal-tab--on { color: rgba(26,18,8,0.82); border-bottom-color: rgba(26,18,8,0.75); }
 
 /* ── content ── */
@@ -77,28 +77,28 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: 18px 24px 14px; border-bottom: 1px solid rgba(26,18,8,0.06);
 }
-.portal-section-title { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(26,18,8,0.45); }
-.portal-count { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 11px; color: rgba(26,18,8,0.3); }
+.portal-section-title { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(26,18,8,0.48); }
+.portal-count { font-size: 12px; color: rgba(26,18,8,0.32); }
 
 /* flag filters */
 .portal-flag-filters { display: flex; gap: 4px; }
 .portal-flag-btn {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
   padding: 5px 12px; background: none; border: 1px solid rgba(26,18,8,0.12);
-  border-radius: 2px; cursor: pointer; color: rgba(26,18,8,0.45); transition: all 0.15s;
+  border-radius: 2px; cursor: pointer; color: rgba(26,18,8,0.5); transition: all 0.15s;
 }
 .portal-flag-btn:hover { background: rgba(26,18,8,0.04); }
-.portal-flag-btn--on { background: rgba(26,18,8,0.08); color: rgba(26,18,8,0.8); border-color: rgba(26,18,8,0.25); }
+.portal-flag-btn--on { background: rgba(26,18,8,0.08); color: rgba(26,18,8,0.82); border-color: rgba(26,18,8,0.25); }
 .portal-flag-btn--critico.portal-flag-btn--on { background: rgba(200,0,26,0.08); color: #C8001A; border-color: rgba(200,0,26,0.3); }
 .portal-flag-btn--alterado.portal-flag-btn--on { background: rgba(200,120,0,0.08); color: #C87800; border-color: rgba(200,120,0,0.3); }
 .portal-flag-btn--normal.portal-flag-btn--on { background: rgba(46,122,80,0.08); color: #2E7A50; border-color: rgba(46,122,80,0.25); }
 
 .portal-search {
   flex: 1; min-width: 160px;
-  background: #fff; border: 1px solid rgba(26,18,8,0.1); border-radius: 3px; padding: 7px 12px;
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: rgba(26,18,8,0.75); outline: none;
+  background: #fff; border: 1px solid rgba(26,18,8,0.1); border-radius: 3px; padding: 8px 12px;
+  font-size: 14px; color: rgba(26,18,8,0.75); outline: none;
 }
-.portal-search::placeholder { color: rgba(26,18,8,0.25); }
+.portal-search::placeholder { color: rgba(26,18,8,0.28); }
 
 /* ── resultado card ── */
 .portal-res-card {
@@ -117,13 +117,13 @@
 }
 .portal-res-card-main:hover { background: rgba(26,18,8,0.02); }
 .portal-res-card-left { flex: 1; min-width: 0; }
-.portal-res-card-nome { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 14px; color: rgba(26,18,8,0.82); }
-.portal-res-card-meta { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.06em; color: rgba(26,18,8,0.35); margin-top: 2px; }
+.portal-res-card-nome { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 15px; color: rgba(26,18,8,0.82); }
+.portal-res-card-meta { font-size: 12px; letter-spacing: 0.04em; color: rgba(26,18,8,0.38); margin-top: 2px; }
 .portal-res-card-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.portal-res-card-valor { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 16px; font-style: italic; color: rgba(26,18,8,0.82); }
+.portal-res-card-valor { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 17px; font-style: italic; color: rgba(26,18,8,0.82); }
 
 .portal-res-flag {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   padding: 3px 8px; border-radius: 2px;
 }
 .portal-res-flag--normal        { background: rgba(46,122,80,0.1);  color: #2E7A50; }
@@ -131,9 +131,9 @@
 .portal-res-flag--baixo         { background: rgba(0,100,180,0.1);  color: #0064B4; }
 .portal-res-flag--critico_alto,
 .portal-res-flag--critico_baixo { background: rgba(200,0,26,0.1);   color: #C8001A; font-weight: 700; }
-.portal-res-flag--pendente      { background: rgba(26,18,8,0.06);   color: rgba(26,18,8,0.4); }
+.portal-res-flag--pendente      { background: rgba(26,18,8,0.06);   color: rgba(26,18,8,0.42); }
 
-.portal-res-chevron { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 14px; color: rgba(26,18,8,0.3); }
+.portal-res-chevron { font-size: 14px; color: rgba(26,18,8,0.3); }
 
 /* detalhe resultado */
 .portal-res-card-detail {
@@ -142,10 +142,10 @@
 }
 .portal-res-detail-grid { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 10px; }
 .portal-res-detail-item { display: flex; flex-direction: column; gap: 2px; }
-.portal-res-detail-lbl { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26,18,8,0.3); }
-.portal-res-detail-val { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 13px; color: rgba(26,18,8,0.72); }
-.portal-res-flag-desc { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 13px; color: rgba(26,18,8,0.5); margin-bottom: 10px; }
-.portal-res-obs { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: rgba(26,18,8,0.45); font-style: italic; margin-bottom: 10px; }
+.portal-res-detail-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(26,18,8,0.32); }
+.portal-res-detail-val { font-size: 14px; color: rgba(26,18,8,0.72); }
+.portal-res-flag-desc { font-style: italic; font-size: 14px; color: rgba(26,18,8,0.5); margin-bottom: 10px; }
+.portal-res-obs { font-size: 13px; color: rgba(26,18,8,0.45); font-style: italic; margin-bottom: 10px; }
 
 /* ── requisição card ── */
 .portal-req-card {
@@ -163,36 +163,36 @@
 
 .portal-req-card-left { flex: 1; min-width: 0; }
 .portal-req-card-num {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 15px; letter-spacing: 0.08em;
+  font-size: 15px; font-weight: 500; letter-spacing: 0.04em;
   color: rgba(26,18,8,0.82); display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
 }
 .portal-req-urgente {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 8px; letter-spacing: 0.12em;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
   text-transform: uppercase; padding: 2px 7px; border-radius: 2px;
   background: rgba(200,0,26,0.1); color: #C8001A;
 }
 .portal-req-card-analises {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px;
-  color: rgba(26,18,8,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 13px;
+  color: rgba(26,18,8,0.44); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .portal-req-mais {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.06em;
-  color: rgba(26,18,8,0.35); margin-left: 4px;
+  font-size: 11px; font-weight: 500;
+  color: rgba(26,18,8,0.38); margin-left: 4px;
 }
 
 .portal-req-card-right {
   display: flex; align-items: center; gap: 12px; flex-shrink: 0;
 }
 .portal-req-card-date {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 11px; letter-spacing: 0.06em;
-  color: rgba(26,18,8,0.3);
+  font-size: 12px; letter-spacing: 0.04em;
+  color: rgba(26,18,8,0.32);
 }
 
 .portal-req-badge {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 8px; letter-spacing: 0.12em;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
   text-transform: uppercase; padding: 4px 10px; border-radius: 2px;
 }
-.portal-req-badge--pendente  { background: rgba(26,18,8,0.07);   color: rgba(26,18,8,0.45); }
+.portal-req-badge--pendente  { background: rgba(26,18,8,0.07);   color: rgba(26,18,8,0.48); }
 .portal-req-badge--em_curso  { background: rgba(90,100,200,0.1); color: #5A64C8; }
 .portal-req-badge--concluida { background: rgba(46,122,80,0.1);  color: #2E7A50; }
 .portal-req-badge--cancelada { background: rgba(200,0,26,0.1);   color: #C8001A; }
@@ -204,7 +204,7 @@
   border-top: 1px solid rgba(26,18,8,0.06);
 }
 
-/* ── pipeline redesenhado ── */
+/* ── pipeline ── */
 .portal-pipeline {
   display: flex;
   align-items: flex-start;
@@ -212,7 +212,6 @@
   padding: 4px 0;
 }
 
-/* wrap = flex row: [dot+label] + [line]. Último wrap não tem linha. */
 .portal-pipeline-item-wrap {
   display: flex;
   align-items: flex-start;
@@ -220,7 +219,6 @@
 }
 .portal-pipeline-item-wrap:last-child { flex: 0 0 auto; }
 
-/* dot + label em coluna */
 .portal-pipeline-item {
   display: flex;
   flex-direction: column;
@@ -228,13 +226,12 @@
   flex-shrink: 0;
 }
 
-/* linha horizontal entre itens */
 .portal-pipeline-conn {
   flex: 1;
   height: 2px;
   background: rgba(26,18,8,0.12);
   align-self: flex-start;
-  margin-top: 4px; /* metade do dot (10px/2 - 1px border) */
+  margin-top: 4px;
   min-width: 20px;
 }
 .portal-pipeline-conn--done { background: #2E7A50; }
@@ -251,8 +248,8 @@
 }
 
 .portal-pipeline-lbl {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.08em;
-  text-transform: uppercase; color: rgba(26,18,8,0.28);
+  font-size: 11px; font-weight: 500; letter-spacing: 0.05em;
+  text-transform: uppercase; color: rgba(26,18,8,0.3);
   margin-top: 8px; text-align: center; white-space: nowrap;
   max-width: 90px;
 }
@@ -261,9 +258,9 @@
 /* chips de análises */
 .portal-req-analises-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
 .portal-chip {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.05em;
+  font-size: 12px; font-weight: 500;
   padding: 4px 10px; background: rgba(26,18,8,0.055); border-radius: 2px;
-  color: rgba(26,18,8,0.58); border: 1px solid rgba(26,18,8,0.07);
+  color: rgba(26,18,8,0.6); border: 1px solid rgba(26,18,8,0.07);
 }
 
 /* ── fatura card ── */
@@ -272,56 +269,56 @@
 .portal-fat-card--pend { border-left: 3px solid #C87800; }
 .portal-fat-card-main { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; cursor: pointer; }
 .portal-fat-card-main:hover { background: rgba(26,18,8,0.02); }
-.portal-fat-num { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 13px; letter-spacing: 0.1em; color: rgba(26,18,8,0.72); }
-.portal-fat-meta { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.06em; color: rgba(26,18,8,0.35); text-transform: uppercase; margin-top: 2px; }
+.portal-fat-num { font-size: 14px; font-weight: 500; letter-spacing: 0.05em; color: rgba(26,18,8,0.72); }
+.portal-fat-meta { font-size: 12px; letter-spacing: 0.04em; color: rgba(26,18,8,0.38); text-transform: uppercase; margin-top: 2px; }
 .portal-fat-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.portal-fat-valor { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 17px; font-style: italic; color: rgba(26,18,8,0.82); }
+.portal-fat-valor { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 18px; font-style: italic; color: rgba(26,18,8,0.82); }
 .portal-fat-badge {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px;
 }
 .portal-fat-badge--emitida { background: rgba(240,208,128,0.2); color: #A87800; }
 .portal-fat-badge--paga    { background: rgba(46,122,80,0.1);  color: #2E7A50; }
-.portal-fat-badge--rascunho{ background: rgba(26,18,8,0.07);   color: rgba(26,18,8,0.45); }
+.portal-fat-badge--rascunho{ background: rgba(26,18,8,0.07);   color: rgba(26,18,8,0.48); }
 
-.portal-fat-total-pend { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 14px; color: #A87800; }
+.portal-fat-total-pend { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 15px; color: #A87800; }
 
 .portal-fat-detail { padding: 14px 20px 16px; background: rgba(26,18,8,0.02); border-top: 1px solid rgba(26,18,8,0.06); }
 .portal-fat-linhas { margin-bottom: 10px; }
 .portal-fat-linha { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(26,18,8,0.04); }
 .portal-fat-linha:last-child { border-bottom: none; }
-.portal-fat-linha-cod { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.1em; color: rgba(26,18,8,0.35); min-width: 44px; }
-.portal-fat-linha-desc { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 13px; color: rgba(26,18,8,0.7); flex: 1; }
-.portal-fat-linha-preco { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: rgba(26,18,8,0.65); }
+.portal-fat-linha-cod { font-family: 'DM Mono','JetBrains Mono',monospace; font-size: 11px; letter-spacing: 0.06em; color: rgba(26,18,8,0.38); min-width: 48px; }
+.portal-fat-linha-desc { font-size: 14px; color: rgba(26,18,8,0.7); flex: 1; }
+.portal-fat-linha-preco { font-size: 13px; font-weight: 500; color: rgba(26,18,8,0.65); }
 .portal-fat-totais { border-top: 1px solid rgba(26,18,8,0.08); padding-top: 8px; }
-.portal-fat-total-row { display: flex; justify-content: space-between; padding: 4px 0; font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 13px; color: rgba(26,18,8,0.6); }
-.portal-fat-total-row--comp { color: #2E7A50; font-size: 12px; }
-.portal-fat-total-row--final { font-size: 15px; color: rgba(26,18,8,0.82); padding-top: 6px; margin-top: 2px; border-top: 1px solid rgba(26,18,8,0.1); }
+.portal-fat-total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: rgba(26,18,8,0.6); }
+.portal-fat-total-row--comp { color: #2E7A50; font-size: 13px; }
+.portal-fat-total-row--final { font-size: 16px; font-weight: 600; color: rgba(26,18,8,0.82); padding-top: 6px; margin-top: 2px; border-top: 1px solid rgba(26,18,8,0.1); }
 
 /* ── perfil ── */
 .portal-perfil { padding: 20px 24px; }
 .portal-perfil-nome { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 22px; color: rgba(26,18,8,0.82); margin-bottom: 16px; }
 .portal-perfil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.portal-perfil-lbl { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26,18,8,0.3); margin-bottom: 2px; }
-.portal-perfil-val { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 13px; color: rgba(26,18,8,0.72); }
+.portal-perfil-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(26,18,8,0.32); margin-bottom: 2px; }
+.portal-perfil-val { font-size: 14px; color: rgba(26,18,8,0.72); }
 
 .portal-perfil-edit { padding: 20px 24px; }
-.portal-perfil-note { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 12px; color: rgba(26,18,8,0.4); margin-bottom: 18px; }
+.portal-perfil-note { font-style: italic; font-size: 13px; color: rgba(26,18,8,0.4); margin-bottom: 18px; }
 .portal-perfil-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
 .portal-edit-actions { display: flex; gap: 10px; }
 
 /* ── forms & buttons ── */
 .portal-ff { display: flex; flex-direction: column; gap: 4px; }
-.portal-ff-lbl { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26,18,8,0.35); }
+.portal-ff-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(26,18,8,0.38); }
 .portal-input {
   background: rgba(26,18,8,0.04); border: 1px solid rgba(26,18,8,0.1); border-radius: 3px;
-  padding: 9px 12px; font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 13px;
+  padding: 9px 12px; font-size: 14px;
   color: rgba(26,18,8,0.82); outline: none; transition: border-color 0.15s;
 }
 .portal-input:focus { border-color: rgba(26,18,8,0.28); }
-.portal-input::placeholder { color: rgba(26,18,8,0.25); }
+.portal-input::placeholder { color: rgba(26,18,8,0.28); }
 
 .portal-btn-primary {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
   padding: 11px 22px; background: rgba(26,18,8,0.85); color: #F0EDE4;
   border: none; border-radius: 3px; cursor: pointer; transition: background 0.15s;
 }
@@ -329,36 +326,36 @@
 .portal-btn-primary:disabled { opacity: 0.4; cursor: default; }
 
 .portal-btn-outline {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
   padding: 8px 16px; background: none; border: 1px solid rgba(26,18,8,0.15);
-  border-radius: 3px; cursor: pointer; color: rgba(26,18,8,0.5); transition: all 0.15s; margin-top: 10px;
+  border-radius: 3px; cursor: pointer; color: rgba(26,18,8,0.52); transition: all 0.15s; margin-top: 10px;
 }
 .portal-btn-outline:hover { border-color: rgba(26,18,8,0.35); color: rgba(26,18,8,0.78); }
 
 /* ── misc ── */
-.portal-empty { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 13px; color: rgba(26,18,8,0.28); padding: 32px 24px; text-align: center; }
-.portal-loading { flex: 1; display: flex; align-items: center; justify-content: center; font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 14px; color: rgba(26,18,8,0.3); }
+.portal-empty { font-style: italic; font-size: 14px; color: rgba(26,18,8,0.3); padding: 32px 24px; text-align: center; }
+.portal-loading { flex: 1; display: flex; align-items: center; justify-content: center; font-style: italic; font-size: 15px; color: rgba(26,18,8,0.32); }
 
 .portal-pag { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px 0; border-top: 1px solid rgba(26,18,8,0.05); }
-.portal-pag-btn { background: none; border: 1px solid rgba(26,18,8,0.15); border-radius: 2px; width: 30px; height: 30px; cursor: pointer; font-size: 16px; color: rgba(26,18,8,0.4); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.portal-pag-btn { background: none; border: 1px solid rgba(26,18,8,0.15); border-radius: 2px; width: 30px; height: 30px; cursor: pointer; font-size: 16px; color: rgba(26,18,8,0.42); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
 .portal-pag-btn:hover:not(:disabled) { border-color: rgba(26,18,8,0.4); color: rgba(26,18,8,0.8); }
 .portal-pag-btn:disabled { opacity: 0.2; cursor: default; }
-.portal-pag-info { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px; letter-spacing: 0.1em; color: rgba(26,18,8,0.3); }
+.portal-pag-info { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; color: rgba(26,18,8,0.32); }
 
 /* ── no link ── */
 .portal-no-link { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
 .portal-no-link-title { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 26px; color: rgba(26,18,8,0.65); margin-bottom: 8px; text-align: center; }
-.portal-no-link-sub { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 14px; color: rgba(26,18,8,0.35); text-align: center; }
+.portal-no-link-sub { font-style: italic; font-size: 15px; color: rgba(26,18,8,0.36); text-align: center; }
 .portal-link-form { width: 100%; max-width: 380px; margin-top: 32px; }
 .portal-link-row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 16px; }
-.portal-link-ou { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 13px; color: rgba(26,18,8,0.3); padding-bottom: 9px; flex-shrink: 0; }
-.portal-link-err { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: #C8001A; background: rgba(200,0,26,0.07); border: 1px solid rgba(200,0,26,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 12px; }
-.portal-link-ok  { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 12px; color: #2E7A50; background: rgba(46,122,80,0.08); border: 1px solid rgba(46,122,80,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 12px; }
+.portal-link-ou { font-style: italic; font-size: 14px; color: rgba(26,18,8,0.32); padding-bottom: 9px; flex-shrink: 0; }
+.portal-link-err { font-size: 13px; font-weight: 500; color: #C8001A; background: rgba(200,0,26,0.07); border: 1px solid rgba(200,0,26,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 12px; }
+.portal-link-ok  { font-size: 13px; font-weight: 500; color: #2E7A50; background: rgba(46,122,80,0.08); border: 1px solid rgba(46,122,80,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 12px; }
 .portal-link-form .portal-btn-primary { width: 100%; }
 .portal-link-form .portal-input { width: 100%; box-sizing: border-box; }
 
 /* ── relatório msg ── */
-.portal-rel-msg { font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 12px; color: #2E7A50; margin-top: 6px; }
+.portal-rel-msg { font-style: italic; font-size: 13px; color: #2E7A50; margin-top: 6px; }
 .portal-rel-msg--err { color: #C8001A; }
 
 /* ── referência de pagamento ── */
@@ -368,14 +365,14 @@
   display: flex; align-items: center; gap: 12px;
 }
 .portal-fat-pagamento-lbl {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: rgba(26,18,8,0.4); flex-shrink: 0;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(26,18,8,0.42); flex-shrink: 0;
 }
 .portal-fat-pagamento-val {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 15px; font-style: italic;
+  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 16px; font-style: italic;
   color: rgba(26,18,8,0.8); letter-spacing: 0.06em;
 }
 .portal-fat-pagamento-sem {
-  font-family: 'GFS Didot','Didot',Georgia,serif; font-style: italic; font-size: 12px;
+  font-style: italic; font-size: 13px;
   color: rgba(26,18,8,0.4);
 }

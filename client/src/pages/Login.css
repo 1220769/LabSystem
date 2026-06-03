@@ -25,9 +25,8 @@
 .login-stamp {
   position: absolute;
   z-index: 10;
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-size: 8px;
-  letter-spacing: 0.14em;
+  font-size: 10px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(10, 8, 6, 0.2);
   line-height: 1.7;
@@ -80,24 +79,22 @@
 .login-logo-text em { color: #C8001A; font-style: normal; }
 
 .login-logo-sub {
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-size: 8px;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(10, 8, 6, 0.3);
+  color: rgba(10, 8, 6, 0.35);
   margin-top: 3px;
 }
 
 .login-field { margin-bottom: 18px; }
 
 .login-label {
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(10, 8, 6, 0.45);
-  margin-bottom: 6px;
+  color: rgba(10, 8, 6, 0.5);
+  margin-bottom: 7px;
   display: block;
 }
 
@@ -107,21 +104,20 @@
   border: 1px solid rgba(10, 8, 6, 0.12);
   border-radius: 4px;
   padding: 11px 14px;
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 400;
   color: #0A0A08;
   outline: none;
   transition: border-color 0.15s;
 }
 .login-input:focus { border-color: rgba(200, 0, 26, 0.5); }
-.login-input::placeholder { color: rgba(10, 8, 6, 0.25); }
+.login-input::placeholder { color: rgba(10, 8, 6, 0.28); }
 
 .login-error {
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: 500;
   color: #C8001A;
-  padding: 8px 12px;
+  padding: 9px 12px;
   background: rgba(200, 0, 26, 0.08);
   border: 1px solid rgba(200, 0, 26, 0.2);
   border-radius: 4px;
@@ -134,10 +130,9 @@
   border: none;
   border-radius: 4px;
   padding: 13px;
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #F0EDE4;
   cursor: pointer;
@@ -155,12 +150,11 @@
 }
 .login-divider-line { flex: 1; height: 1px; background: rgba(10, 8, 6, 0.08); }
 .login-divider-text {
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-size: 10px;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(10, 8, 6, 0.25);
+  color: rgba(10, 8, 6, 0.3);
 }
 
 .login-roles {
@@ -170,7 +164,7 @@
 }
 
 .login-chip {
-  padding: 7px 4px;
+  padding: 8px 4px;
   border: 1px solid rgba(10, 8, 6, 0.1);
   border-radius: 4px;
   text-align: center;
@@ -186,27 +180,64 @@
   background: rgba(200, 0, 26, 0.08);
 }
 .login-chip i {
-  font-size: 15px;
+  font-size: 16px;
   color: rgba(10, 8, 6, 0.3);
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 .login-chip span {
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(10, 8, 6, 0.35);
+  color: rgba(10, 8, 6, 0.45);
 }
 .login-chip--active i    { color: #C8001A; }
 .login-chip--active span { color: #C8001A; }
 
-.login-footer {
-  margin-top: 28px;
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+.login-demo {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(10, 8, 6, 0.08);
+}
+
+.login-demo-label {
   font-size: 10px;
-  font-weight: 400;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(10, 8, 6, 0.25);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.login-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.login-demo-btn {
+  background: none;
+  border: 1px solid rgba(10, 8, 6, 0.1);
+  border-radius: 3px;
+  padding: 6px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(10, 8, 6, 0.4);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.login-demo-btn:hover {
+  background: rgba(200, 0, 26, 0.05);
+  border-color: rgba(200, 0, 26, 0.3);
+  color: #C8001A;
+}
+
+.login-footer {
+  margin-top: 20px;
+  font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(10, 8, 6, 0.18);
