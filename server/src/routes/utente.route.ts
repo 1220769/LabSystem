@@ -7,7 +7,7 @@ import {
   updateUtente,
 } from '../controllers/utente.controller'
 import { verifyToken } from '../auth/verifyToken'
-import { checkRole } from '../middleWare/checkRole'
+import { checkRole } from '../middleware/checkRole'
 
 const router = Router()
 

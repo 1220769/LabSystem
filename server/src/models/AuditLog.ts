@@ -19,6 +19,11 @@ const AuditLogSchema = new Schema<IAuditLog>({
   ip:           { type: String },
 }, { timestamps: true })
 
+AuditLogSchema.index({ modulo:      1 })
+AuditLogSchema.index({ utilizadorId: 1 })
+AuditLogSchema.index({ createdAt:   -1 })
+AuditLogSchema.index({ modulo: 1, createdAt: -1 })
+
 AuditLogSchema.set('toJSON', {
   transform: (_doc, ret) => { delete ret.__v; return ret }
 })

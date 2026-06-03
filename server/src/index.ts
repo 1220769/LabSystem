@@ -21,7 +21,14 @@ connectDB()
 const app  = express()
 const PORT = process.env.PORT || 4000
 
-app.use(cors({ origin: 'http://localhost:3000' }))
+const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:3000').split(',').map(o => o.trim())
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) cb(null, true)
+    else cb(new Error(`CORS: origem não permitida — ${origin}`))
+  },
+  credentials: true,
+}))
 app.use(express.json())
 
 app.use('/api/auth',        authRoutes)

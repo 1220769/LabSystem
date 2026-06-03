@@ -1,7 +1,7 @@
 import { Response } from 'express'
 import bcrypt from 'bcryptjs'
 import User from '../models/User'
-import { AuthRequest } from '../middleWare/authMiddleware'
+import { AuthRequest } from '../middleware/authMiddleware'
 import { PERMISSIONS } from '../models/User'
 
 // GET /api/users — só admin

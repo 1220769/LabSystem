@@ -1,1 +1,1 @@
-export { protect as verifyToken } from '../middleWare/authMiddleware'
+export { protect as verifyToken } from '../middleware/authMiddleware'

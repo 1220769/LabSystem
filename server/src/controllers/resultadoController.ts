@@ -15,31 +15,37 @@ export const gerarWorklist = async (req: AuthRequest, res: Response) => {
     const requisicao = await Requisicao.findById(amostra.requisicao)
     if (!requisicao) return res.status(404).json({ message: 'Requisição não encontrada' })
 
-    const year  = new Date().getFullYear()
-    const created = []
+    const year = new Date().getFullYear()
 
-    for (const analise of requisicao.analises) {
-      const exists = await Resultado.findOne({ amostra: amostra._id, 'analise.codigo': analise.codigo })
-      if (exists) continue
+    // 1 query para saber quais análises já têm resultado nesta amostra
+    const codigosAnalisesExistentes = await Resultado
+      .find({ amostra: amostra._id }, { 'analise.codigo': 1 })
+      .lean()
+      .then(rs => new Set(rs.map(r => r.analise.codigo)))
 
-      const count = await Resultado.countDocuments({ codigoResultado: { $regex: `^RES-${year}` } })
-      const codigoResultado = `RES-${year}-${String(count + 1).padStart(4, '0')}`
-
-      const r = await Resultado.create({
-        codigoResultado,
-        amostra:          amostra._id,
-        codigoAmostra:    amostra.codigoAmostra,
-        requisicao:       requisicao._id,
-        requisicaoNumero: requisicao.numeroRequisicao,
-        utente:           amostra.utente,
-        utenteNome:       amostra.utenteNome,
-        analise,
-        flag:   'pendente',
-        estado: 'pendente',
-        createdBy: req.user!._id,
-      })
-      created.push(r)
+    const analisesNovas = requisicao.analises.filter(a => !codigosAnalisesExistentes.has(a.codigo))
+    if (analisesNovas.length === 0) {
+      return res.status(200).json({ created: 0, resultados: [] })
     }
+
+    // 1 query para obter o contador actual e gerar códigos sequenciais
+    const baseCount = await Resultado.countDocuments({ codigoResultado: { $regex: `^RES-${year}` } })
+
+    const docs = analisesNovas.map((analise, i) => ({
+      codigoResultado:  `RES-${year}-${String(baseCount + i + 1).padStart(4, '0')}`,
+      amostra:          amostra._id,
+      codigoAmostra:    amostra.codigoAmostra,
+      requisicao:       requisicao._id,
+      requisicaoNumero: requisicao.numeroRequisicao,
+      utente:           amostra.utente,
+      utenteNome:       amostra.utenteNome,
+      analise,
+      flag:      'pendente',
+      estado:    'pendente',
+      createdBy: req.user!._id,
+    }))
+
+    const created = await Resultado.insertMany(docs)
 
     res.status(201).json({ created: created.length, resultados: created })
   } catch (err) {

@@ -6,7 +6,7 @@ import {
   updateUtente,
   deleteUtente,
 } from '../controllers/utenteController'
-import { protect, authorize, checkPermission } from '../middleWare/authMiddleware'  
+import { protect, authorize, checkPermission } from '../middleware/authMiddleware'  
 
 
 const router = Router()

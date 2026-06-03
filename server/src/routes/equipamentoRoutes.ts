@@ -10,17 +10,19 @@ import {
 const router = Router()
 router.use(protect)
 
-router.get('/stats',              getStats)
-router.get('/equipamentos',       getEquipamentos)
-router.post('/equipamentos',      authorize('administrador','tecnico'), createEquipamento)
-router.patch('/equipamentos/:id', authorize('administrador','tecnico'), updateEquipamento)
+const isTecnico = authorize('administrador', 'tecnico')
 
-router.get('/reagentes',          getReagentes)
-router.post('/reagentes',         authorize('administrador','tecnico'), createReagente)
-router.patch('/reagentes/:id',    authorize('administrador','tecnico'), updateReagente)
+router.get('/stats',              isTecnico, getStats)
+router.get('/equipamentos',       isTecnico, getEquipamentos)
+router.post('/equipamentos',      isTecnico, createEquipamento)
+router.patch('/equipamentos/:id', isTecnico, updateEquipamento)
 
-router.get('/manutencoes',        getManutencoes)
-router.post('/manutencoes',       authorize('administrador','tecnico'), createManutencao)
-router.patch('/manutencoes/:id/resolver', authorize('administrador','tecnico'), resolverManutencao)
+router.get('/reagentes',          isTecnico, getReagentes)
+router.post('/reagentes',         isTecnico, createReagente)
+router.patch('/reagentes/:id',    isTecnico, updateReagente)
+
+router.get('/manutencoes',        isTecnico, getManutencoes)
+router.post('/manutencoes',       isTecnico, createManutencao)
+router.patch('/manutencoes/:id/resolver', isTecnico, resolverManutencao)
 
 export default router

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { getMedicos } from '../controllers/medico.controller'
 import { verifyToken } from '../auth/verifyToken'
-import { checkRole } from '../middleWare/checkRole'
+import { checkRole } from '../middleware/checkRole'
 
 const router = Router()
 

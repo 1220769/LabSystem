@@ -9,7 +9,7 @@ import {
   getMyPermissions,
   getStats,
 } from '../controllers/userController'
-import { protect, authorize } from '../middleWare/authMiddleware'
+import { protect, authorize } from '../middleware/authMiddleware'
 
 const router = Router()
 
