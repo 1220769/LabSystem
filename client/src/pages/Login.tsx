@@ -6,27 +6,27 @@ import './Login.css'
 
 const TEST_LOGINS: Record<string, { email: string; password: string }> = {
   medico: {
-    email: 'medico@labsystem.pt',
+    email: 'medico@lab.pt',
     password: 'medico123',
   },
   tecnico: {
-    email: 'tecnico@labsystem.pt',
+    email: 'tecnico@lab.pt',
     password: 'tecnico123',
   },
   enfermeiro: {
-    email: 'enfermeiro@labsystem.pt',
+    email: 'enfermeiro@lab.pt',
     password: 'enfermeiro123',
   },
   financeiro: {
-    email: 'financeiro@labsystem.pt',
+    email: 'financeiro@lab.pt',
     password: 'financeiro123',
   },
   utente: {
-    email: 'utente@labsystem.pt',
+    email: 'utente@lab.pt',
     password: 'utente123',
   },
   administrador: {
-    email: 'admin@labsystem.pt',
+    email: 'admin2@lab.pt',
     password: 'admin123',
   },
 }
@@ -137,8 +137,9 @@ export default function Login() {
   function destino(role: string) {
     if (role === 'utente')        return '/portal'
     if (role === 'medico')        return '/medico'
-    if (role === 'administrador') return '/'        /* tubo directo */
-    return '/private'
+    if (role === 'tecnico')       return '/tecnico'
+    if (role === 'administrador') return '/'
+    return '/private'   /* enfermeiro, financeiro */
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
