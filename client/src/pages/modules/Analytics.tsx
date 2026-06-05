@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import {
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend,
+} from 'recharts'
 import api from '../../api/axios'
 import './Analytics.css'
 
@@ -41,9 +45,10 @@ interface IDash {
     validadosHoje: number
     criticosPorValidar: number
   }
-  topAnalises: { _id: string; nome: string; count: number }[]
-  financeiro:  { _id: string; count: number; valor: number }[]
-  pipeline:    { _id: string; count: number }[]
+  topAnalises:        { _id: string; nome: string; count: number }[]
+  financeiro:         { _id: string; count: number; valor: number }[]
+  pipeline:           { _id: string; count: number }[]
+  requisicoesPorDia:  { _id: string; count: number }[]
 }
 
 function BarFill({ pct, color }: { pct: number; color: string }) {
@@ -117,6 +122,54 @@ export default function Analytics({ seg }: { seg: { color: string; name: string 
 
       {data && (
         <>
+          {/* Gráficos recharts */}
+          <div className="an7-charts">
+            <div className="an7-chart-card">
+              <div className="an7-section-title">Requisições — últimos 14 dias</div>
+              <ResponsiveContainer width="100%" height={160}>
+                <AreaChart data={data.requisicoesPorDia} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="reqGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%"  stopColor="#90CAFF" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#90CAFF" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="_id" tick={{ fontSize: 10, fill: 'rgba(240,235,225,0.35)' }}
+                    tickFormatter={d => d.slice(5)} />
+                  <YAxis tick={{ fontSize: 10, fill: 'rgba(240,235,225,0.35)' }} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{ background: '#1A1A18', border: '1px solid rgba(240,235,225,0.1)', borderRadius: 4, fontSize: 12 }}
+                    labelStyle={{ color: 'rgba(240,235,225,0.6)' }}
+                    itemStyle={{ color: '#90CAFF' }}
+                  />
+                  <Area type="monotone" dataKey="count" name="requisições"
+                    stroke="#90CAFF" strokeWidth={2} fill="url(#reqGrad)" dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="an7-chart-card">
+              <div className="an7-section-title">Flags — distribuição</div>
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie data={data.resultados.porFlag.filter(f => f.count > 0)}
+                    dataKey="count" nameKey="_id"
+                    cx="50%" cy="50%" outerRadius={60} strokeWidth={0}>
+                    {data.resultados.porFlag.filter(f => f.count > 0).map(f => (
+                      <Cell key={f._id} fill={FLAG_COLORS[f._id] ?? '#888'} />
+                    ))}
+                  </Pie>
+                  <Legend iconSize={8} iconType="circle"
+                    formatter={(v: string) => <span style={{ fontSize: 11, color: 'rgba(240,235,225,0.55)' }}>{v.replace(/_/g,' ')}</span>} />
+                  <Tooltip
+                    contentStyle={{ background: '#1A1A18', border: '1px solid rgba(240,235,225,0.1)', borderRadius: 4, fontSize: 12 }}
+                    itemStyle={{ color: 'rgba(240,235,225,0.8)' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
           {/* KPIs */}
           <div className="an7-kpis">
             <div className="an7-kpi">

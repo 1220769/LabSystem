@@ -106,6 +106,50 @@
   line-height: 1;
   white-space: nowrap;
 }
+.seg-label-name--2 {
+  margin-top: 4px;
+  font-size: 22px;
+  color: rgba(10,10,8,0.55);
+}
+
+/* ── picker (grupos com 2 módulos) ── */
+.tube-picker {
+  position: absolute;
+  left: calc(100% + 28px);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 20;
+}
+.tube-picker-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F0EDE4;
+  border: 1px solid rgba(10,10,8,0.12);
+  border-radius: 3px;
+  padding: 9px 16px;
+  font-family: 'GFS Didot', 'Didot', Georgia, serif;
+  font-size: 18px;
+  color: #0A0A08;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 12px rgba(10,10,8,0.08);
+}
+.tube-picker-btn::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dot);
+  flex-shrink: 0;
+}
+.tube-picker-btn:hover {
+  border-color: rgba(10,10,8,0.3);
+  box-shadow: 0 4px 20px rgba(10,10,8,0.12);
+}
 
 .seg-label-desc {
   font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
@@ -191,30 +235,33 @@
   transform: translateY(-50%);
   font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
   font-weight: 700;
-  font-size: clamp(52px, 8vw, 130px);
+  font-size: clamp(24px, 3.5vw, 80px);
   color: #0A0A08;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  white-space: nowrap;
+  word-break: break-word;
   pointer-events: none;
   user-select: none;
-  line-height: 1;
+  line-height: 1.05;
   transition: opacity 0.2s ease;
 }
 .slogan--hide {
   opacity: 0;
 }
+
 .slogan-left {
-  right: calc(50% + 60px);
   left: 0;
-  text-align: center;
+  right: calc(50% + 75px);
+  text-align: right;
+  padding-right: 12px;
 }
 
 .slogan-right {
-  left: calc(50% + 60px);
+  left: calc(50% + 75px);
   right: 0;
-  text-align: center;
-  font-size: clamp(60px, 10vw, 160px);
+  text-align: left;
+  padding-left: 12px;
+  font-size: clamp(28px, 4.2vw, 96px);
 }
 .panel {
   position: absolute;
@@ -358,15 +405,13 @@
 }
 .badge-ok   { background: rgba(0,200,150,0.12);  color: #00C896; }
 .badge-pend { background: rgba(232,160,32,0.12); color: #E8A020; }
-.badge-crit { background: rgba(200,0,26,0.15);   color: #C8001A; }@keyframes rainbow {
-  0%   { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
-}
+.badge-crit { background: rgba(200,0,26,0.15);   color: #C8001A; }
 
+/* ── tubo: sombra suave (SEM o arco-íris hue-rotate, que parecia partido) ── */
 .tube-svg {
   filter: drop-shadow(0 8px 40px rgba(10,10,8,0.10));
-  animation: rainbow 2s linear infinite;
 }
+
 .dive-overlay {
   position: absolute;
   width: 100px;
@@ -376,4 +421,33 @@
   transform: translate(-50%, -50%);
   z-index: 100;
   pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CAMADA VIVA DO TUBO  —  animações usadas por <TubeActivity />
+   As custom properties (--rise, --bmax, --flowrise) são definidas inline
+   em cada elemento. Dentro de SVG, 1px no transform = 1 unidade do viewBox.
+═══════════════════════════════════════════════════════════════════════ */
+@keyframes tubeBubble {
+  0%   { transform: translateY(0) scale(.6); opacity: 0; }
+  14%  { opacity: var(--bmax); }
+  85%  { opacity: calc(var(--bmax) * .65); }
+  100% { transform: translateY(var(--rise)) scale(1); opacity: 0; }
+}
+
+@keyframes tubeFlow {
+  0%       { transform: translateY(0); opacity: 0; }
+  10%, 90% { opacity: .85; }
+  100%     { transform: translateY(var(--flowrise)); opacity: 0; }
+}
+
+@keyframes tubeLiveGlow {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: .34; }
+}
+
+/* respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .tube-svg circle,
+  .tube-svg [style*="tubeLiveGlow"] { animation: none !important; }
 }

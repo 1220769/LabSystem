@@ -20,6 +20,7 @@ export async function getDashboard(_req: Request, res: Response) {
       topAnalises,
       finEstado,
       pipeline,
+      requisicoesPorDia,
     ] = await Promise.all([
       Requisicao.countDocuments({ createdAt: { $gte: hoje } }),
       Requisicao.countDocuments({ createdAt: { $gte: semana } }),
@@ -47,6 +48,14 @@ export async function getDashboard(_req: Request, res: Response) {
       Resultado.aggregate([
         { $group: { _id: '$estado', count: { $sum: 1 } } },
       ]),
+      Requisicao.aggregate([
+        { $match: { createdAt: { $gte: new Date(Date.now() - 14 * 86400_000) } } },
+        { $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          count: { $sum: 1 },
+        }},
+        { $sort: { _id: 1 } },
+      ]),
     ])
 
     res.json({
@@ -61,6 +70,7 @@ export async function getDashboard(_req: Request, res: Response) {
       topAnalises,
       financeiro: finEstado,
       pipeline,
+      requisicoesPorDia,
     })
   } catch (err) {
     res.status(500).json({ message: 'Erro ao gerar dashboard' })

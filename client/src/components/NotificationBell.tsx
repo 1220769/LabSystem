@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
+import { useSocket } from '../hooks/useSocket'
 import './NotificationBell.css'
 
 type NotifTipo = 'resultado' | 'critico' | 'requisicao' | 'fatura'
@@ -58,12 +59,15 @@ export default function NotificationBell({ theme = 'light' }: Props) {
     } catch { /* silêncio */ }
   }, [])
 
-  // polling a cada 30s
-  useEffect(() => {
-    load()
-    const id = setInterval(load, 30_000)
-    return () => clearInterval(id)
-  }, [load])
+  // carga inicial
+  useEffect(() => { load() }, [load])
+
+  // WebSocket — push em tempo real
+  useSocket('notification', (data) => {
+    const notif = data as INotification
+    setNotifications(prev => [notif, ...prev].slice(0, 20))
+    setUnread(u => u + 1)
+  })
 
   // fechar ao clicar fora
   useEffect(() => {
