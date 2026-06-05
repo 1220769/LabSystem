@@ -3,6 +3,7 @@ import Amostra    from '../models/Amostra'
 import Resultado  from '../models/Resultado'
 import Requisicao from '../models/Requisicao'
 import { AuthRequest } from '../middleware/authMiddleware'
+import { escapeRegex } from '../utils/escapeRegex'
 
 export const getAmostras = async (req: AuthRequest, res: Response) => {
   try {
@@ -12,10 +13,11 @@ export const getAmostras = async (req: AuthRequest, res: Response) => {
     if (estado && estado !== 'todas')             filter.estado = estado
     if (tipoColheita && tipoColheita !== 'todas') filter.tipoColheita = tipoColheita
     if (search) {
+      const s = escapeRegex(search as string)
       filter.$or = [
-        { codigoAmostra:    { $regex: search, $options: 'i' } },
-        { utenteNome:       { $regex: search, $options: 'i' } },
-        { requisicaoNumero: { $regex: search, $options: 'i' } },
+        { codigoAmostra:    { $regex: s, $options: 'i' } },
+        { utenteNome:       { $regex: s, $options: 'i' } },
+        { requisicaoNumero: { $regex: s, $options: 'i' } },
       ]
     }
 

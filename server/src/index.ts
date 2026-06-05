@@ -1,6 +1,7 @@
 import http from 'http'
 import express from 'express'
 import cors from 'cors'
+import rateLimit from 'express-rate-limit'
 import dotenv from 'dotenv'
 import { connectDB } from './config/db'
 import { initSocket } from './socket'
@@ -35,6 +36,16 @@ app.use(cors({
   credentials: true,
 }))
 app.use(express.json())
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Demasiadas tentativas. Tente novamente em 15 minutos.' },
+  skip: () => process.env.NODE_ENV === 'test',
+})
+app.use('/api/auth/login', loginLimiter)
 
 app.use('/api/auth',          authRoutes)
 app.use('/api/utentes',       utenteRoutes)

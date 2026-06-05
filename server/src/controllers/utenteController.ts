@@ -2,6 +2,7 @@ import { Response } from 'express'
 import Utente from '../models/Utente'
 import User from '../models/User'
 import { AuthRequest } from '../middleware/authMiddleware'
+import { escapeRegex } from '../utils/escapeRegex'
 
 // GET /api/utentes
 export const getUtentes = async (req: AuthRequest, res: Response) => {
@@ -9,11 +10,12 @@ export const getUtentes = async (req: AuthRequest, res: Response) => {
     const { search, page = 1, limit = 20 } = req.query
     const filter: any = { ativo: true }
     if (search) {
+      const s = escapeRegex(search as string)
       filter.$or = [
-        { nome:           { $regex: search, $options: 'i' } },
-        { numeroProcesso: { $regex: search, $options: 'i' } },
-        { nif:            { $regex: search, $options: 'i' } },
-        { sns:            { $regex: search, $options: 'i' } },
+        { nome:           { $regex: s, $options: 'i' } },
+        { numeroProcesso: { $regex: s, $options: 'i' } },
+        { nif:            { $regex: s, $options: 'i' } },
+        { sns:            { $regex: s, $options: 'i' } },
       ]
     }
     const total   = await Utente.countDocuments(filter)

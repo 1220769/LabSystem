@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import User, { IUser, type UserRole } from '../models/User'
 import bcrypt from 'bcryptjs'
+import { registarEvento } from '../utils/registarEvento'
 
 const generateToken = (id: string) =>
   jwt.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
@@ -80,6 +81,14 @@ export const login = async (req: Request, res: Response) => {
     }
     user.ultimoLogin = new Date()
     await user.save()
+    registarEvento({
+      utilizador:   user.nome,
+      utilizadorId: user._id as any,
+      acao:         'login',
+      modulo:       'auth',
+      detalhe:      `Login com role ${user.role}`,
+      ip:           req.ip,
+    })
     res.json({
       _id: user._id,
       nome: user.nome,
@@ -89,6 +98,61 @@ export const login = async (req: Request, res: Response) => {
     })
   } catch (err) {
     res.status(500).json({ message: 'Erro ao autenticar', error: err })
+  }
+}
+
+// PUT /api/auth/change-password — utilizador altera a própria password
+export const changePassword = async (req: Request & { user?: IUser }, res: Response) => {
+  try {
+    const { passwordAtual, passwordNova } = req.body
+    if (!passwordAtual || !passwordNova) {
+      return res.status(400).json({ message: 'Password actual e nova são obrigatórias' })
+    }
+    if (passwordNova.length < 6) {
+      return res.status(400).json({ message: 'A nova password deve ter pelo menos 6 caracteres' })
+    }
+    const user = await (await import('../models/User')).default.findById(req.user!._id)
+    if (!user) return res.status(404).json({ message: 'Utilizador não encontrado' })
+    if (!(await user.matchPassword(passwordAtual))) {
+      return res.status(401).json({ message: 'Password actual incorrecta' })
+    }
+    user.password = await bcrypt.hash(passwordNova, await bcrypt.genSalt(10))
+    await user.save()
+    registarEvento({
+      utilizador:   user.nome,
+      utilizadorId: user._id as any,
+      acao:         'alterar_password',
+      modulo:       'auth',
+    })
+    res.json({ message: 'Password alterada com sucesso' })
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao alterar password', error: err })
+  }
+}
+
+// POST /api/auth/reset-password/:userId — admin reseta password de outro utilizador
+export const resetPassword = async (req: Request & { user?: IUser }, res: Response) => {
+  try {
+    const { passwordNova } = req.body
+    if (!passwordNova || passwordNova.length < 6) {
+      return res.status(400).json({ message: 'Password deve ter pelo menos 6 caracteres' })
+    }
+    const UserModel = (await import('../models/User')).default
+    const target = await UserModel.findById(req.params.userId)
+    if (!target) return res.status(404).json({ message: 'Utilizador não encontrado' })
+
+    target.password = await bcrypt.hash(passwordNova, await bcrypt.genSalt(10))
+    await target.save()
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'reset_password',
+      modulo:       'utilizadores',
+      detalhe:      `Reset para ${target.nome} (${target.email})`,
+    })
+    res.json({ message: `Password de ${target.nome} reposta com sucesso` })
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao repor password', error: err })
   }
 }
 

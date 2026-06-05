@@ -3,6 +3,7 @@ import Fatura from '../models/Fatura'
 import Requisicao from '../models/Requisicao'
 import { AuthRequest as Request } from '../middleware/authMiddleware'
 import { notifyUtenteByRef } from '../utils/createNotification'
+import { escapeRegex } from '../utils/escapeRegex'
 
 function nextNumero(last: string | null, prefix: string): string {
   if (!last) return `${prefix}-${new Date().getFullYear()}-0001`
@@ -21,10 +22,11 @@ export async function getFaturas(req: Request, res: Response) {
     const filter: Record<string, unknown> = {}
     if (estado && estado !== 'todas') filter.estado = estado
     if (search) {
+      const s = escapeRegex(search)
       filter.$or = [
-        { numeroFatura: { $regex: search, $options: 'i' } },
-        { utenteNome:   { $regex: search, $options: 'i' } },
-        { requisicaoNumero: { $regex: search, $options: 'i' } },
+        { numeroFatura:     { $regex: s, $options: 'i' } },
+        { utenteNome:       { $regex: s, $options: 'i' } },
+        { requisicaoNumero: { $regex: s, $options: 'i' } },
       ]
     }
 

@@ -1,6 +1,7 @@
 import { Response } from 'express'
 import Requisicao from '../models/Requisicao'
 import { AuthRequest } from '../middleware/authMiddleware'
+import { escapeRegex } from '../utils/escapeRegex'
 
 export const getRequisicoes = async (req: AuthRequest, res: Response) => {
   try {
@@ -13,10 +14,11 @@ export const getRequisicoes = async (req: AuthRequest, res: Response) => {
     if (medicoId === 'mine') filter.createdBy = req.user!._id
     else if (medicoId)       filter.createdBy = medicoId
     if (search) {
+      const s = escapeRegex(search as string)
       filter.$or = [
-        { numeroRequisicao:  { $regex: search, $options: 'i' } },
-        { utenteNome:        { $regex: search, $options: 'i' } },
-        { medicoSolicitante: { $regex: search, $options: 'i' } },
+        { numeroRequisicao:  { $regex: s, $options: 'i' } },
+        { utenteNome:        { $regex: s, $options: 'i' } },
+        { medicoSolicitante: { $regex: s, $options: 'i' } },
       ]
     }
 

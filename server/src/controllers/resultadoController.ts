@@ -6,6 +6,8 @@ import Fatura from '../models/Fatura'
 import User from '../models/User'
 import { AuthRequest } from '../middleware/authMiddleware'
 import { notifyUtenteByRef, notifyUser } from '../utils/createNotification'
+import { escapeRegex } from '../utils/escapeRegex'
+import { registarEvento } from '../utils/registarEvento'
 
 /* auto-generated when amostra → recebida */
 export const gerarWorklist = async (req: AuthRequest, res: Response) => {
@@ -65,11 +67,12 @@ export const getResultados = async (req: AuthRequest, res: Response) => {
     if (utente)  filter.utente = utente
     if (flagIn)  filter.flag   = { $in: (flagIn as string).split(',') }
     if (search) {
+      const s = escapeRegex(search as string)
       filter.$or = [
-        { codigoResultado:    { $regex: search, $options: 'i' } },
-        { utenteNome:         { $regex: search, $options: 'i' } },
-        { codigoAmostra:      { $regex: search, $options: 'i' } },
-        { 'analise.nome':     { $regex: search, $options: 'i' } },
+        { codigoResultado:    { $regex: s, $options: 'i' } },
+        { utenteNome:         { $regex: s, $options: 'i' } },
+        { codigoAmostra:      { $regex: s, $options: 'i' } },
+        { 'analise.nome':     { $regex: s, $options: 'i' } },
       ]
     }
 
@@ -110,6 +113,13 @@ export const validarTecnico = async (req: AuthRequest, res: Response) => {
       observacoes,
     }
     await resultado.save()
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'validacao_tecnica',
+      modulo:       'resultados',
+      detalhe:      `${resultado.codigoResultado} — ${resultado.analise.nome}`,
+    })
     res.json(resultado)
   } catch (err) {
     res.status(500).json({ message: 'Erro ao validar tecnicamente', error: err })
@@ -147,6 +157,14 @@ export const validarMedico = async (req: AuthRequest, res: Response) => {
         : `O resultado de ${resultado.analise.nome} já está disponível no seu portal.`,
       'resultados'
     )
+
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         isCritico ? 'validacao_medica_critico' : 'validacao_medica',
+      modulo:       'resultados',
+      detalhe:      `${resultado.codigoResultado} — ${resultado.analise.nome} [${resultado.flag}]`,
+    })
 
     // melhoria 3: notificar directamente o médico se resultado crítico
     if (isCritico) {
@@ -260,6 +278,13 @@ export const rejeitarResultado = async (req: AuthRequest, res: Response) => {
       motivo,
     }
     await resultado.save()
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'rejeicao_resultado',
+      modulo:       'resultados',
+      detalhe:      `${resultado.codigoResultado} — motivo: ${motivo}`,
+    })
 
     // notificar o técnico que inseriu o resultado
     notifyUser(

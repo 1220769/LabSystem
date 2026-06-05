@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs'
 import User from '../models/User'
 import { AuthRequest } from '../middleware/authMiddleware'
 import { PERMISSIONS } from '../models/User'
+import { escapeRegex } from '../utils/escapeRegex'
+import { registarEvento } from '../utils/registarEvento'
 
 // GET /api/users — só admin
 export const getUsers = async (req: AuthRequest, res: Response) => {
@@ -11,10 +13,13 @@ export const getUsers = async (req: AuthRequest, res: Response) => {
     const filter: any = {}
     if (role)   filter.role  = role
     if (ativo !== undefined) filter.ativo = ativo === 'true'
-    if (search) filter.$or = [
-      { nome:  { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
-    ]
+    if (search) {
+      const s = escapeRegex(search as string)
+      filter.$or = [
+        { nome:  { $regex: s, $options: 'i' } },
+        { email: { $regex: s, $options: 'i' } },
+      ]
+    }
     // filtro: utentes sem registo clínico ligado
     if (semLink === 'true') {
       filter.role = 'utente'
@@ -69,6 +74,13 @@ export const createUser = async (req: AuthRequest, res: Response) => {
       ...(utenteRef ? { utenteRef, linkedAt: new Date(), linkedBy: req.user?._id } : {}),
     })
     const { password: _, ...userWithoutPassword } = user.toObject()
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'criar_utilizador',
+      modulo:       'utilizadores',
+      detalhe:      `${nome} (${role}) — ${email}`,
+    })
     res.status(201).json(userWithoutPassword)
   } catch (err) {
     res.status(500).json({ message: 'Erro ao criar utilizador', error: err })
@@ -119,6 +131,13 @@ export const deactivateUser = async (req: AuthRequest, res: Response) => {
       { new: true }
     ).select('-password')
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado' })
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'desactivar_utilizador',
+      modulo:       'utilizadores',
+      detalhe:      `${user.nome} (${user.role})`,
+    })
     res.json({ message: 'Utilizador desactivado', user })
   } catch (err) {
     res.status(500).json({ message: 'Erro ao desactivar utilizador', error: err })
