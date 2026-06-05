@@ -144,6 +144,34 @@ export const deactivateUser = async (req: AuthRequest, res: Response) => {
   }
 }
 
+// DELETE /api/users/:id/permanent — eliminação permanente, só admin, só inactivos
+export const deleteUserPermanent = async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?._id.toString() === req.params.id) {
+      return res.status(400).json({ message: 'Não podes eliminar a tua própria conta' })
+    }
+    const user = await User.findById(req.params.id)
+    if (!user) return res.status(404).json({ message: 'Utilizador não encontrado' })
+    if (user.ativo) {
+      return res.status(400).json({ message: 'Desactiva o utilizador antes de o eliminar permanentemente' })
+    }
+    const nome  = user.nome
+    const role  = user.role
+    const email = user.email
+    await user.deleteOne()
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'eliminar_utilizador',
+      modulo:       'utilizadores',
+      detalhe:      `${nome} (${role}) — ${email}`,
+    })
+    res.json({ message: `Utilizador ${nome} eliminado permanentemente` })
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao eliminar utilizador', error: err })
+  }
+}
+
 // GET /api/users/stats — totais por role e estado
 export const getStats = async (_req: AuthRequest, res: Response) => {
   try {

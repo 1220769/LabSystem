@@ -278,6 +278,12 @@
 .uz-btn-toggle:hover { background: rgba(200,0,26,0.06); border-color: rgba(200,0,26,0.5); }
 .uz-btn-toggle--activate { color: #2E7A50; border-color: rgba(46,122,80,0.25); }
 .uz-btn-toggle--activate:hover { background: rgba(46,122,80,0.06); border-color: rgba(46,122,80,0.5); }
+.uz-btn-delete {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 11px 18px; background: none; border: 1px solid rgba(200,0,26,0.2);
+  border-radius: 3px; cursor: pointer; color: rgba(200,0,26,0.5); transition: all 0.15s;
+}
+.uz-btn-delete:hover { background: rgba(200,0,26,0.08); border-color: #C8001A; color: #C8001A; }
 
 /* form */
 .uz-form { padding: 20px 36px 60px; display: flex; flex-direction: column; gap: 0; }

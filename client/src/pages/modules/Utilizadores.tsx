@@ -181,6 +181,17 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
     } catch { /* */ }
   }
 
+  async function handleDeletePermanent(u: IUser) {
+    if (!window.confirm(`Eliminar permanentemente "${u.nome}"?\nEsta acção é irreversível.`)) return
+    try {
+      await api.delete(`/users/${u._id}/permanent`)
+      setSelected(null)
+      load(); loadStats()
+    } catch (e: any) {
+      alert(e.response?.data?.message ?? 'Erro ao eliminar utilizador')
+    }
+  }
+
   const panelOpen = !!(selected || creating)
 
   return (
@@ -402,6 +413,14 @@ export default function Utilizadores({ seg }: { seg: { color: string; name: stri
                   >
                     {selected.ativo ? 'desativar' : 'reativar'}
                   </button>
+                  {!selected.ativo && (
+                    <button
+                      className="uz-btn-delete"
+                      onClick={() => handleDeletePermanent(selected)}
+                    >
+                      eliminar
+                    </button>
+                  )}
                 </div>
               </div>
             )}

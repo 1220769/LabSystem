@@ -6,6 +6,7 @@ import {
   createUser,
   updateUser,
   deactivateUser,
+  deleteUserPermanent,
   getMyPermissions,
   getStats,
 } from '../controllers/userController'
@@ -22,6 +23,7 @@ router.get('/',                        authorize('administrador'), getUsers)
 router.get('/:id',                     authorize('administrador'), getUserById)
 router.post('/',    authorize('administrador'), createUser)
 router.put('/:id',  authorize('administrador'), updateUser)
-router.delete('/:id', authorize('administrador'), deactivateUser)
+router.delete('/:id',           authorize('administrador'), deactivateUser)
+router.delete('/:id/permanent', authorize('administrador'), deleteUserPermanent)
 
 export default router
