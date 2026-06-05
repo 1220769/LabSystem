@@ -35,7 +35,7 @@ const RequisicaoSchema = new Schema<IRequisicao>(
     utente:            { type: Schema.Types.ObjectId, ref: 'Utente', required: true },
     utenteNome:        { type: String, required: true },
     utenteProcesso:    { type: String, required: true },
-    medicoSolicitante: { type: String, required: true },
+    medicoSolicitante: { type: String, default: 'Pedido próprio' },
     analises:          {
       type: [AnaliseSchema],
       required: true,

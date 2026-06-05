@@ -20,7 +20,27 @@ function fmtEur(v: number) {
 
 /* ── types ── */
 type Flag = 'normal' | 'alto' | 'baixo' | 'critico_alto' | 'critico_baixo' | 'pendente'
-type Tab  = 'resultados' | 'requisicoes' | 'faturas' | 'perfil'
+type Tab  = 'resultados' | 'requisicoes' | 'faturas' | 'pedir' | 'perfil'
+
+/* catálogo simplificado para utente */
+const CAT_UTENTE = [
+  { codigo: 'HEM01', nome: 'Hemograma Completo',        categoria: 'hematologia'    },
+  { codigo: 'BIO01', nome: 'Glicose',                   categoria: 'bioquímica'     },
+  { codigo: 'BIO03', nome: 'Creatinina',                categoria: 'bioquímica'     },
+  { codigo: 'BIO06', nome: 'PCR',                       categoria: 'bioquímica'     },
+  { codigo: 'BIO07', nome: 'ALT / AST',                 categoria: 'bioquímica'     },
+  { codigo: 'BIO13', nome: 'Colesterol Total / LDL / HDL', categoria: 'bioquímica' },
+  { codigo: 'BIO14', nome: 'Triglicéridos',             categoria: 'bioquímica'     },
+  { codigo: 'END01', nome: 'TSH',                       categoria: 'endocrinologia' },
+  { codigo: 'COA01', nome: 'Coagulação (TP, APTT)',     categoria: 'coagulação'     },
+  { codigo: 'URI01', nome: 'Urina Tipo II',             categoria: 'urina'          },
+  { codigo: 'MAR01', nome: 'PSA Total / Livre',         categoria: 'marcadores'     },
+]
+const PERFIS_UTENTE = [
+  { nome: 'Check-up Geral',   codigos: ['HEM01','BIO01','BIO03','BIO06','BIO07','BIO13','BIO14','END01','URI01'] },
+  { nome: 'Perfil Cardíaco',  codigos: ['BIO06','BIO13','BIO14'] },
+  { nome: 'Perfil Hepático',  codigos: ['BIO07','END01','BIO01'] },
+]
 type FlagFilter = 'todos' | 'normal' | 'alterado' | 'critico'
 
 interface IPerfil {
@@ -184,6 +204,39 @@ export default function Portal() {
   const [resPage,    setResPage]    = useState(1)
   const [loading,    setLoading]    = useState(true)
   const [resLoading, setResLoading] = useState(false)
+
+  /* pedir análises */
+  const [pedirSel,     setPedirSel]     = useState<string[]>([])
+  const [pedirObs,     setPedirObs]     = useState('')
+  const [pedirLoading, setPedirLoading] = useState(false)
+  const [pedirMsg,     setPedirMsg]     = useState('')
+  const [pedirErr,     setPedirErr]     = useState('')
+
+  const toggleAnalise = (codigo: string) =>
+    setPedirSel(prev => prev.includes(codigo) ? prev.filter(c => c !== codigo) : [...prev, codigo])
+
+  const handlePedido = async () => {
+    if (pedirSel.length === 0) { setPedirErr('Seleccione pelo menos uma análise'); return }
+    setPedirLoading(true); setPedirErr(''); setPedirMsg('')
+    try {
+      const analises = CAT_UTENTE.filter(a => pedirSel.includes(a.codigo))
+      await api.post('/requisicoes', {
+        utente:           (user as any)?.utenteRef ?? null,
+        utenteNome:       perfil?.nome ?? user?.nome ?? '',
+        utenteProcesso:   perfil?.numeroProcesso ?? '',
+        medicoSolicitante: 'Pedido próprio',
+        analises,
+        observacoes:      pedirObs || undefined,
+      })
+      setPedirMsg('Pedido submetido com sucesso! Uma fatura será gerada pelo departamento financeiro.')
+      setPedirSel([]); setPedirObs('')
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } }
+      setPedirErr(err.response?.data?.message ?? 'Erro ao submeter pedido')
+    } finally {
+      setPedirLoading(false)
+    }
+  }
 
   /* resultado estado */
   const [flagFilter,   setFlagFilter]   = useState<FlagFilter>('todos')
@@ -384,10 +437,10 @@ export default function Portal() {
       </div>
 
       <div className="portal-tabs">
-        {(['resultados','requisicoes','faturas','perfil'] as Tab[]).map(t => (
+        {(['resultados','requisicoes','faturas','pedir','perfil'] as Tab[]).map(t => (
           <button key={t} className={`portal-tab${tab === t ? ' portal-tab--on' : ''}`}
             onClick={() => t === 'resultados' ? handleTabResultados() : setTab(t)}>
-            {t}
+            {t === 'pedir' ? 'pedir análises' : t}
             {t === 'resultados' && novosCount > 0 && tab !== 'resultados' && (
               <span className="portal-tab-badge">{novosCount}</span>
             )}
@@ -632,6 +685,71 @@ export default function Portal() {
                 </div>
               ))
             }
+          </div>
+        )}
+
+        {/* ── PEDIR ANÁLISES ── */}
+        {tab === 'pedir' && (
+          <div className="portal-section">
+            <div className="portal-section-header">
+              <div className="portal-section-title">Pedir análises</div>
+            </div>
+            <div style={{ padding: '20px 24px' }}>
+              {pedirMsg && <div style={{ color: '#2E7A50', background: 'rgba(46,122,80,0.08)', border: '1px solid rgba(46,122,80,0.2)', borderRadius: 4, padding: '10px 14px', marginBottom: 16, fontSize: 13 }}>{pedirMsg}</div>}
+              {pedirErr && <div className="portal-link-err">{pedirErr}</div>}
+
+              {/* Perfis rápidos */}
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(26,18,8,0.35)', marginBottom: 8 }}>Perfis pré-definidos</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {PERFIS_UTENTE.map(p => (
+                    <button key={p.nome} className="portal-btn-outline"
+                      onClick={() => setPedirSel(prev => [...new Set([...prev, ...p.codigos])])}>
+                      {p.nome}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Catálogo */}
+              {[...new Set(CAT_UTENTE.map(a => a.categoria))].map(cat => (
+                <div key={cat} style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(26,18,8,0.35)', marginBottom: 6 }}>{cat}</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                    {CAT_UTENTE.filter(a => a.categoria === cat).map(a => (
+                      <button key={a.codigo}
+                        style={{
+                          padding: '5px 12px', borderRadius: 3, fontSize: 13, cursor: 'pointer', transition: 'all 0.12s',
+                          background: pedirSel.includes(a.codigo) ? 'rgba(26,18,8,0.85)' : 'rgba(26,18,8,0.04)',
+                          color:      pedirSel.includes(a.codigo) ? '#F0EDE4' : 'rgba(26,18,8,0.65)',
+                          border:     pedirSel.includes(a.codigo) ? '1px solid transparent' : '1px solid rgba(26,18,8,0.1)',
+                        }}
+                        onClick={() => toggleAnalise(a.codigo)}>
+                        {a.nome}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {pedirSel.length > 0 && (
+                <div style={{ marginTop: 16, padding: '14px', background: 'rgba(26,18,8,0.03)', borderRadius: 6, border: '1px solid rgba(26,18,8,0.08)' }}>
+                  <div style={{ fontSize: 12, color: 'rgba(26,18,8,0.5)', marginBottom: 8 }}>{pedirSel.length} análise{pedirSel.length !== 1 ? 's' : ''} seleccionada{pedirSel.length !== 1 ? 's' : ''}</div>
+                  <textarea
+                    placeholder="Observações (opcional)"
+                    value={pedirObs}
+                    onChange={e => setPedirObs(e.target.value)}
+                    style={{ width: '100%', minHeight: 60, padding: '8px 10px', border: '1px solid rgba(26,18,8,0.1)', borderRadius: 4, fontSize: 13, resize: 'vertical', boxSizing: 'border-box', marginBottom: 10 }}
+                  />
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button className="portal-btn-primary" onClick={handlePedido} disabled={pedirLoading}>
+                      {pedirLoading ? 'A submeter…' : 'Submeter pedido'}
+                    </button>
+                    <button className="portal-btn-outline" onClick={() => { setPedirSel([]); setPedirObs('') }}>Limpar</button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

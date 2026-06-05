@@ -1,18 +1,25 @@
 import { Response } from 'express'
 import Requisicao from '../models/Requisicao'
+import Fatura     from '../models/Fatura'
+import User       from '../models/User'
 import { AuthRequest } from '../middleware/authMiddleware'
 import { escapeRegex } from '../utils/escapeRegex'
+import { notifyUser } from '../utils/createNotification'
+import { registarEvento } from '../utils/registarEvento'
 
 export const getRequisicoes = async (req: AuthRequest, res: Response) => {
   try {
-    const { estado, search, urgente, medicoId, page = 1, limit = 20 } = req.query
+    const { estado, search, urgente, medicoId, utenteId, page = 1, limit = 20 } = req.query
     const filter: any = {}
 
     if (estado && estado !== 'todas') filter.estado = estado
     if (urgente === 'true')           filter.urgente = true
-    // medicoId=mine → requisições criadas pelo médico autenticado
     if (medicoId === 'mine') filter.createdBy = req.user!._id
     else if (medicoId)       filter.createdBy = medicoId
+    // utente só vê as suas requisições
+    if (utenteId === 'mine') filter.utente = (req.user as any).utenteRef ?? null
+    else if (utenteId)       filter.utente = utenteId
+
     if (search) {
       const s = escapeRegex(search as string)
       filter.$or = [
@@ -50,11 +57,55 @@ export const createRequisicao = async (req: AuthRequest, res: Response) => {
     const count = await Requisicao.countDocuments({ numeroRequisicao: { $regex: `^REQ-${year}` } })
     const numeroRequisicao = `REQ-${year}-${String(count + 1).padStart(4, '0')}`
 
+    const medicoSolicitante = req.body.medicoSolicitante
+      || (req.user!.role === 'utente' ? 'Pedido próprio' : req.user!.nome)
+
     const requisicao = await Requisicao.create({
       ...req.body,
       numeroRequisicao,
+      medicoSolicitante,
       createdBy: req.user!._id,
     })
+
+    // criar rascunho de fatura imediatamente
+    try {
+      const fatCount = await Fatura.countDocuments({ numeroFatura: { $regex: `^FAT-${year}` } })
+      const numeroFatura = `FAT-${year}-${String(fatCount + 1).padStart(4, '0')}`
+      const linhas = (requisicao.analises ?? []).map((a: any) => ({
+        codigo: a.codigo, descricao: a.nome, preco: 0,
+      }))
+      await Fatura.create({
+        numeroFatura,
+        requisicao:       requisicao._id,
+        requisicaoNumero: requisicao.numeroRequisicao,
+        utente:           requisicao.utente,
+        utenteNome:       requisicao.utenteNome,
+        tipo:             'particular',
+        linhas,
+        valorBruto: 0, percentComparticipacao: 0,
+        valorComparticipado: 0, valorLiquido: 0,
+        estado:    'rascunho',
+        createdBy: req.user!._id,
+      })
+      // notificar financeiro
+      const financeiros = await User.find({ role: 'financeiro', ativo: true }).select('_id')
+      for (const f of financeiros) {
+        notifyUser(f._id, 'fatura',
+          'Nova requisição para faturar',
+          `Requisição ${requisicao.numeroRequisicao} criada. Fatura ${numeroFatura} em rascunho aguarda preços.`,
+          'financeiro'
+        )
+      }
+    } catch { /* não bloquear */ }
+
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'criar_requisicao',
+      modulo:       'requisicoes',
+      detalhe:      `${requisicao.numeroRequisicao} — ${requisicao.utenteNome}`,
+    })
+
     res.status(201).json(requisicao)
   } catch (err: any) {
     res.status(500).json({ message: 'Erro ao criar requisição', error: err })

@@ -13,7 +13,7 @@ router.get('/stats', getStats)
 router.get('/',      getRequisicoes)
 router.get('/:id',   getRequisicaoById)
 
-router.post('/',   authorize('administrador','tecnico','medico','enfermeiro'), createRequisicao)
+router.post('/',   authorize('administrador','tecnico','medico','enfermeiro','utente'), createRequisicao)
 router.put('/:id', authorize('administrador','tecnico','medico'),              updateRequisicao)
 router.delete('/:id', authorize('administrador','medico'),                    cancelRequisicao)
 

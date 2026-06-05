@@ -174,8 +174,8 @@ export default function TecnicomainComponent() {
   const loadRecepcao = useCallback(() => {
     setALoad(true)
     Promise.all([
-      api.get('/amostras', { params: { estado: 'em_transito', limit: 30 } }),
-      api.get('/amostras', { params: { estado: 'recebida',    limit: 30 } }),
+      api.get('/amostras', { params: { estado: 'em_transito', atribuidoA: 'tecnico', limit: 30 } }),
+      api.get('/amostras', { params: { estado: 'recebida',    atribuidoA: 'tecnico', limit: 30 } }),
     ]).then(([t, r]) => {
       setTransito(t.data.data ?? [])
       setRecebidas(r.data.data ?? [])

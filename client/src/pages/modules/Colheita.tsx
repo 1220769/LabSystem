@@ -63,8 +63,14 @@ interface Amostra {
   estado: EstadoAmostra
   motivoRejeicao?: string
   observacoes?: string
+  enfermeiroAtribuido?: string
+  enfermeiroNome?: string
+  tecnicoAtribuido?: string
+  tecnicoNome?: string
   createdAt: string
 }
+
+interface Staff { _id: string; nome: string }
 
 interface RequisicaoOpt {
   _id: string; numeroRequisicao: string
@@ -136,6 +142,33 @@ export default function Colheita({ seg }: { seg: Seg }) {
   const rTimer   = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const canWrite = ['administrador','tecnico','enfermeiro'].includes(user?.role ?? '')
+  const isAdmin  = user?.role === 'administrador'
+
+  const [enfermeiros, setEnfermeiros] = useState<Staff[]>([])
+  const [tecnicos,    setTecnicos]    = useState<Staff[]>([])
+  const [selEnf,      setSelEnf]      = useState('')
+  const [selTec,      setSelTec]      = useState('')
+  const [atribLoading, setAtribLoading] = useState(false)
+
+  useEffect(() => {
+    if (!isAdmin) return
+    api.get('/users', { params: { role: 'enfermeiro', ativo: 'true', limit: 50 } }).then(r => setEnfermeiros(r.data.data ?? []))
+    api.get('/users', { params: { role: 'tecnico',    ativo: 'true', limit: 50 } }).then(r => setTecnicos(r.data.data ?? []))
+  }, [isAdmin])
+
+  const handleAtribuirEnf = async () => {
+    if (!selected || !selEnf) return
+    setAtribLoading(true)
+    await api.patch(`/amostras/${selected._id}/atribuir-enfermeiro`, { enfermeiroId: selEnf }).catch(() => {})
+    setAtribLoading(false); setSelEnf(''); fetchAmostras()
+  }
+
+  const handleAtribuirTec = async () => {
+    if (!selected || !selTec) return
+    setAtribLoading(true)
+    await api.patch(`/amostras/${selected._id}/atribuir-tecnico`, { tecnicoId: selTec }).catch(() => {})
+    setAtribLoading(false); setSelTec(''); fetchAmostras()
+  }
 
   useEffect(() => {
     if (debTimer.current) clearTimeout(debTimer.current)
@@ -402,7 +435,19 @@ export default function Colheita({ seg }: { seg: Seg }) {
                   ))}
                 </div>
 
-                {selected.tecnico && (
+                {(selected.enfermeiroNome || selected.tecnicoNome) && (
+                  <div className="col-dsection">
+                    {selected.enfermeiroNome && <>
+                      <div className="col-dsection-title">Enfermeiro atribuído</div>
+                      <div className="col-dval">{selected.enfermeiroNome}</div>
+                    </>}
+                    {selected.tecnicoNome && <>
+                      <div className="col-dsection-title" style={{ marginTop: 8 }}>Técnico atribuído</div>
+                      <div className="col-dval">{selected.tecnicoNome}</div>
+                    </>}
+                  </div>
+                )}
+                {selected.tecnico && !selected.tecnicoNome && (
                   <div className="col-dsection">
                     <div className="col-dsection-title">Técnico</div>
                     <div className="col-dval">{selected.tecnico}</div>
@@ -451,6 +496,36 @@ export default function Colheita({ seg }: { seg: Seg }) {
                         Rejeitar
                       </button>
                     )}
+                  </div>
+                )}
+
+                {isAdmin && (
+                  <div className="col-dsection">
+                    <div className="col-dsection-title">Atribuição</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <select value={selEnf} onChange={e => setSelEnf(e.target.value)}
+                          style={{ flex: 1, padding: '6px 8px', border: '1px solid rgba(10,10,8,0.12)', borderRadius: 4, fontSize: 13 }}>
+                          <option value="">— Enfermeiro —</option>
+                          {enfermeiros.map(e => <option key={e._id} value={e._id}>{e.nome}</option>)}
+                        </select>
+                        <button onClick={handleAtribuirEnf} disabled={!selEnf || atribLoading}
+                          style={{ padding: '6px 12px', background: '#2A5F7A', color: '#fff', border: 'none', borderRadius: 4, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          Atribuir
+                        </button>
+                      </div>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <select value={selTec} onChange={e => setSelTec(e.target.value)}
+                          style={{ flex: 1, padding: '6px 8px', border: '1px solid rgba(10,10,8,0.12)', borderRadius: 4, fontSize: 13 }}>
+                          <option value="">— Técnico —</option>
+                          {tecnicos.map(t => <option key={t._id} value={t._id}>{t.nome}</option>)}
+                        </select>
+                        <button onClick={handleAtribuirTec} disabled={!selTec || atribLoading}
+                          style={{ padding: '6px 12px', background: '#2A5F7A', color: '#fff', border: 'none', borderRadius: 4, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          Atribuir
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
 

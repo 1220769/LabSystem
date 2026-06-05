@@ -182,75 +182,23 @@ export const validarMedico = async (req: AuthRequest, res: Response) => {
       } catch { /* não bloquear */ }
     }
 
-    // se todos os resultados da requisição estão validados → concluir requisição + auto-fatura
+    // se todos os resultados da requisição estão validados → concluir requisição
     try {
       const porValidar = await Resultado.countDocuments({
         requisicao: resultado.requisicao,
         estado: { $nin: ['validado_medico', 'rejeitado'] },
       })
       if (porValidar === 0) {
-        const requisicao = await Requisicao.findByIdAndUpdate(
-          resultado.requisicao,
-          { estado: 'concluida' },
-          { new: true }
+        await Requisicao.findByIdAndUpdate(resultado.requisicao, { estado: 'concluida' })
+        notifyUtenteByRef(
+          resultado.utente,
+          'requisicao',
+          'Resultados disponíveis',
+          `Todos os resultados da requisição ${resultado.requisicaoNumero} foram validados. Consulte o seu portal.`,
+          'resultados'
         )
-
-        if (requisicao) {
-          // notificar utente: requisição concluída
-          notifyUtenteByRef(
-            resultado.utente,
-            'requisicao',
-            'Requisição concluída',
-            `A requisição ${resultado.requisicaoNumero} foi concluída. Pode consultar todos os resultados no portal.`,
-            'requisicoes'
-          )
-
-          // melhoria 1: criar rascunho de fatura automaticamente
-          const jaExiste = await Fatura.findOne({ requisicao: requisicao._id })
-          if (!jaExiste) {
-            const year = new Date().getFullYear()
-            const count = await Fatura.countDocuments({ numeroFatura: { $regex: `^FAT-${year}` } })
-            const numeroFatura = `FAT-${year}-${String(count + 1).padStart(4, '0')}`
-
-            const linhas = requisicao.analises.map(a => ({
-              codigo:    a.codigo,
-              descricao: a.nome,
-              preco:     0,
-            }))
-
-            await Fatura.create({
-              numeroFatura,
-              requisicao:       requisicao._id,
-              requisicaoNumero: requisicao.numeroRequisicao,
-              utente:           requisicao.utente,
-              utenteNome:       requisicao.utenteNome,
-              tipo:             'particular',
-              linhas,
-              valorBruto:             0,
-              percentComparticipacao: 0,
-              valorComparticipado:    0,
-              valorLiquido:           0,
-              estado:  'rascunho',
-              createdBy: resultado.createdBy,
-            })
-
-            // notificar financeiro sobre nova fatura
-            try {
-              const financeiros = await User.find({ role: 'financeiro', ativo: true }).select('_id')
-              for (const f of financeiros) {
-                notifyUser(
-                  f._id,
-                  'fatura',
-                  'Nova fatura para revisão',
-                  `Requisição ${requisicao.numeroRequisicao} concluída. Rascunho de fatura ${numeroFatura} criado automaticamente.`,
-                  'financeiro'
-                )
-              }
-            } catch { /* não bloquear */ }
-          }
-        }
       }
-    } catch { /* não bloquear a validação se esta verificação falhar */ }
+    } catch { /* não bloquear */ }
 
     res.json(resultado)
   } catch (err) {

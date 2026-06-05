@@ -51,12 +51,13 @@ describe('POST /api/requisicoes', () => {
     expect(res.status).toBe(401)
   })
 
-  it('rejeita criação com role utente', async () => {
+  it('utente pode criar requisição (pedido próprio)', async () => {
     const token = await getToken('utente@lab.pt', 'utente123')
     const res = await request(app)
       .post('/api/requisicoes')
       .set('Authorization', `Bearer ${token}`)
       .send({ utente: 'abc', analises: [] })
-    expect(res.status).toBe(403)
+    // utente está autorizado — falha por dados inválidos (400/500), não por 403
+    expect(res.status).not.toBe(403)
   })
 })

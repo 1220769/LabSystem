@@ -24,6 +24,10 @@ export interface IAmostra extends Document {
   tecnico?: string
   temperatura?: number
   estado: EstadoAmostra
+  enfermeiroAtribuido?: mongoose.Types.ObjectId
+  enfermeiroNome?: string
+  tecnicoAtribuido?: mongoose.Types.ObjectId
+  tecnicoNome?: string
   motivoRejeicao?: string
   observacoes?: string
   createdBy: mongoose.Types.ObjectId
@@ -52,9 +56,13 @@ const AmostraSchema = new Schema<IAmostra>(
     tecnico:          { type: String },
     temperatura:      { type: Number },
     estado:           { type: String, enum: ['aguarda_colheita','colhida','em_transito','recebida','rejeitada'], default: 'aguarda_colheita' },
-    motivoRejeicao:   { type: String },
-    observacoes:      { type: String },
-    createdBy:        { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    motivoRejeicao:      { type: String },
+    observacoes:         { type: String },
+    enfermeiroAtribuido: { type: Schema.Types.ObjectId, ref: 'User', index: true },
+    enfermeiroNome:      { type: String },
+    tecnicoAtribuido:    { type: Schema.Types.ObjectId, ref: 'User', index: true },
+    tecnicoNome:         { type: String },
+    createdBy:           { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true }
 )

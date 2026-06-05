@@ -2,16 +2,21 @@ import { Response } from 'express'
 import Amostra    from '../models/Amostra'
 import Resultado  from '../models/Resultado'
 import Requisicao from '../models/Requisicao'
+import User from '../models/User'
 import { AuthRequest } from '../middleware/authMiddleware'
 import { escapeRegex } from '../utils/escapeRegex'
+import { notifyUser } from '../utils/createNotification'
 
 export const getAmostras = async (req: AuthRequest, res: Response) => {
   try {
-    const { estado, tipoColheita, search, page = 1, limit = 20 } = req.query
+    const { estado, tipoColheita, search, page = 1, limit = 20, atribuidoA } = req.query
     const filter: Record<string, unknown> = {}
 
     if (estado && estado !== 'todas')             filter.estado = estado
     if (tipoColheita && tipoColheita !== 'todas') filter.tipoColheita = tipoColheita
+    // filtro por atribuição: enfermeiro ou técnico
+    if (atribuidoA === 'enfermeiro') filter.enfermeiroAtribuido = req.user!._id
+    if (atribuidoA === 'tecnico')    filter.tecnicoAtribuido    = req.user!._id
     if (search) {
       const s = escapeRegex(search as string)
       filter.$or = [
@@ -115,6 +120,58 @@ export const updateAmostra = async (req: AuthRequest, res: Response) => {
     res.json(amostra)
   } catch (err) {
     res.status(500).json({ message: 'Erro ao actualizar amostra', error: err })
+  }
+}
+
+// PATCH /api/amostras/:id/atribuir-enfermeiro — admin atribui colheita a enfermeiro
+export const atribuirEnfermeiro = async (req: AuthRequest, res: Response) => {
+  try {
+    const { enfermeiroId } = req.body
+    const enfermeiro = await User.findById(enfermeiroId).select('nome role')
+    if (!enfermeiro || enfermeiro.role !== 'enfermeiro') {
+      return res.status(400).json({ message: 'Utilizador não é enfermeiro' })
+    }
+    const amostra = await Amostra.findByIdAndUpdate(
+      req.params.id,
+      { enfermeiroAtribuido: enfermeiroId, enfermeiroNome: enfermeiro.nome },
+      { new: true }
+    )
+    if (!amostra) return res.status(404).json({ message: 'Amostra não encontrada' })
+
+    notifyUser(enfermeiroId, 'requisicao',
+      'Colheita atribuída',
+      `Foi-lhe atribuída a colheita ${amostra.codigoAmostra} do utente ${amostra.utenteNome}.`,
+      'colheita'
+    )
+    res.json(amostra)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao atribuir enfermeiro', error: err })
+  }
+}
+
+// PATCH /api/amostras/:id/atribuir-tecnico — admin atribui amostra a técnico
+export const atribuirTecnico = async (req: AuthRequest, res: Response) => {
+  try {
+    const { tecnicoId } = req.body
+    const tecnico = await User.findById(tecnicoId).select('nome role')
+    if (!tecnico || tecnico.role !== 'tecnico') {
+      return res.status(400).json({ message: 'Utilizador não é técnico' })
+    }
+    const amostra = await Amostra.findByIdAndUpdate(
+      req.params.id,
+      { tecnicoAtribuido: tecnicoId, tecnicoNome: tecnico.nome },
+      { new: true }
+    )
+    if (!amostra) return res.status(404).json({ message: 'Amostra não encontrada' })
+
+    notifyUser(tecnicoId, 'resultado',
+      'Amostra atribuída para análise',
+      `A amostra ${amostra.codigoAmostra} do utente ${amostra.utenteNome} foi-lhe atribuída para processamento.`,
+      'analise'
+    )
+    res.json(amostra)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao atribuir técnico', error: err })
   }
 }
 

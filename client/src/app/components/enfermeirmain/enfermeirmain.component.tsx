@@ -132,7 +132,7 @@ export default function EnfermeiromainComponent() {
 
   const loadAmostras = useCallback((est: EstadoAmostra | 'todas' = filtro, q = debSearch) => {
     setALoad(true)
-    const params: Record<string, string> = { limit: '50' }
+    const params: Record<string, string> = { limit: '50', atribuidoA: 'enfermeiro' }
     if (est !== 'todas') params.estado  = est
     if (q)               params.search  = q
     api.get('/amostras', { params })
