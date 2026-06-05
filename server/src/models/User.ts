@@ -90,10 +90,15 @@ export interface IUser extends Document {
   utenteRef?: mongoose.Types.ObjectId
   linkedAt?: Date
   linkedBy?: mongoose.Types.ObjectId
+  // segurança de login
+  loginAttempts: number
+  lockUntil?: Date
+  tokenVersion: number
   createdAt: Date
   updatedAt: Date
   matchPassword(enteredPassword: string): Promise<boolean>
   hasPermission(module: Module, action: Action): boolean
+  isLocked(): boolean
 }
 
 const UserSchema = new Schema<IUser>(
@@ -111,9 +116,12 @@ const UserSchema = new Schema<IUser>(
     telefone:     { type: String },
     departamento: { type: String },
     ultimoLogin:  { type: Date },
-    utenteRef:    { type: Schema.Types.ObjectId, ref: 'Utente' },
-    linkedAt:     { type: Date },
-    linkedBy:     { type: Schema.Types.ObjectId, ref: 'User' },
+    utenteRef:     { type: Schema.Types.ObjectId, ref: 'Utente' },
+    linkedAt:      { type: Date },
+    linkedBy:      { type: Schema.Types.ObjectId, ref: 'User' },
+    loginAttempts: { type: Number, default: 0 },
+    lockUntil:     { type: Date },
+    tokenVersion:  { type: Number, default: 0 },
   },
   { timestamps: true }
 )
@@ -125,6 +133,10 @@ UserSchema.methods.matchPassword = async function (enteredPassword: string): Pro
 UserSchema.methods.hasPermission = function (module: Module, action: Action): boolean {
   const perms = PERMISSIONS[this.role as UserRole]
   return perms[module]?.includes(action) ?? false
+}
+
+UserSchema.methods.isLocked = function (): boolean {
+  return !!(this.lockUntil && this.lockUntil > new Date())
 }
 
 export default mongoose.model<IUser>('User', UserSchema)

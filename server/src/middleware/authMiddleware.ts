@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User'
 import type { IUser, Module, Action } from '../models/User'
 
-interface JwtPayload { id: string }
+interface JwtPayload { id: string; tokenVersion?: number }
 
 export interface AuthRequest extends Request {
   user?: IUser
@@ -20,6 +20,10 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     const user    = await User.findById(decoded.id).select('-password')
     if (!user || !user.ativo) {
       return res.status(401).json({ message: 'Utilizador inactivo ou inexistente' })
+    }
+    // verificar que o token não foi invalidado por logout
+    if (decoded.tokenVersion !== undefined && decoded.tokenVersion !== user.tokenVersion) {
+      return res.status(401).json({ message: 'Sessão expirada — faça login novamente' })
     }
     req.user = user
     next()

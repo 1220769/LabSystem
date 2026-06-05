@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { register, login, getMe, changePassword, resetPassword } from '../controllers/authController'
+import { register, login, logout, getMe, changePassword, resetPassword } from '../controllers/authController'
 import { protect, authorize, AuthRequest } from '../middleware/authMiddleware'
 import { Response } from 'express'
 
@@ -8,6 +8,11 @@ const router = Router()
 router.post('/register', register)
 router.post('/login',    login)
 router.get ('/me',       protect, (req, res) => getMe(req as AuthRequest, res as Response))
+
+router.post('/logout',
+  protect,
+  (req, res) => logout(req as AuthRequest, res as Response)
+)
 
 router.put('/change-password',
   protect,

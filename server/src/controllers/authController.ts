@@ -4,8 +4,11 @@ import User, { IUser, type UserRole } from '../models/User'
 import bcrypt from 'bcryptjs'
 import { registarEvento } from '../utils/registarEvento'
 
-const generateToken = (id: string) =>
-  jwt.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
+const MAX_LOGIN_ATTEMPTS = 5
+const LOCK_DURATION_MS   = 15 * 60 * 1000 // 15 minutos
+
+const generateToken = (id: string, tokenVersion: number) =>
+  jwt.sign({ id, tokenVersion }, process.env.JWT_SECRET as string, { expiresIn: '7d' })
 
 const DEMO_USERS: Record<string, { nome: string; password: string; role: UserRole }> = {
   'medico@lab.pt':           { nome: 'João Costa',      password: 'medico123',      role: 'medico'         },
@@ -58,7 +61,7 @@ export const register = async (req: Request, res: Response) => {
       nome: user.nome,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id.toString()),
+      token: generateToken(user._id.toString(), user.tokenVersion ?? 0),
     })
   } catch (err) {
     res.status(500).json({ message: 'Erro ao registar', error: err })
@@ -67,20 +70,71 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body
-    const normalizedEmail = String(email ?? '').toLowerCase().trim()
-    const normalizedPassword = String(password ?? '')
-    const demoUser = await ensureDemoUser(normalizedEmail, normalizedPassword)
-    const user = demoUser ?? await User.findOne({ email: normalizedEmail })
-    if (!user || !(await user.matchPassword(normalizedPassword))) {
+    const rawEmail    = String(req.body?.email    ?? '').toLowerCase().trim()
+    const rawPassword = String(req.body?.password ?? '')
+
+    // validação básica de input
+    if (!rawEmail || !rawPassword) {
+      return res.status(401).json({ message: 'Credenciais inválidas' })
+    }
+    if (rawEmail.length > 254 || rawPassword.length > 128) {
       return res.status(401).json({ message: 'Credenciais inválidas' })
     }
 
-    if (!user.ativo) {
-      return res.status(403).json({ message: 'Conta desactivada' })
+    const demoUser = await ensureDemoUser(rawEmail, rawPassword)
+    const user     = demoUser ?? await User.findOne({ email: rawEmail })
+
+    // conta inexistente — resposta idêntica para não revelar se email existe
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciais inválidas' })
     }
-    user.ultimoLogin = new Date()
+
+    // conta desactivada
+    if (!user.ativo) {
+      return res.status(403).json({ message: 'Conta desactivada. Contacte o administrador.' })
+    }
+
+    // conta bloqueada por tentativas excessivas
+    if (user.isLocked()) {
+      const restam = Math.ceil((user.lockUntil!.getTime() - Date.now()) / 60000)
+      registarEvento({
+        utilizador: rawEmail, acao: 'login_bloqueado',
+        modulo: 'auth', detalhe: `Conta bloqueada — ${restam}min restantes`, ip: req.ip,
+      })
+      return res.status(423).json({
+        message: `Conta temporariamente bloqueada. Tente novamente em ${restam} minuto${restam !== 1 ? 's' : ''}.`,
+      })
+    }
+
+    const passwordCorreta = await user.matchPassword(rawPassword)
+
+    if (!passwordCorreta) {
+      // incrementar tentativas
+      user.loginAttempts = (user.loginAttempts ?? 0) + 1
+      if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        user.lockUntil     = new Date(Date.now() + LOCK_DURATION_MS)
+        user.loginAttempts = 0
+        registarEvento({
+          utilizador: user.nome, utilizadorId: user._id as any,
+          acao: 'conta_bloqueada', modulo: 'auth',
+          detalhe: `Bloqueada após ${MAX_LOGIN_ATTEMPTS} tentativas falhadas`, ip: req.ip,
+        })
+      } else {
+        registarEvento({
+          utilizador: rawEmail, acao: 'login_falhado', modulo: 'auth',
+          detalhe: `Tentativa ${user.loginAttempts}/${MAX_LOGIN_ATTEMPTS}`, ip: req.ip,
+        })
+      }
+      await user.save()
+      return res.status(401).json({ message: 'Credenciais inválidas' })
+    }
+
+    // login bem-sucedido — resetar contadores
+    user.loginAttempts = 0
+    user.lockUntil     = undefined
+    user.ultimoLogin   = new Date()
     await user.save()
+
     registarEvento({
       utilizador:   user.nome,
       utilizadorId: user._id as any,
@@ -89,15 +143,33 @@ export const login = async (req: Request, res: Response) => {
       detalhe:      `Login com role ${user.role}`,
       ip:           req.ip,
     })
+
     res.json({
-      _id: user._id,
-      nome: user.nome,
+      _id:   user._id,
+      nome:  user.nome,
       email: user.email,
-      role: user.role,
-      token: generateToken(user._id.toString()),
+      role:  user.role,
+      token: generateToken(user._id.toString(), user.tokenVersion),
     })
   } catch (err) {
     res.status(500).json({ message: 'Erro ao autenticar', error: err })
+  }
+}
+
+// POST /api/auth/logout — invalida o token actual via tokenVersion
+export const logout = async (req: Request & { user?: IUser }, res: Response) => {
+  try {
+    await User.findByIdAndUpdate(req.user!._id, { $inc: { tokenVersion: 1 } })
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'logout',
+      modulo:       'auth',
+      ip:           req.ip,
+    })
+    res.json({ message: 'Sessão terminada' })
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao terminar sessão', error: err })
   }
 }
 
