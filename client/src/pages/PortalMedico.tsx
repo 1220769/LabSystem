@@ -183,6 +183,7 @@ export default function PortalMedico() {
   const [utList, setUtList]       = useState<IUtente[]>([])
   const [utTotal, setUtTotal]     = useState(0)
   const [utLoading, setUtLoad]    = useState(false)
+  const [utSoMeus, setUtSoMeus]   = useState(true)
   const [selUt, setSelUt]         = useState<IUtente | null>(null)
   const [utResultados, setUtResultados] = useState<IResultado[]>([])
   const [utReqs, setUtReqs]       = useState<IRequisicao[]>([])
@@ -226,12 +227,14 @@ export default function PortalMedico() {
   }, [reqEstado, reqPage])
 
   const loadUtentes = useCallback(() => {
-    if (!utDebSearch) { setUtList([]); setUtTotal(0); return }
     setUtLoad(true)
-    api.get('/utentes', { params: { search: utDebSearch, limit: 12 } })
+    const params: Record<string, string | number> = { limit: 20 }
+    if (utSoMeus) params.medicoId = 'mine'
+    if (utDebSearch) params.search = utDebSearch
+    api.get('/utentes', { params })
       .then(({ data }) => { setUtList(data.data); setUtTotal(data.total) })
       .finally(() => setUtLoad(false))
-  }, [utDebSearch])
+  }, [utDebSearch, utSoMeus])
 
   const loadCriticos = useCallback(() => {
     setCritLoad(true)
@@ -676,14 +679,18 @@ ${r.validacaoMedica?`<div class="vblock"><div class="vlbl">Validação Médica</
                 <input className="pm-search pm-search--icon" placeholder="nome · SNS · NIF · nº processo…"
                   value={utSearch} onChange={e => setUtSearch(e.target.value)} autoFocus />
               </div>
-              {utTotal > 0 && <span className="pm-count">{utTotal} resultado{utTotal !== 1 ? 's' : ''}</span>}
+              <div className="pm-req-estado-tabs">
+                <button className={`pm-req-etab${utSoMeus ? ' pm-req-etab--on' : ''}`} onClick={() => setUtSoMeus(true)}>Os meus</button>
+                <button className={`pm-req-etab${!utSoMeus ? ' pm-req-etab--on' : ''}`} onClick={() => setUtSoMeus(false)}>Todos</button>
+              </div>
+              {utTotal > 0 && <span className="pm-count">{utTotal} utente{utTotal !== 1 ? 's' : ''}</span>}
             </div>
 
-            {!utDebSearch && (
+            {!utDebSearch && utList.length === 0 && !utLoading && (
               <div className="pm-empty-state pm-empty-state--search">
                 <div className="pm-empty-icon">◉</div>
-                <div className="pm-empty-title">Pesquise um utente</div>
-                <div className="pm-empty-sub">Introduza nome, SNS, NIF ou número de processo para aceder à ficha clínica</div>
+                <div className="pm-empty-title">Sem utentes atribuídos</div>
+                <div className="pm-empty-sub">Ainda não tem utentes atribuídos. Pesquise pelo nome ou SNS para encontrar um utente e atribuí-lo a si.</div>
               </div>
             )}
 
@@ -736,9 +743,22 @@ ${r.validacaoMedica?`<div class="vblock"><div class="vlbl">Validação Médica</
                             <DField l="Contacto" v={u.contacto} />
                             {u.email && <DField l="Email" v={u.email} />}
                             <DField l="Morada" v={`${u.morada.rua}, ${u.morada.codigoPostal} ${u.morada.localidade}`} />
-                            {u.medico && <DField l="Médico família" v={u.medico} />}
+                            <DField l="Médico atribuído" v={(u as any).medicoNome || u.medico || '—'} />
                             {u.observacoes && <DField l="Observações" v={u.observacoes} />}
                           </div>
+
+                          {!(u as any).medicoId && (
+                            <button
+                              className="pm-btn-outline"
+                              style={{ marginBottom: 12 }}
+                              onClick={async () => {
+                                await api.patch(`/utentes/${u._id}/atribuir-medico`, { medicoId: user?._id })
+                                loadUtentes()
+                              }}
+                            >
+                              + Atribuir a mim
+                            </button>
+                          )}
 
                           {utResultados.length > 0 && (
                             <div className="pm-ut-section">

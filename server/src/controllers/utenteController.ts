@@ -7,8 +7,16 @@ import { escapeRegex } from '../utils/escapeRegex'
 // GET /api/utentes
 export const getUtentes = async (req: AuthRequest, res: Response) => {
   try {
-    const { search, page = 1, limit = 20 } = req.query
+    const { search, page = 1, limit = 20, medicoId } = req.query
     const filter: any = { ativo: true }
+
+    // filtro por médico: 'mine' → utentes do médico autenticado; id específico → esse médico
+    if (medicoId === 'mine') {
+      filter.medicoId = req.user!._id
+    } else if (medicoId) {
+      filter.medicoId = medicoId
+    }
+
     if (search) {
       const s = escapeRegex(search as string)
       filter.$or = [
@@ -44,7 +52,13 @@ export const getUtenteById = async (req: AuthRequest, res: Response) => {
 // POST /api/utentes
 export const createUtente = async (req: AuthRequest, res: Response) => {
   try {
-    const utente = await Utente.create(req.body)
+    // se médico cria utente, atribui automaticamente a si próprio
+    const body = { ...req.body }
+    if (req.user?.role === 'medico' && !body.medicoId) {
+      body.medicoId   = req.user._id
+      body.medicoNome = req.user.nome
+    }
+    const utente = await Utente.create(body)
     res.status(201).json(utente)
   } catch (err: any) {
     if (err.code === 11000) {
@@ -55,9 +69,6 @@ export const createUtente = async (req: AuthRequest, res: Response) => {
     if (err.name === 'ValidationError') {
       const msgs = Object.values(err.errors).map((e: any) => e.message).join('; ')
       return res.status(400).json({ message: msgs })
-    }
-    if (err.name === 'CastError') {
-      return res.status(400).json({ message: `Campo inválido: ${err.path}` })
     }
     res.status(500).json({ message: 'Erro ao criar utente' })
   }
@@ -78,6 +89,32 @@ export const updateUtente = async (req: AuthRequest, res: Response) => {
   }
 }
 
+// PATCH /api/utentes/:id/atribuir-medico
+export const atribuirMedico = async (req: AuthRequest, res: Response) => {
+  try {
+    const { medicoId } = req.body
+
+    let medicoNome = ''
+    if (medicoId) {
+      const medico = await User.findById(medicoId).select('nome role')
+      if (!medico || medico.role !== 'medico') {
+        return res.status(400).json({ message: 'Utilizador não é médico' })
+      }
+      medicoNome = medico.nome
+    }
+
+    const utente = await Utente.findByIdAndUpdate(
+      req.params.id,
+      { medicoId: medicoId || null, medicoNome: medicoNome || '' },
+      { new: true }
+    )
+    if (!utente) return res.status(404).json({ message: 'Utente não encontrado' })
+    res.json(utente)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao atribuir médico', error: err })
+  }
+}
+
 // DELETE /api/utentes/:id (soft delete)
 export const deleteUtente = async (req: AuthRequest, res: Response) => {
   try {
@@ -87,7 +124,6 @@ export const deleteUtente = async (req: AuthRequest, res: Response) => {
       { new: true }
     )
     if (!utente) return res.status(404).json({ message: 'Utente não encontrado' })
-    // cascade: desativar utilizadores portal ligados a este utente
     await User.updateMany({ utenteRef: req.params.id, ativo: true }, { ativo: false })
     res.json({ message: 'Utente desactivado com sucesso' })
   } catch (err) {

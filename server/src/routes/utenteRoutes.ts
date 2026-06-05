@@ -5,6 +5,7 @@ import {
   createUtente,
   updateUtente,
   deleteUtente,
+  atribuirMedico,
 } from '../controllers/utenteController'
 import { protect, authorize, checkPermission } from '../middleware/authMiddleware'  
 
@@ -17,6 +18,7 @@ router.get('/',     getUtentes)
 router.get('/:id',  getUtenteById)
 router.post('/',    authorize('administrador','tecnico','medico','enfermeiro'), createUtente)
 router.put('/:id',  authorize('administrador','tecnico','medico'), updateUtente)
-router.delete('/:id', authorize('administrador'), deleteUtente)
+router.delete('/:id',              authorize('administrador'), deleteUtente)
+router.patch('/:id/atribuir-medico', authorize('administrador','medico'), atribuirMedico)
 
 export default router

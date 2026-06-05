@@ -15,6 +15,8 @@ export interface IUtente extends Document {
     localidade: string
   }
   medico?: string
+  medicoId?: mongoose.Types.ObjectId
+  medicoNome?: string
   observacoes?: string
   ativo: boolean
   createdAt: Date
@@ -36,8 +38,10 @@ const UtenteSchema = new Schema<IUtente>(
       codigoPostal: { type: String, required: true },
       localidade:   { type: String, required: true },
     },
-    medico:       { type: String },
-    observacoes:  { type: String },
+    medico:      { type: String },
+    medicoId:    { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
+    medicoNome:  { type: String },
+    observacoes: { type: String },
     ativo:        { type: Boolean, default: true },
   },
   { timestamps: true }
