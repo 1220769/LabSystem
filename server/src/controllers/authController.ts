@@ -228,6 +228,54 @@ export const resetPassword = async (req: Request & { user?: IUser }, res: Respon
   }
 }
 
+// POST /api/auth/register-request — cria conta inactiva, aguarda aprovação do admin
+export const registerRequest = async (req: Request, res: Response) => {
+  try {
+    const { nome, email, password, role } = req.body
+    if (!nome || !email || !password || !role) {
+      return res.status(400).json({ message: 'Todos os campos são obrigatórios' })
+    }
+    const rolesPermitidos = ['medico','tecnico','enfermeiro','financeiro','utente']
+    if (!rolesPermitidos.includes(role)) {
+      return res.status(400).json({ message: 'Role inválido' })
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password deve ter pelo menos 6 caracteres' })
+    }
+
+    const UserModel = (await import('../models/User')).default
+    const existe = await UserModel.findOne({ email: String(email).toLowerCase().trim() })
+    if (existe) return res.status(400).json({ message: 'Email já registado' })
+
+    const hashed = await bcrypt.hash(password, await bcrypt.genSalt(10))
+    const user   = await UserModel.create({
+      nome, email: String(email).toLowerCase().trim(),
+      password: hashed, role, ativo: false,
+    })
+
+    // notificar admins
+    const admins = await UserModel.find({ role: 'administrador', ativo: true }).select('_id')
+    const { notifyUser: notify } = await import('../utils/createNotification')
+    for (const admin of admins) {
+      notify(admin._id, 'resultado',
+        'Nova conta pendente de aprovação',
+        `${nome} (${role}) solicitou acesso ao sistema. Aprove em Utilizadores.`,
+        'utilizadores'
+      )
+    }
+
+    registarEvento({
+      utilizador: nome, utilizadorId: user._id as any,
+      acao: 'registo_pendente', modulo: 'auth',
+      detalhe: `${role} — ${email}`, ip: req.ip,
+    })
+
+    res.status(201).json({ message: 'Conta criada. Aguarde aprovação do administrador.' })
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao criar conta', error: err })
+  }
+}
+
 // POST /api/auth/recover-request — auto-serviço: email + nome + nova password
 export const recoverRequest = async (req: Request, res: Response) => {
   try {

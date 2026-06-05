@@ -124,6 +124,34 @@ const { setAuth }                 = useAuthStore()
     return '/private'   /* enfermeiro, financeiro */
   }
 
+  const [regModal,      setRegModal]      = useState(false)
+  const [regNome,       setRegNome]       = useState('')
+  const [regEmail,      setRegEmail]      = useState('')
+  const [regPassword,   setRegPassword]   = useState('')
+  const [regConfirm,    setRegConfirm]    = useState('')
+  const [regRole,       setRegRole]       = useState('tecnico')
+  const [regMsg,        setRegMsg]        = useState('')
+  const [regErr,        setRegErr]        = useState('')
+  const [regLoading,    setRegLoading]    = useState(false)
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setRegErr(''); setRegMsg('')
+    if (regPassword !== regConfirm) { setRegErr('As passwords não coincidem'); return }
+    setRegLoading(true)
+    try {
+      const { data } = await api.post('/auth/register-request', {
+        nome: regNome, email: regEmail, password: regPassword, role: regRole,
+      })
+      setRegMsg(data.message)
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } } }
+      setRegErr(e.response?.data?.message || 'Erro ao criar conta')
+    } finally {
+      setRegLoading(false)
+    }
+  }
+
   const [recovering,      setRecovering]      = useState(false)
   const [recoverEmail,    setRecoverEmail]    = useState('')
   const [recoverNome,     setRecoverNome]     = useState('')
@@ -283,8 +311,65 @@ return (
           </div>
         </div>
 
-        <div className="login-footer">LabSystem Pro · v2.0 · SNS</div>
+        <div className="login-footer">
+          LabSystem Pro · v2.0 · SNS
+          <button className="login-register-link" onClick={() => { setRegModal(true); setRegMsg(''); setRegErr('') }}>
+            Criar conta
+          </button>
+        </div>
       </div>
+
+      {/* Modal de registo */}
+      {regModal && (
+        <div className="login-modal-overlay" onClick={() => setRegModal(false)}>
+          <div className="login-modal" onClick={e => e.stopPropagation()}>
+            <button className="login-modal-close" onClick={() => setRegModal(false)}>✕</button>
+            <h2 className="login-modal-title">Criar conta</h2>
+            <p className="login-modal-sub">A conta ficará pendente até o administrador aprovar.</p>
+
+            {regMsg ? (
+              <p className="login-recover-ok" style={{ textAlign: 'center', padding: '20px 0' }}>{regMsg}</p>
+            ) : (
+              <form onSubmit={handleRegister}>
+                <div className="login-field">
+                  <label className="login-label">Nome completo</label>
+                  <input className="login-input" type="text" placeholder="Nome Apelido"
+                    value={regNome} onChange={e => setRegNome(e.target.value)} required />
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Email</label>
+                  <input className="login-input" type="email" placeholder="nome@hospital.pt"
+                    value={regEmail} onChange={e => setRegEmail(e.target.value)} required />
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Perfil</label>
+                  <select className="login-input" value={regRole} onChange={e => setRegRole(e.target.value)}>
+                    <option value="medico">Médico</option>
+                    <option value="tecnico">Técnico</option>
+                    <option value="enfermeiro">Enfermeiro</option>
+                    <option value="financeiro">Financeiro</option>
+                    <option value="utente">Utente</option>
+                  </select>
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Password</label>
+                  <input className="login-input" type="password" placeholder="mínimo 6 caracteres"
+                    value={regPassword} onChange={e => setRegPassword(e.target.value)} required />
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Confirmar password</label>
+                  <input className="login-input" type="password" placeholder="repetir password"
+                    value={regConfirm} onChange={e => setRegConfirm(e.target.value)} required />
+                </div>
+                {regErr && <div className="login-error">{regErr}</div>}
+                <button className="login-btn" type="submit" disabled={regLoading}>
+                  {regLoading ? 'A criar...' : 'Submeter pedido'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
