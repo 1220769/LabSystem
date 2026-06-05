@@ -3,7 +3,7 @@ import { protect, authorize } from '../middleware/authMiddleware'
 import {
   gerarWorklist, getResultados, getResultadoById,
   updateResultado, getStats, getCategorias,
-  validarTecnico, validarMedico, emitirRelatorio,
+  validarTecnico, validarMedico, emitirRelatorio, rejeitarResultado,
 } from '../controllers/resultadoController'
 
 const router = Router()
@@ -38,6 +38,11 @@ router.post('/:id/validar-medico',
 router.post('/:id/emitir-relatorio',
   authorize('administrador','medico','tecnico'),
   emitirRelatorio
+)
+
+router.post('/:id/rejeitar',
+  authorize('administrador','medico'),
+  rejeitarResultado
 )
 
 export default router

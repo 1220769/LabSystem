@@ -1,13 +1,20 @@
 import mongoose, { Document, Schema } from 'mongoose'
 
 export type FlagResultado    = 'pendente' | 'normal' | 'alto' | 'baixo' | 'critico_alto' | 'critico_baixo'
-export type EstadoResultado  = 'pendente' | 'em_processamento' | 'resultado_disponivel' | 'validado_tecnico' | 'validado_medico'
+export type EstadoResultado  = 'pendente' | 'em_processamento' | 'resultado_disponivel' | 'validado_tecnico' | 'validado_medico' | 'rejeitado'
 
 export interface IAssinatura {
   userId: mongoose.Types.ObjectId
   nome: string
   dataHora: Date
   observacoes?: string
+}
+
+export interface IRejeicao {
+  userId: mongoose.Types.ObjectId
+  nome: string
+  dataHora: Date
+  motivo: string
 }
 
 export interface IResultado extends Document {
@@ -29,6 +36,7 @@ export interface IResultado extends Document {
   observacoes?: string
   validacaoTecnica?: IAssinatura
   validacaoMedica?: IAssinatura
+  rejeicao?: IRejeicao
   relatorioEmitido: boolean
   relatorioDataHora?: Date
   createdBy: mongoose.Types.ObjectId
@@ -63,10 +71,18 @@ const ResultadoSchema = new Schema<IResultado>(
     refMin:           { type: Number },
     refMax:           { type: Number },
     flag:             { type: String, enum: ['pendente','normal','alto','baixo','critico_alto','critico_baixo'], default: 'pendente' },
-    estado:           { type: String, enum: ['pendente','em_processamento','resultado_disponivel','validado_tecnico','validado_medico'], default: 'pendente' },
+    estado:           { type: String, enum: ['pendente','em_processamento','resultado_disponivel','validado_tecnico','validado_medico','rejeitado'], default: 'pendente' },
     observacoes:      { type: String },
     validacaoTecnica: { type: AssinaturaSchema },
     validacaoMedica:  { type: AssinaturaSchema },
+    rejeicao: {
+      type: new Schema<IRejeicao>({
+        userId:   { type: Schema.Types.ObjectId, ref: 'User' },
+        nome:     { type: String, required: true },
+        dataHora: { type: Date, required: true },
+        motivo:   { type: String, required: true },
+      }, { _id: false }),
+    },
     relatorioEmitido: { type: Boolean, default: false },
     relatorioDataHora:{ type: Date },
     createdBy:        { type: Schema.Types.ObjectId, ref: 'User', required: true },

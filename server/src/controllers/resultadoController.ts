@@ -2,8 +2,10 @@ import { Response } from 'express'
 import Resultado from '../models/Resultado'
 import Amostra   from '../models/Amostra'
 import Requisicao from '../models/Requisicao'
+import Fatura from '../models/Fatura'
+import User from '../models/User'
 import { AuthRequest } from '../middleware/authMiddleware'
-import { notifyUtenteByRef } from '../utils/createNotification'
+import { notifyUtenteByRef, notifyUser } from '../utils/createNotification'
 
 /* auto-generated when amostra → recebida */
 export const gerarWorklist = async (req: AuthRequest, res: Response) => {
@@ -146,28 +148,131 @@ export const validarMedico = async (req: AuthRequest, res: Response) => {
       'resultados'
     )
 
-    // se todos os resultados da requisição estão validados → concluir requisição
+    // melhoria 3: notificar directamente o médico se resultado crítico
+    if (isCritico) {
+      try {
+        const req = await Requisicao.findById(resultado.requisicao).select('createdBy numeroRequisicao')
+        if (req && req.createdBy.toString() !== resultado.createdBy?.toString()) {
+          notifyUser(
+            req.createdBy,
+            'critico',
+            `Resultado crítico — ${resultado.analise.nome}`,
+            `Resultado crítico validado na requisição ${resultado.requisicaoNumero}. Valor: ${resultado.valor ?? '—'} ${resultado.unidade ?? ''}. Reveja o portal.`,
+            'validacao'
+          )
+        }
+      } catch { /* não bloquear */ }
+    }
+
+    // se todos os resultados da requisição estão validados → concluir requisição + auto-fatura
     try {
       const porValidar = await Resultado.countDocuments({
         requisicao: resultado.requisicao,
-        estado: { $ne: 'validado_medico' },
+        estado: { $nin: ['validado_medico', 'rejeitado'] },
       })
       if (porValidar === 0) {
-        await Requisicao.findByIdAndUpdate(resultado.requisicao, { estado: 'concluida' })
-        // notificar utente: requisição concluída
-        notifyUtenteByRef(
-          resultado.utente,
-          'requisicao',
-          'Requisição concluída',
-          `A requisição ${resultado.requisicaoNumero} foi concluída. Pode consultar todos os resultados no portal.`,
-          'requisicoes'
+        const requisicao = await Requisicao.findByIdAndUpdate(
+          resultado.requisicao,
+          { estado: 'concluida' },
+          { new: true }
         )
+
+        if (requisicao) {
+          // notificar utente: requisição concluída
+          notifyUtenteByRef(
+            resultado.utente,
+            'requisicao',
+            'Requisição concluída',
+            `A requisição ${resultado.requisicaoNumero} foi concluída. Pode consultar todos os resultados no portal.`,
+            'requisicoes'
+          )
+
+          // melhoria 1: criar rascunho de fatura automaticamente
+          const jaExiste = await Fatura.findOne({ requisicao: requisicao._id })
+          if (!jaExiste) {
+            const year = new Date().getFullYear()
+            const count = await Fatura.countDocuments({ numeroFatura: { $regex: `^FAT-${year}` } })
+            const numeroFatura = `FAT-${year}-${String(count + 1).padStart(4, '0')}`
+
+            const linhas = requisicao.analises.map(a => ({
+              codigo:    a.codigo,
+              descricao: a.nome,
+              preco:     0,
+            }))
+
+            await Fatura.create({
+              numeroFatura,
+              requisicao:       requisicao._id,
+              requisicaoNumero: requisicao.numeroRequisicao,
+              utente:           requisicao.utente,
+              utenteNome:       requisicao.utenteNome,
+              tipo:             'particular',
+              linhas,
+              valorBruto:             0,
+              percentComparticipacao: 0,
+              valorComparticipado:    0,
+              valorLiquido:           0,
+              estado:  'rascunho',
+              createdBy: resultado.createdBy,
+            })
+
+            // notificar financeiro sobre nova fatura
+            try {
+              const financeiros = await User.find({ role: 'financeiro', ativo: true }).select('_id')
+              for (const f of financeiros) {
+                notifyUser(
+                  f._id,
+                  'fatura',
+                  'Nova fatura para revisão',
+                  `Requisição ${requisicao.numeroRequisicao} concluída. Rascunho de fatura ${numeroFatura} criado automaticamente.`,
+                  'financeiro'
+                )
+              }
+            } catch { /* não bloquear */ }
+          }
+        }
       }
     } catch { /* não bloquear a validação se esta verificação falhar */ }
 
     res.json(resultado)
   } catch (err) {
     res.status(500).json({ message: 'Erro ao validar médicamente', error: err })
+  }
+}
+
+// melhoria 2: rejeição de resultado pelo médico
+export const rejeitarResultado = async (req: AuthRequest, res: Response) => {
+  try {
+    const { motivo } = req.body
+    if (!motivo?.trim()) return res.status(400).json({ message: 'Motivo de rejeição obrigatório' })
+
+    const resultado = await Resultado.findById(req.params.id)
+    if (!resultado) return res.status(404).json({ message: 'Resultado não encontrado' })
+    if (!['validado_tecnico', 'resultado_disponivel'].includes(resultado.estado)) {
+      return res.status(400).json({ message: 'Só é possível rejeitar resultados disponíveis ou validados tecnicamente' })
+    }
+
+    resultado.estado   = 'rejeitado'
+    resultado.rejeicao = {
+      userId:   req.user!._id as any,
+      nome:     req.user!.nome,
+      dataHora: new Date(),
+      motivo,
+    }
+    await resultado.save()
+
+    // notificar o técnico que inseriu o resultado
+    notifyUser(
+      resultado.createdBy,
+      'resultado',
+      `Resultado rejeitado — ${resultado.analise.nome}`,
+      `O resultado ${resultado.codigoResultado} foi rejeitado. Motivo: ${motivo}. Por favor reveja e reinsira.`,
+      'analise'
+    )
+
+    res.json(resultado)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao rejeitar resultado', error: err })
   }
 }
 
@@ -189,6 +294,13 @@ export const updateResultado = async (req: AuthRequest, res: Response) => {
   try {
     const allowed = ['valor','unidade','refMin','refMax','flag','estado','equipamento','observacoes']
     const update  = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)))
+
+    // se o técnico re-submete um resultado rejeitado, volta a disponível e limpa rejeição
+    const atual = await Resultado.findById(req.params.id).select('estado')
+    if (atual?.estado === 'rejeitado' && update.valor !== undefined) {
+      update.estado   = 'resultado_disponivel'
+      ;(update as any).$unset = { rejeicao: 1 }
+    }
 
     const resultado = await Resultado.findByIdAndUpdate(
       req.params.id, update, { new: true, runValidators: true }
