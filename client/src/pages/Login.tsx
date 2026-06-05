@@ -124,6 +124,38 @@ const { setAuth }                 = useAuthStore()
     return '/private'   /* enfermeiro, financeiro */
   }
 
+  const [recovering,      setRecovering]      = useState(false)
+  const [recoverEmail,    setRecoverEmail]    = useState('')
+  const [recoverNome,     setRecoverNome]     = useState('')
+  const [recoverPassword, setRecoverPassword] = useState('')
+  const [recoverConfirm,  setRecoverConfirm]  = useState('')
+  const [recoverMsg,      setRecoverMsg]      = useState('')
+  const [recoverErr,      setRecoverErr]      = useState('')
+  const [recoverLoading,  setRecoverLoading]  = useState(false)
+
+  const handleRecover = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setRecoverErr(''); setRecoverMsg('')
+    if (recoverPassword !== recoverConfirm) {
+      setRecoverErr('As passwords não coincidem')
+      return
+    }
+    setRecoverLoading(true)
+    try {
+      const { data } = await api.post('/auth/recover-request', {
+        email:        recoverEmail,
+        nome:         recoverNome,
+        passwordNova: recoverPassword,
+      })
+      setRecoverMsg(data.message)
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } } }
+      setRecoverErr(e.response?.data?.message || 'Erro ao redefinir password')
+    } finally {
+      setRecoverLoading(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -132,8 +164,9 @@ const { setAuth }                 = useAuthStore()
       const { data } = await api.post('/auth/login', { email, password })
       setAuth(data, data.token)
       navigate(destino(data.role))
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao autenticar')
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } } }
+      setError(e.response?.data?.message || 'Erro ao autenticar')
     } finally {
       setLoading(false)
     }
@@ -186,7 +219,53 @@ return (
           <button className="login-btn" type="submit" disabled={loading}>
             {loading ? 'A entrar...' : 'Entrar no sistema'}
           </button>
+
+          <button
+            type="button"
+            className="login-recover-link"
+            onClick={() => { setRecovering(r => !r); setRecoverMsg(''); setRecoverErr('') }}
+          >
+            Esqueceu a password?
+          </button>
         </form>
+
+        {recovering && (
+          <div className="login-recover-panel">
+            {recoverMsg ? (
+              <p className="login-recover-ok">{recoverMsg}</p>
+            ) : (
+              <form onSubmit={handleRecover}>
+                <p className="login-recover-info">
+                  Confirme a sua identidade e defina uma nova password.
+                </p>
+                <div className="login-field">
+                  <label className="login-label">Email</label>
+                  <input className="login-input" type="email" placeholder="o-seu-email@hospital.pt"
+                    value={recoverEmail} onChange={e => setRecoverEmail(e.target.value)} required />
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Nome completo</label>
+                  <input className="login-input" type="text" placeholder="Nome tal como registado"
+                    value={recoverNome} onChange={e => setRecoverNome(e.target.value)} required />
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Nova password</label>
+                  <input className="login-input" type="password" placeholder="mínimo 6 caracteres"
+                    value={recoverPassword} onChange={e => setRecoverPassword(e.target.value)} required />
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Confirmar password</label>
+                  <input className="login-input" type="password" placeholder="repetir password"
+                    value={recoverConfirm} onChange={e => setRecoverConfirm(e.target.value)} required />
+                </div>
+                {recoverErr && <div className="login-error">{recoverErr}</div>}
+                <button className="login-btn" type="submit" disabled={recoverLoading}>
+                  {recoverLoading ? 'A redefinir...' : 'Redefinir password'}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
 
         <div className="login-demo">
           <div className="login-demo-label">Acesso rápido — demonstração</div>

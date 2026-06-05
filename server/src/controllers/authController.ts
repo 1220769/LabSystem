@@ -228,6 +228,49 @@ export const resetPassword = async (req: Request & { user?: IUser }, res: Respon
   }
 }
 
+// POST /api/auth/recover-request — auto-serviço: email + nome + nova password
+export const recoverRequest = async (req: Request, res: Response) => {
+  try {
+    const email       = String(req.body?.email       ?? '').toLowerCase().trim()
+    const nome        = String(req.body?.nome        ?? '').trim()
+    const passwordNova = String(req.body?.passwordNova ?? '').trim()
+
+    if (!email || !nome || !passwordNova) {
+      return res.status(400).json({ message: 'Email, nome e nova password são obrigatórios' })
+    }
+    if (passwordNova.length < 6) {
+      return res.status(400).json({ message: 'A nova password deve ter pelo menos 6 caracteres' })
+    }
+
+    const UserModel = (await import('../models/User')).default
+    // verificar email + nome em conjunto (case-insensitive no nome)
+    const user = await UserModel.findOne({
+      email,
+      ativo: true,
+      nome: { $regex: `^${nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' },
+    })
+
+    // resposta sempre igual — não revelar se combinação existe
+    const okMsg = { message: 'Password redefinida com sucesso. Pode fazer login.' }
+    if (!user) return res.json(okMsg)
+
+    user.password      = await bcrypt.hash(passwordNova, await bcrypt.genSalt(10))
+    user.loginAttempts = 0
+    user.lockUntil     = undefined
+    user.tokenVersion  = (user.tokenVersion ?? 0) + 1
+    await user.save()
+
+    registarEvento({
+      utilizador: user.nome, utilizadorId: user._id as any,
+      acao: 'recuperacao_password_propria', modulo: 'auth', ip: req.ip,
+    })
+
+    res.json(okMsg)
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao redefinir password', error: err })
+  }
+}
+
 export const getMe = async (req: Request & { user?: IUser }, res: Response) => {
   const user = req.user
   if (!user) return res.status(401).json({ message: 'Não autenticado' })

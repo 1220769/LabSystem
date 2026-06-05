@@ -195,6 +195,29 @@
 .login-chip--active i    { color: #C8001A; }
 .login-chip--active span { color: #C8001A; }
 
+.login-recover-link {
+  display: block; width: 100%; margin-top: 10px;
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; color: rgba(10,8,6,0.38);
+  text-align: center; transition: color 0.15s;
+}
+.login-recover-link:hover { color: #C8001A; }
+
+.login-recover-panel {
+  margin-top: 16px; padding: 16px;
+  background: rgba(10,8,6,0.03);
+  border: 1px solid rgba(10,8,6,0.08);
+  border-radius: 6px;
+}
+.login-recover-info {
+  font-size: 12px; color: rgba(10,8,6,0.5);
+  margin-bottom: 10px; line-height: 1.5;
+}
+.login-recover-ok {
+  font-size: 13px; font-weight: 500;
+  color: #2E7A50; text-align: center;
+}
+
 .login-demo {
   margin-top: 24px;
   padding-top: 20px;
