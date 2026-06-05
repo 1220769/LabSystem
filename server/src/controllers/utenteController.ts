@@ -52,13 +52,7 @@ export const getUtenteById = async (req: AuthRequest, res: Response) => {
 // POST /api/utentes
 export const createUtente = async (req: AuthRequest, res: Response) => {
   try {
-    // se médico cria utente, atribui automaticamente a si próprio
-    const body = { ...req.body }
-    if (req.user?.role === 'medico' && !body.medicoId) {
-      body.medicoId   = req.user._id
-      body.medicoNome = req.user.nome
-    }
-    const utente = await Utente.create(body)
+    const utente = await Utente.create(req.body)
     res.status(201).json(utente)
   } catch (err: any) {
     if (err.code === 11000) {

@@ -183,7 +183,6 @@ export default function PortalMedico() {
   const [utList, setUtList]       = useState<IUtente[]>([])
   const [utTotal, setUtTotal]     = useState(0)
   const [utLoading, setUtLoad]    = useState(false)
-  const [utSoMeus, setUtSoMeus]   = useState(true)
   const [selUt, setSelUt]         = useState<IUtente | null>(null)
   const [utResultados, setUtResultados] = useState<IResultado[]>([])
   const [utReqs, setUtReqs]       = useState<IRequisicao[]>([])
@@ -228,13 +227,12 @@ export default function PortalMedico() {
 
   const loadUtentes = useCallback(() => {
     setUtLoad(true)
-    const params: Record<string, string | number> = { limit: 20 }
-    if (utSoMeus) params.medicoId = 'mine'
+    const params: Record<string, string | number> = { medicoId: 'mine', limit: 20 }
     if (utDebSearch) params.search = utDebSearch
     api.get('/utentes', { params })
       .then(({ data }) => { setUtList(data.data); setUtTotal(data.total) })
       .finally(() => setUtLoad(false))
-  }, [utDebSearch, utSoMeus])
+  }, [utDebSearch])
 
   const loadCriticos = useCallback(() => {
     setCritLoad(true)
@@ -679,10 +677,6 @@ ${r.validacaoMedica?`<div class="vblock"><div class="vlbl">Validação Médica</
                 <input className="pm-search pm-search--icon" placeholder="nome · SNS · NIF · nº processo…"
                   value={utSearch} onChange={e => setUtSearch(e.target.value)} autoFocus />
               </div>
-              <div className="pm-req-estado-tabs">
-                <button className={`pm-req-etab${utSoMeus ? ' pm-req-etab--on' : ''}`} onClick={() => setUtSoMeus(true)}>Os meus</button>
-                <button className={`pm-req-etab${!utSoMeus ? ' pm-req-etab--on' : ''}`} onClick={() => setUtSoMeus(false)}>Todos</button>
-              </div>
               {utTotal > 0 && <span className="pm-count">{utTotal} utente{utTotal !== 1 ? 's' : ''}</span>}
             </div>
 
@@ -747,18 +741,6 @@ ${r.validacaoMedica?`<div class="vblock"><div class="vlbl">Validação Médica</
                             {u.observacoes && <DField l="Observações" v={u.observacoes} />}
                           </div>
 
-                          {!(u as any).medicoId && (
-                            <button
-                              className="pm-btn-outline"
-                              style={{ marginBottom: 12 }}
-                              onClick={async () => {
-                                await api.patch(`/utentes/${u._id}/atribuir-medico`, { medicoId: user?._id })
-                                loadUtentes()
-                              }}
-                            >
-                              + Atribuir a mim
-                            </button>
-                          )}
 
                           {utResultados.length > 0 && (
                             <div className="pm-ut-section">

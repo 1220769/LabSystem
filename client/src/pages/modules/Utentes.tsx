@@ -17,10 +17,14 @@ interface Utente {
   email?: string
   morada: { rua: string; codigoPostal: string; localidade: string }
   medico?: string
+  medicoId?: string
+  medicoNome?: string
   observacoes?: string
   ativo: boolean
   createdAt: string
 }
+
+interface Medico { _id: string; nome: string }
 
 interface PortalUser {
   _id: string
@@ -41,7 +45,7 @@ const EMPTY: Omit<Utente, '_id' | 'ativo' | 'createdAt'> = {
   genero: 'masculino', nif: '', sns: '',
   contacto: '', email: '',
   morada: { rua: '', codigoPostal: '', localidade: '' },
-  medico: '', observacoes: '',
+  medico: '', medicoId: '', medicoNome: '', observacoes: '',
 }
 
 export default function Utentes({ seg }: { seg: Seg }) {
@@ -72,10 +76,18 @@ export default function Utentes({ seg }: { seg: Seg }) {
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [debouncedSearch, setDebouncedSearch] = useState('')
 
+  const [medicos, setMedicos] = useState<Medico[]>([])
+
   const canCreate = ['administrador', 'tecnico', 'medico', 'enfermeiro'].includes(user?.role ?? '')
   const canEdit   = ['administrador', 'tecnico', 'medico'].includes(user?.role ?? '')
   const canDelete = user?.role === 'administrador'
   const isAdmin   = user?.role === 'administrador'
+
+  useEffect(() => {
+    api.get('/users', { params: { role: 'medico', ativo: 'true', limit: 100 } })
+      .then(r => setMedicos(r.data.data ?? []))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (searchTimer.current) clearTimeout(searchTimer.current)
@@ -146,8 +158,10 @@ export default function Utentes({ seg }: { seg: Seg }) {
       contacto:       u.contacto,
       email:          u.email ?? '',
       morada:         { ...u.morada },
-      medico:         u.medico ?? '',
-      observacoes:    u.observacoes ?? '',
+      medico:      u.medico    ?? '',
+      medicoId:    u.medicoId  ?? '',
+      medicoNome:  u.medicoNome ?? '',
+      observacoes: u.observacoes ?? '',
     })
     setSelected(u)
     setFormError('')
@@ -359,7 +373,7 @@ export default function Utentes({ seg }: { seg: Seg }) {
                   <DField l="Morada"
                     v={`${selected.morada.rua}, ${selected.morada.codigoPostal} ${selected.morada.localidade}`}
                   />
-                  {selected.medico      && <DField l="Médico"       v={selected.medico} />}
+                  <DField l="Médico de família" v={(selected as any).medicoNome || selected.medico || '—'} />
                   {selected.observacoes && <DField l="Observações"  v={selected.observacoes} />}
                 </div>
 
@@ -508,7 +522,18 @@ export default function Utentes({ seg }: { seg: Seg }) {
 
                 <Section title="Clínica">
                   <FF label="Médico de família">
-                    <input value={form.medico} onChange={e => setForm(f => ({ ...f, medico: e.target.value }))} />
+                    <select
+                      value={form.medicoId ?? ''}
+                      onChange={e => {
+                        const med = medicos.find(m => m._id === e.target.value)
+                        setForm(f => ({ ...f, medicoId: e.target.value, medicoNome: med?.nome ?? '' }))
+                      }}
+                    >
+                      <option value="">— Sem médico atribuído —</option>
+                      {medicos.map(m => (
+                        <option key={m._id} value={m._id}>{m.nome}</option>
+                      ))}
+                    </select>
                   </FF>
                   <FF label="Observações">
                     <textarea rows={3} value={form.observacoes}
