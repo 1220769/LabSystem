@@ -359,7 +359,7 @@ export default function Portal() {
       <header className="portal-hd">
         <div className="portal-logo">Lab<strong>System</strong> Pro</div>
         <div className="portal-user">
-          <div><div className="portal-user-name">{user?.nome}</div><div className="portal-user-role">portal de utente</div></div>
+          <div><div className="portal-user-name">{perfil?.nome ?? user?.nome}</div><div className="portal-user-role">portal de utente</div></div>
           <NotificationBell theme="light" />
           <button className="portal-logout" onClick={handleLogout}>sair</button>
         </div>
@@ -401,7 +401,7 @@ export default function Portal() {
       <header className="portal-hd">
         <div className="portal-logo">Lab<strong>System</strong> Pro</div>
         <div className="portal-user">
-          <div><div className="portal-user-name">{user?.nome}</div><div className="portal-user-role">portal de utente</div></div>
+          <div><div className="portal-user-name">{perfil?.nome ?? user?.nome}</div><div className="portal-user-role">portal de utente</div></div>
           <NotificationBell theme="light" />
           <button className="portal-logout" onClick={handleLogout}>sair</button>
         </div>
