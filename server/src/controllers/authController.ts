@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import User, { IUser, type UserRole } from '../models/User'
-import bcrypt from 'bcryptjs'
+import { hashPassword } from '../utils/password'
 import { registarEvento } from '../utils/registarEvento'
 
 const MAX_LOGIN_ATTEMPTS = 5
@@ -30,7 +30,7 @@ async function ensureDemoUser(email: string, password: string) {
   const demo = DEMO_USERS[normalizedEmail]
   if (!demo || password !== demo.password) return null
 
-  const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10))
+  const hashedPassword = await hashPassword(password)
   return User.findOneAndUpdate(
     { email: normalizedEmail },
     {
@@ -52,8 +52,7 @@ export const register = async (req: Request, res: Response) => {
     const existe = await User.findOne({ email })
     if (existe) return res.status(400).json({ message: 'Email já registado' })
 
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
+    const hashedPassword = await hashPassword(password)
 
     const user = await User.create({ nome, email, password: hashedPassword, role })
     res.status(201).json({
@@ -188,7 +187,7 @@ export const changePassword = async (req: Request & { user?: IUser }, res: Respo
     if (!(await user.matchPassword(passwordAtual))) {
       return res.status(401).json({ message: 'Password actual incorrecta' })
     }
-    user.password = await bcrypt.hash(passwordNova, await bcrypt.genSalt(10))
+    user.password = await hashPassword(passwordNova)
     await user.save()
     registarEvento({
       utilizador:   user.nome,
@@ -213,7 +212,7 @@ export const resetPassword = async (req: Request & { user?: IUser }, res: Respon
     const target = await UserModel.findById(req.params.userId)
     if (!target) return res.status(404).json({ message: 'Utilizador não encontrado' })
 
-    target.password = await bcrypt.hash(passwordNova, await bcrypt.genSalt(10))
+    target.password = await hashPassword(passwordNova)
     await target.save()
     registarEvento({
       utilizador:   req.user!.nome,
@@ -247,7 +246,7 @@ export const registerRequest = async (req: Request, res: Response) => {
     const existe = await UserModel.findOne({ email: String(email).toLowerCase().trim() })
     if (existe) return res.status(400).json({ message: 'Email já registado' })
 
-    const hashed = await bcrypt.hash(password, await bcrypt.genSalt(10))
+    const hashed = await hashPassword(password)
     const user   = await UserModel.create({
       nome, email: String(email).toLowerCase().trim(),
       password: hashed, role, ativo: false,
@@ -302,7 +301,7 @@ export const recoverRequest = async (req: Request, res: Response) => {
     const okMsg = { message: 'Password redefinida com sucesso. Pode fazer login.' }
     if (!user) return res.json(okMsg)
 
-    user.password      = await bcrypt.hash(passwordNova, await bcrypt.genSalt(10))
+    user.password      = await hashPassword(passwordNova)
     user.loginAttempts = 0
     user.lockUntil     = undefined
     user.tokenVersion  = (user.tokenVersion ?? 0) + 1

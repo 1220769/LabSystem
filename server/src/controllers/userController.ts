@@ -1,5 +1,5 @@
 import { Response } from 'express'
-import bcrypt from 'bcryptjs'
+import { hashPassword } from '../utils/password'
 import User from '../models/User'
 import { AuthRequest } from '../middleware/authMiddleware'
 import { PERMISSIONS } from '../models/User'
@@ -66,8 +66,7 @@ export const createUser = async (req: AuthRequest, res: Response) => {
     const { nome, email, password, role, telefone, departamento, utenteRef } = req.body
     const existe = await User.findOne({ email })
     if (existe) return res.status(400).json({ message: 'Email já registado' })
-    const salt           = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
+    const hashedPassword = await hashPassword(password)
     const user = await User.create({
       nome, email, password: hashedPassword,
       role, telefone, departamento,
@@ -93,8 +92,7 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
     const { password, utenteRef, ...rest } = req.body
     const updateData: any = { ...rest }
     if (password) {
-      const salt = await bcrypt.genSalt(10)
-      updateData.password = await bcrypt.hash(password, salt)
+      updateData.password = await hashPassword(password)
     }
     // se está a definir/alterar utenteRef, regista quem ligou e quando
     if (utenteRef !== undefined) {

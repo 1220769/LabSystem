@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose'
-import bcrypt from 'bcryptjs'
+import { verifyPassword } from '../utils/password'
 
 export type UserRole =
   | 'administrador'
@@ -127,7 +127,7 @@ const UserSchema = new Schema<IUser>(
 )
 
 UserSchema.methods.matchPassword = async function (enteredPassword: string): Promise<boolean> {
-  return bcrypt.compare(enteredPassword, this.password)
+  return verifyPassword(enteredPassword, this.password)
 }
 
 UserSchema.methods.hasPermission = function (module: Module, action: Action): boolean {
