@@ -206,6 +206,66 @@ export const validarMedico = async (req: AuthRequest, res: Response) => {
   }
 }
 
+// Validação médica em bloco — todos os resultados de uma requisição de uma vez
+export const validarRequisicaoMedico = async (req: AuthRequest, res: Response) => {
+  try {
+    const { reqNumero } = req.params
+    const { observacoes } = req.body
+
+    const pendentes = await Resultado.find({
+      requisicaoNumero: reqNumero,
+      estado: 'validado_tecnico',
+    })
+
+    if (pendentes.length === 0) {
+      return res.status(404).json({ message: 'Sem resultados por validar nesta requisição' })
+    }
+
+    const agora = new Date()
+    const validacaoMedica = {
+      userId:      req.user!._id,
+      nome:        req.user!.nome,
+      dataHora:    agora,
+      observacoes: observacoes || undefined,
+    }
+
+    await Resultado.updateMany(
+      { requisicaoNumero: reqNumero, estado: 'validado_tecnico' },
+      { $set: { estado: 'validado_medico', validacaoMedica, relatorioEmitido: true, relatorioDataHora: agora } }
+    )
+
+    // marcar requisição como concluída
+    const requisicao = await Requisicao.findOneAndUpdate(
+      { numeroRequisicao: reqNumero },
+      { estado: 'concluida' },
+      { new: true }
+    )
+
+    // uma única notificação ao utente
+    if (requisicao) {
+      notifyUtenteByRef(
+        pendentes[0].utente,
+        'requisicao',
+        'Resultados disponíveis',
+        `Todos os resultados da requisição ${reqNumero} foram validados. Consulte o seu portal.`,
+        'resultados'
+      )
+    }
+
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'validacao_medica_bulk',
+      modulo:       'resultados',
+      detalhe:      `Requisição ${reqNumero} — ${pendentes.length} resultado(s) validados em bloco`,
+    })
+
+    res.json({ validated: pendentes.length, reqNumero })
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao validar requisição', error: err })
+  }
+}
+
 // melhoria 2: rejeição de resultado pelo médico
 export const rejeitarResultado = async (req: AuthRequest, res: Response) => {
   try {

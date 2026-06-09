@@ -412,13 +412,29 @@ export default function Landing() {
         )}
 
         {criticos > 0 && !diving && (
-          <div className="live-badge live-badge--crit" style={{ top: `${((268 + 38) / 540) * 100}%` }}>
+          <div
+            className="live-badge live-badge--crit"
+            style={{
+              top: `${((268 + 38) / 540) * 100}%`,
+              opacity: hovered === 3 || picker === 3 ? 0 : 1,
+              transition: 'opacity 0.18s',
+              pointerEvents: 'none',
+            }}
+          >
             <span className="live-badge-pulse" />
             {criticos} crítico{criticos !== 1 ? 's' : ''}
           </div>
         )}
         {emCurso > 0 && !diving && (
-          <div className="live-badge live-badge--info" style={{ top: `${((192 + 38) / 540) * 100}%` }}>
+          <div
+            className="live-badge live-badge--info"
+            style={{
+              top: `${((192 + 38) / 540) * 100}%`,
+              opacity: hovered === 2 || picker === 2 ? 0 : 1,
+              transition: 'opacity 0.18s',
+              pointerEvents: 'none',
+            }}
+          >
             {emCurso} em curso
           </div>
         )}

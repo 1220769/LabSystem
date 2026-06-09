@@ -1,3 +1,69 @@
+/* ── validação em bloco por requisição (tab médica) ── */
+.val-req-group {
+  background: rgba(255,255,255,0.92);
+  border-radius: 10px; overflow: hidden;
+  margin-bottom: 16px;
+}
+.val-req-group-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px 14px; gap: 16px;
+  border-bottom: 1px solid rgba(26,18,8,0.07);
+  background: rgba(26,18,8,0.025);
+}
+.val-req-group-info {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.val-req-group-num {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.14em; color: rgba(26,18,8,0.4); margin-bottom: 2px;
+}
+.val-req-group-utente {
+  font-size: 18px; font-weight: 600; color: rgba(26,18,8,0.88);
+}
+.val-req-group-meta {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: rgba(26,18,8,0.35); margin-top: 2px;
+}
+.val-btn-validar-all {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 11px; letter-spacing: 0.1em;
+  background: rgba(30,90,56,0.92); color: rgba(240,235,225,0.95);
+  border: none; border-radius: 5px; padding: 11px 22px;
+  cursor: pointer; white-space: nowrap; transition: all 0.15s;
+  flex-shrink: 0;
+}
+.val-btn-validar-all:hover:not(:disabled) { background: rgba(30,90,56,1); }
+.val-btn-validar-all:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.val-req-analises { display: flex; flex-direction: column; }
+.val-req-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 22px; border-bottom: 1px solid rgba(26,18,8,0.05);
+  cursor: pointer; transition: background 0.1s;
+}
+.val-req-row:last-child { border-bottom: none; }
+.val-req-row:hover { background: rgba(26,18,8,0.03); }
+.val-req-row--crit { background: rgba(200,0,26,0.04); }
+.val-req-row--crit:hover { background: rgba(200,0,26,0.07); }
+.val-req-row-nome {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1; font-size: 14px; color: rgba(26,18,8,0.82); min-width: 0;
+}
+.val-req-row-cat {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(26,18,8,0.3); flex-shrink: 0;
+}
+.val-req-row-valor {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.val-req-err {
+  font-family: 'GFS Didot', 'Didot', Georgia, serif; font-size: 12px;
+  color: #C8001A; background: rgba(200,0,26,0.07);
+  border: 1px solid rgba(200,0,26,0.2); border-radius: 4px;
+  padding: 10px 16px; margin-bottom: 14px;
+}
+
 /* ── layout ── */
 .val-page {
   min-height: 100vh;

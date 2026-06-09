@@ -66,6 +66,8 @@ export default function Validacao({ seg }: { seg: Seg }) {
   const [fEmitir, setFEmitir]   = useState(false)
   const [saving, setSaving]     = useState(false)
   const [formErr, setFormErr]   = useState('')
+  const [validandoReq, setValidandoReq] = useState<string | null>(null)
+  const [reqErr, setReqErr]     = useState<string | null>(null)
 
   const debTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -130,6 +132,16 @@ export default function Validacao({ seg }: { seg: Seg }) {
     } catch (err: any) {
       setFormErr(err.response?.data?.message ?? 'Erro ao validar')
     } finally { setSaving(false) }
+  }
+
+  const handleValidarRequisicao = async (reqNumero: string) => {
+    setValidandoReq(reqNumero); setReqErr(null)
+    try {
+      await api.post(`/resultados/requisicao/${reqNumero}/validar-medico`)
+      fetchResultados()
+    } catch (err: any) {
+      setReqErr(err.response?.data?.message ?? 'Erro ao validar requisição')
+    } finally { setValidandoReq(null) }
   }
 
   const printRelatorio = (r: Resultado) => {
@@ -270,7 +282,75 @@ ${r.validacaoMedica ? `<div class="val-block"><div class="val-label">Validação
           <div className="val-msg">a carregar…</div>
         ) : resultados.length === 0 ? (
           <div className="val-msg">sem resultados pendentes</div>
+        ) : tab === 'medica' && isMedico ? (
+          /* ── tab médica: agrupado por requisição ── */
+          <>
+            {reqErr && <div className="val-req-err">{reqErr}</div>}
+            {(() => {
+              const byReq: Record<string, Resultado[]> = {}
+              for (const r of resultados) {
+                if (!byReq[r.requisicaoNumero]) byReq[r.requisicaoNumero] = []
+                byReq[r.requisicaoNumero].push(r)
+              }
+              return Object.entries(byReq).map(([reqNum, items], gi) => (
+                <motion.div key={reqNum} className="val-req-group"
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: gi * 0.04 }}>
+
+                  <div className="val-req-group-hd">
+                    <div className="val-req-group-info">
+                      <span className="val-req-group-num">{reqNum}</span>
+                      <span className="val-req-group-utente">{items[0].utenteNome}</span>
+                      <span className="val-req-group-meta">
+                        {items.length} análise{items.length !== 1 ? 's' : ''} · {fmt(items[0].createdAt)}
+                      </span>
+                    </div>
+                    <button
+                      className="val-btn-validar-all"
+                      disabled={validandoReq === reqNum}
+                      onClick={() => handleValidarRequisicao(reqNum)}
+                    >
+                      {validandoReq === reqNum ? 'a validar…' : `✓ Validar tudo — ${user?.nome}`}
+                    </button>
+                  </div>
+
+                  <div className="val-req-analises">
+                    {items.map(r => (
+                      <div key={r._id}
+                        className={`val-req-row ${isCritico(r.flag) ? 'val-req-row--crit' : ''}`}
+                        onClick={() => openDetail(r)}>
+                        <div className="val-req-row-nome">
+                          {isCritico(r.flag) && <span className="val-crit-pulse" />}
+                          <span>{r.analise.nome}</span>
+                          <span className="val-req-row-cat">{r.analise.categoria}</span>
+                        </div>
+                        <div className="val-req-row-valor">
+                          {r.valor ? (
+                            <span className={`val-valor val-valor--${r.flag}`}>{r.valor} {r.unidade}</span>
+                          ) : (
+                            <span className="val-no-val">sem valor</span>
+                          )}
+                          {(r.refMin !== undefined || r.refMax !== undefined) && (
+                            <span className="val-ref">ref {r.refMin ?? '–'}–{r.refMax ?? '–'}</span>
+                          )}
+                        </div>
+                        <span className={`val-flag val-flag--${r.flag}`}>{FLAG_LABEL[r.flag]}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))
+            })()}
+            {pages > 1 && (
+              <div className="val-pag">
+                <button className="val-pag-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</button>
+                <span className="val-pag-info">{page} / {pages}</span>
+                <button className="val-pag-btn" disabled={page >= pages} onClick={() => setPage(p => p + 1)}>›</button>
+              </div>
+            )}
+          </>
         ) : (
+          /* ── tabs técnica e concluída: lista flat ── */
           <>
             <div className="val-list">
               {resultados.map((r, i) => (

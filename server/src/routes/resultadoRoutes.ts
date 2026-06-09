@@ -3,7 +3,8 @@ import { protect, authorize } from '../middleware/authMiddleware'
 import {
   gerarWorklist, getResultados, getResultadoById,
   updateResultado, getStats, getCategorias,
-  validarTecnico, validarMedico, emitirRelatorio, rejeitarResultado,
+  validarTecnico, validarMedico, validarRequisicaoMedico,
+  emitirRelatorio, rejeitarResultado,
 } from '../controllers/resultadoController'
 
 const router = Router()
@@ -33,6 +34,12 @@ router.post('/:id/validar-tecnico',
 router.post('/:id/validar-medico',
   authorize('administrador','medico'),
   validarMedico
+)
+
+// deve vir antes de /:id para não ser capturado como ObjectId
+router.post('/requisicao/:reqNumero/validar-medico',
+  authorize('administrador','medico'),
+  validarRequisicaoMedico
 )
 
 router.post('/:id/emitir-relatorio',
