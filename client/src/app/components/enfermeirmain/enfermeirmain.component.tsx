@@ -191,12 +191,16 @@ export default function EnfermeiromainComponent() {
     setFormErr(''); setRfSaving(true)
     try {
       const body: Record<string, unknown> = {
-        requisicao: formReq._id, utente: formReq.utente,
-        tubos: buildTubos(formReq.analises),
-        tipoColheita: formTipo,
-        observacoes: formObs || undefined,
+        requisicao:       formReq._id,
+        requisicaoNumero: formReq.numeroRequisicao,
+        utente:           formReq.utente,
+        utenteNome:       formReq.utenteNome,
+        utenteProcesso:   formReq.utenteProcesso,
+        tubos:            buildTubos(formReq.analises),
+        tipoColheita:     formTipo,
+        observacoes:      formObs || undefined,
         dataHoraColheita: formData || undefined,
-        temperatura: formTemp ? parseFloat(formTemp) : undefined,
+        temperatura:      formTemp ? parseFloat(formTemp) : undefined,
       }
       if (formTipo === 'domiciliaria') body.moradaColheita = formMorada
       await api.post('/amostras', body)

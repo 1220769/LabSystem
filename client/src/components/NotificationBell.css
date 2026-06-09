@@ -16,8 +16,8 @@
 }
 .nb-btn--light { color: rgba(26,18,8,0.45); }
 .nb-btn--light:hover { background: rgba(26,18,8,0.07); color: rgba(26,18,8,0.75); }
-.nb-btn--dark  { color: rgba(240,235,225,0.45); }
-.nb-btn--dark:hover  { background: rgba(240,235,225,0.1); color: rgba(240,235,225,0.82); }
+.nb-btn--dark  { color: rgba(240,235,225,0.78); }
+.nb-btn--dark:hover  { background: rgba(240,235,225,0.12); color: rgba(240,235,225,0.96); }
 
 .nb-icon { width: 20px; height: 20px; }
 
