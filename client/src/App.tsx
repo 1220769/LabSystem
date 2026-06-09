@@ -6,7 +6,6 @@ import Portal                  from './pages/Portal'
 import PortalMedico            from './pages/PortalMedico'
 import ProtectedRoute          from './components/ProtectedRoute'
 import EnfermeiromainComponent from './app/components/enfermeirmain/enfermeirmain.component'
-import FinanceiromainComponent from './app/components/financeiromain/financeiromain.component'
 import TecnicomainComponent    from './app/components/tecnicomain/tecnicomain.component'
 import { useAuthStore }        from './store/authStore'
 
@@ -17,7 +16,6 @@ function PrivateDashboard() {
   if (user.role === 'utente')        return <Navigate to="/portal"  replace />
   if (user.role === 'medico')        return <Navigate to="/medico"  replace />
   if (user.role === 'enfermeiro')    return <EnfermeiromainComponent />
-  if (user.role === 'financeiro')    return <FinanceiromainComponent />
   if (user.role === 'tecnico')       return <Navigate to="/tecnico" replace />
   if (user.role === 'administrador') return <Navigate to="/" replace />
   return <Landing />
@@ -30,7 +28,6 @@ function RootRedirect() {
   if (user?.role === 'medico')     return <Navigate to="/medico"  replace />
   if (user?.role === 'tecnico')    return <Navigate to="/tecnico" replace />
   if (user?.role === 'enfermeiro') return <Navigate to="/private" replace />
-  if (user?.role === 'financeiro') return <Navigate to="/private" replace />
   return (
     <ProtectedRoute>
       <Landing />

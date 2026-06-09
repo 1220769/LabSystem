@@ -87,10 +87,10 @@ export const createRequisicao = async (req: AuthRequest, res: Response) => {
         estado:    'rascunho',
         createdBy: req.user!._id,
       })
-      // notificar financeiro
-      const financeiros = await User.find({ role: 'financeiro', ativo: true }).select('_id')
-      for (const f of financeiros) {
-        notifyUser(f._id, 'fatura',
+      // notificar administradores sobre nova requisição para faturar
+      const admins = await User.find({ role: 'administrador', ativo: true }).select('_id')
+      for (const a of admins) {
+        notifyUser(a._id, 'fatura',
           'Nova requisição para faturar',
           `Requisição ${requisicao.numeroRequisicao} criada. Fatura ${numeroFatura} em rascunho aguarda preços.`,
           'financeiro'

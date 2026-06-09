@@ -5,17 +5,16 @@ import api from '../../api/axios'
 import { useAuthStore } from '../../store/authStore'
 import './Utilizadores.css'
 
-type Role = 'administrador' | 'tecnico' | 'medico' | 'enfermeiro' | 'financeiro' | 'utente'
+type Role = 'administrador' | 'tecnico' | 'medico' | 'enfermeiro' | 'utente'
 type TabUz = 'todos' | 'ativos' | 'inativos' | Role | 'sem_registo'
 
-const ROLES: Role[] = ['administrador', 'tecnico', 'medico', 'enfermeiro', 'financeiro', 'utente']
+const ROLES: Role[] = ['administrador', 'tecnico', 'medico', 'enfermeiro', 'utente']
 
 const ROLE_COLORS: Record<Role, string> = {
   administrador: '#C8A820',
   tecnico:       '#3A8ABF',
   medico:        '#4A9A5E',
   enfermeiro:    '#9060C8',
-  financeiro:    '#C87830',
   utente:        '#6A6A68',
 }
 

@@ -17,7 +17,7 @@ router.get('/',                  getFaturas)
 router.get('/stats',             getStats)
 router.get('/requisicoes-livres', getRequisicoesSemFatura)
 router.get('/:id',               getFaturaById)
-router.post('/',                 authorize('administrador','financeiro'), createFatura)
-router.patch('/:id',             authorize('administrador','financeiro'), updateFatura)
+router.post('/',                 authorize('administrador'), createFatura)
+router.patch('/:id',             authorize('administrador'), updateFatura)
 
 export default router

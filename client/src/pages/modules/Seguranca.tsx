@@ -22,7 +22,7 @@ interface IStats { totalEventos: number; eventosHoje: number; sessoesAtivas: num
 
 const ROLE_LBL: Record<string, string> = {
   administrador:'Administrador', tecnico:'Técnico', medico:'Médico',
-  enfermeiro:'Enfermeiro', financeiro:'Financeiro', utente:'Utente',
+  enfermeiro:'Enfermeiro', utente:'Utente',
 }
 
 const BACKUPS_MOCK = [

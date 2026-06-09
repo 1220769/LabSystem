@@ -245,6 +245,7 @@ export default function FinanceiromainComponent() {
             <div className="staff-user-role">financeiro · {new Date().toLocaleDateString('pt-PT', { weekday:'long', day:'numeric', month:'long' })}</div>
           </div>
           <NotificationBell theme="light" />
+          <button className="staff-btn-ghost" onClick={() => navigate('/')}>← voltar</button>
           <button className="staff-logout" onClick={handleLogout}>sair</button>
         </div>
       </header>

@@ -14,13 +14,11 @@ const DEMO_USERS: Record<string, { nome: string; password: string; role: UserRol
   'medico@lab.pt':           { nome: 'João Costa',      password: 'medico123',      role: 'medico'         },
   'tecnico@lab.pt':          { nome: 'Carlos Oliveira', password: 'tecnico123',     role: 'tecnico'        },
   'enfermeiro@lab.pt':       { nome: 'Sara Rodrigues',  password: 'enfermeiro123',  role: 'enfermeiro'     },
-  'financeiro@lab.pt':       { nome: 'Pedro Almeida',   password: 'financeiro123',  role: 'financeiro'     },
   'utente@lab.pt':           { nome: 'Ana Silva',        password: 'utente123',      role: 'utente'         },
   'admin2@lab.pt':           { nome: 'Miguel Santos',   password: 'admin123',       role: 'administrador'  },
   'medico@labsystem.pt':     { nome: 'João Costa',      password: 'medico123',      role: 'medico'         },
   'tecnico@labsystem.pt':    { nome: 'Carlos Oliveira', password: 'tecnico123',     role: 'tecnico'        },
   'enfermeiro@labsystem.pt': { nome: 'Sara Rodrigues',  password: 'enfermeiro123',  role: 'enfermeiro'     },
-  'financeiro@labsystem.pt': { nome: 'Pedro Almeida',   password: 'financeiro123',  role: 'financeiro'     },
   'utente@labsystem.pt':     { nome: 'Ana Silva',        password: 'utente123',      role: 'utente'         },
   'admin@labsystem.pt':      { nome: 'Miguel Santos',   password: 'admin123',       role: 'administrador'  },
 }
@@ -234,7 +232,7 @@ export const registerRequest = async (req: Request, res: Response) => {
     if (!nome || !email || !password || !role) {
       return res.status(400).json({ message: 'Todos os campos são obrigatórios' })
     }
-    const rolesPermitidos = ['medico','tecnico','enfermeiro','financeiro','utente']
+    const rolesPermitidos = ['medico','tecnico','enfermeiro','utente']
     if (!rolesPermitidos.includes(role)) {
       return res.status(400).json({ message: 'Role inválido' })
     }

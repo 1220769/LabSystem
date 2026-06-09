@@ -1,16 +1,16 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import Utilizadores from './modules/Utilizadores'
-import Utentes      from './modules/Utentes'
-import Requisicoes  from './modules/Requisicoes'
-import Colheita     from './modules/Colheita'
-import Analise      from './modules/Analise'
-import Validacao    from './modules/Validacao'
-import Financeiro   from './modules/Financeiro'
-import Analytics    from './modules/Analytics'
-import Equipamentos from './modules/Equipamentos'
-import Integracoes  from './modules/Integracoes'
-import Seguranca    from './modules/Seguranca'
+import Utilizadores              from './modules/Utilizadores'
+import Utentes                   from './modules/Utentes'
+import Requisicoes               from './modules/Requisicoes'
+import Colheita                  from './modules/Colheita'
+import Analise                   from './modules/Analise'
+import Validacao                 from './modules/Validacao'
+import FinanceiromainComponent   from '../app/components/financeiromain/financeiromain.component'
+import Analytics                 from './modules/Analytics'
+import Equipamentos              from './modules/Equipamentos'
+import Integracoes               from './modules/Integracoes'
+import Seguranca                 from './modules/Seguranca'
 import './Modulo.css'
 
 export default function Modulo() {
@@ -26,7 +26,7 @@ export default function Modulo() {
   if (seg.id === 3)  return <Colheita     seg={seg} />
   if (seg.id === 4)  return <Analise      seg={seg} />
   if (seg.id === 5)  return <Validacao    seg={seg} />
-  if (seg.id === 6)  return <Financeiro   seg={seg} />
+  if (seg.id === 6)  return <FinanceiromainComponent />
   if (seg.id === 7)  return <Analytics    seg={seg} />
   if (seg.id === 8)  return <Equipamentos seg={seg} />
   if (seg.id === 9)  return <Integracoes  seg={seg} />

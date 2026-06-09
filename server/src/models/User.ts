@@ -6,7 +6,6 @@ export type UserRole =
   | 'tecnico'
   | 'medico'
   | 'enfermeiro'
-  | 'financeiro'
   | 'utente'
 
 export type Action = 'create' | 'read' | 'update' | 'delete'
@@ -62,13 +61,6 @@ export const PERMISSIONS: Record<UserRole, Partial<Record<Module, Action[]>>> = 
     requisicoes:  ['create','read'],
     colheita:     ['create','read','update'],
   },
-  financeiro: {
-    utentes:      ['read'],
-    requisicoes:  ['read'],
-    financeiro:   ['create','read','update'],
-    relatorios:   ['read'],
-    analytics:    ['read'],
-  },
   utente: {
     utentes:      ['read'],
     requisicoes:  ['read'],
@@ -108,7 +100,7 @@ const UserSchema = new Schema<IUser>(
     password:     { type: String, required: true, minlength: 6 },
     role:         {
       type: String,
-      enum: ['administrador','tecnico','medico','enfermeiro','financeiro','utente'],
+      enum: ['administrador','tecnico','medico','enfermeiro','utente'],
       default: 'tecnico',
     },
     ativo:        { type: Boolean, default: true },

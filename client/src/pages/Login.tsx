@@ -8,7 +8,6 @@ const DEMO_LOGINS = [
   { label: 'Médico',      email: 'medico@lab.pt',       password: 'medico123'      },
   { label: 'Técnico',     email: 'tecnico@lab.pt',      password: 'tecnico123'     },
   { label: 'Enfermeiro',  email: 'enfermeiro@lab.pt',   password: 'enfermeiro123'  },
-  { label: 'Financeiro',  email: 'financeiro@lab.pt',   password: 'financeiro123'  },
   { label: 'Utente',      email: 'utente@lab.pt',       password: 'utente123'      },
   { label: 'Admin',       email: 'admin2@lab.pt',       password: 'admin123'       },
 ]
@@ -121,7 +120,7 @@ const { setAuth }                 = useAuthStore()
     if (role === 'medico')        return '/medico'
     if (role === 'tecnico')       return '/tecnico'
     if (role === 'administrador') return '/'
-    return '/private'   /* enfermeiro, financeiro */
+    return '/private'   /* enfermeiro */
   }
 
   const [regModal,      setRegModal]      = useState(false)
@@ -347,7 +346,6 @@ return (
                     <option value="medico">Médico</option>
                     <option value="tecnico">Técnico</option>
                     <option value="enfermeiro">Enfermeiro</option>
-                    <option value="financeiro">Financeiro</option>
                     <option value="utente">Utente</option>
                   </select>
                 </div>
