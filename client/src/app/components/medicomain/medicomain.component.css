@@ -142,6 +142,9 @@
 .med-req-date {
   font-size: 10px; color: rgba(26,18,8,0.3); flex-shrink: 0;
 }
+.med-req-amostra {
+  font-size: 10px; color: rgba(26,18,8,0.3); flex-shrink: 0; letter-spacing: 0.04em;
+}
 .med-req-count {
   font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
   padding: 3px 9px; border-radius: 2px;
@@ -307,6 +310,14 @@
 }
 .med-btn--validar-all:hover { filter: brightness(0.9); }
 .med-btn--validar-all:disabled { opacity: 0.4; cursor: default; }
+
+.med-btn--pdf {
+  width: 100%; margin-top: 8px; padding: 11px; font-size: 10px;
+  font-family: 'GFS Didot','Didot',Georgia,serif; letter-spacing: 0.08em;
+  text-transform: uppercase; background: #fff; border: 1px solid rgba(26,18,8,0.14);
+  border-radius: 6px; color: rgba(26,18,8,0.55); cursor: pointer; transition: all 0.15s;
+}
+.med-btn--pdf:hover { border-color: rgba(63,120,144,0.35); color: var(--med-accent); }
 
 .med-success { font-size: 12px; color: var(--med-ok); background: rgba(46,122,80,0.07); border: 1px solid rgba(46,122,80,0.2); border-radius: 4px; padding: 8px 14px; margin-bottom: 12px; font-family: 'GFS Didot','Didot',Georgia,serif; }
 .med-err     { font-size: 12px; color: var(--med-danger); background: rgba(200,0,26,0.06); border: 1px solid rgba(200,0,26,0.18); border-radius: 4px; padding: 8px 14px; margin-bottom: 12px; font-family: 'GFS Didot','Didot',Georgia,serif; }

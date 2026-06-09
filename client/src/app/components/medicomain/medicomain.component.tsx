@@ -162,6 +162,45 @@ export default function MedicomainComponent() {
 
   const handleLogout = () => { logout(); navigate('/login') }
 
+  /* ─── PDF export ─── */
+  const printPDF = (reqNum: string, items: IResultado[]) => {
+    const utente  = items[0]?.utenteNome ?? ''
+    const amostra = items[0]?.codigoAmostra ?? ''
+    const date    = fmtDate(items[0]?.createdAt)
+    const rows = items.map(r => `
+      <tr>
+        <td>${r.analise.nome}</td>
+        <td>${r.analise.categoria}</td>
+        <td style="font-weight:600;color:${FLAG_COLOR[r.flag]}">${r.valor ?? '—'} ${r.unidade ?? ''}</td>
+        <td>${r.refMin !== undefined && r.refMax !== undefined ? `${r.refMin} – ${r.refMax} ${r.unidade ?? ''}` : '—'}</td>
+        <td style="color:${FLAG_COLOR[r.flag]}">${FLAG_LABEL[r.flag]}</td>
+        ${r.observacoes ? `<td>${r.observacoes}</td>` : '<td>—</td>'}
+      </tr>`).join('')
+    const html = `<!DOCTYPE html><html lang="pt"><head><meta charset="utf-8"/>
+      <title>Relatório ${reqNum}</title>
+      <style>
+        body{font-family:Georgia,serif;padding:40px;color:#1A1208;font-size:13px}
+        h1{font-size:22px;letter-spacing:.02em;margin-bottom:4px}
+        .sub{font-size:11px;color:#888;margin-bottom:32px}
+        table{width:100%;border-collapse:collapse}
+        th{text-align:left;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#888;padding:6px 10px;border-bottom:2px solid #eee}
+        td{padding:8px 10px;border-bottom:1px solid #f0ede8;font-size:12px;vertical-align:top}
+        tr:last-child td{border-bottom:none}
+        .footer{margin-top:40px;font-size:10px;color:#aaa;font-style:italic}
+      </style></head><body>
+      <h1>Relatório de Resultados</h1>
+      <div class="sub">${reqNum} · ${utente} · ${amostra} · ${date}</div>
+      <table>
+        <thead><tr><th>Análise</th><th>Categoria</th><th>Resultado</th><th>Referência</th><th>Flag</th><th>Observações</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="footer">Validado por ${user?.nome} · ${new Date().toLocaleString('pt-PT')}</div>
+      <script>window.onload=()=>{window.print();window.onafterprint=()=>window.close()}<\/script>
+    </body></html>`
+    const w = window.open('', '_blank')
+    if (w) { w.document.write(html); w.document.close() }
+  }
+
   /* ─── validação médica ─── */
   const byReqVal = groupByReq(valList)
 
@@ -306,28 +345,21 @@ export default function MedicomainComponent() {
                       <div className="med-req-left">
                         <span className="med-req-num">{reqNum}</span>
                         <span className="med-req-utente">{utente}</span>
-                        <span className="med-req-date">{date}</span>
+                        <span className="med-req-amostra">{items[0]?.codigoAmostra}</span>
                       </div>
                       <div className="med-req-right">
                         {hasCrit && <span className="med-crit-chip">⬆ crítico</span>}
-                        <span className="med-req-count">{items.length} resultado{items.length !== 1 ? 's' : ''}</span>
-                        <span className="med-req-arrow">validar →</span>
+                        <span className="med-req-count">{items.length} análise{items.length !== 1 ? 's' : ''}</span>
+                        <span className="med-req-arrow">→</span>
                       </div>
                     </div>
 
-                    <div className="med-req-results">
+                    <div className="med-req-tags">
                       {items.map(r => (
-                        <div key={r._id} className="med-req-result-row">
-                          <span className="med-req-result-nome">{r.analise.nome}</span>
-                          {r.valor && (
-                            <span className="med-req-result-valor" style={{ color: FLAG_COLOR[r.flag] }}>
-                              {r.valor} {r.unidade}
-                            </span>
-                          )}
-                          <span className="med-req-result-flag" style={{ color: FLAG_COLOR[r.flag] }}>
-                            {FLAG_LABEL[r.flag]}
-                          </span>
-                        </div>
+                        <span key={r._id} className="med-req-tag"
+                          style={{ background: (CAT_COLOR[r.analise.categoria] ?? '#888') + '14', color: CAT_COLOR[r.analise.categoria] ?? '#888' }}>
+                          {r.analise.nome}
+                        </span>
                       ))}
                     </div>
                   </motion.div>
@@ -525,6 +557,10 @@ export default function MedicomainComponent() {
                     onClick={validarTodos}>
                     {valSaving === 'all' ? 'a validar…'
                       : `✓ Validar e assinar todos (${(byReqVal[valReqPanel] ?? []).length}) — ${user?.nome}`}
+                  </button>
+                  <button className="med-btn med-btn--pdf"
+                    onClick={() => printPDF(valReqPanel!, byReqVal[valReqPanel] ?? [])}>
+                    ↓ Exportar PDF com todos os resultados
                   </button>
                 </div>
               )}
