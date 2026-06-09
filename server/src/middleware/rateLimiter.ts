@@ -7,7 +7,7 @@ interface Entry { count: number; resetAt: number }
 const store = new Map<string, Entry>()
 
 export function loginRateLimiter(req: Request, res: Response, next: NextFunction): void {
-  if (process.env.NODE_ENV === 'test') { next(); return }
+  if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') { next(); return }
 
   const ip  = req.ip ?? 'unknown'
   const now = Date.now()
