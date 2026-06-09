@@ -711,3 +711,87 @@
 .pm-pag-btn:hover:not(:disabled) { border-color: rgba(42,95,122,0.4); color: rgba(42,95,122,0.8); }
 .pm-pag-btn:disabled { opacity: 0.2; cursor: default; }
 .pm-pag-info { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; color: rgba(26,18,8,0.3); }
+
+/* ── CARDS DE VALIDAÇÃO POR REQUISIÇÃO ── */
+.pm-valreq-list { padding: 14px 24px 24px; display: flex; flex-direction: column; gap: 10px; }
+
+.pm-valreq-card {
+  background: #fafaf9; border: 1px solid rgba(26,18,8,0.08);
+  border-radius: 8px; padding: 16px 20px;
+  cursor: pointer; transition: border-color 0.14s, box-shadow 0.14s, transform 0.12s;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+}
+.pm-valreq-card:hover {
+  border-color: rgba(42,95,122,0.3);
+  box-shadow: 0 3px 14px rgba(26,18,8,0.07);
+  transform: translateX(3px);
+}
+.pm-valreq-card--crit {
+  border-left: 3px solid rgba(200,0,26,0.5);
+  background: rgba(200,0,26,0.02);
+}
+.pm-valreq-card--crit:hover { border-color: rgba(200,0,26,0.4); }
+
+.pm-valreq-hd {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.pm-valreq-left  { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.pm-valreq-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.pm-valreq-num {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(26,18,8,0.35); flex-shrink: 0;
+}
+.pm-valreq-utente {
+  font-size: 15px; font-weight: 500; color: rgba(26,18,8,0.82);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pm-valreq-amostra {
+  font-size: 10px; color: rgba(26,18,8,0.3); flex-shrink: 0; letter-spacing: 0.04em;
+}
+.pm-valreq-count {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 2px;
+  background: rgba(42,95,122,0.08); color: rgba(42,95,122,0.85);
+}
+.pm-valreq-crit {
+  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+  padding: 3px 8px; border-radius: 2px;
+  background: rgba(200,0,26,0.1); color: #C8001A;
+}
+.pm-valreq-arrow {
+  font-size: 13px; color: rgba(26,18,8,0.2);
+  transition: color 0.12s, transform 0.12s;
+}
+.pm-valreq-card:hover .pm-valreq-arrow { color: rgba(42,95,122,0.7); transform: translateX(4px); }
+
+.pm-valreq-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.pm-valreq-tag  {
+  font-size: 10px; letter-spacing: 0.03em; padding: 3px 10px; border-radius: 3px;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+}
+
+/* ── PAINEL REQ VALIDAÇÃO ── */
+.pm-reqval-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(520px, 100vw); background: #F8F6F2;
+  display: flex; flex-direction: column; z-index: 500;
+  overflow-y: auto; box-shadow: -20px 0 60px rgba(26,18,8,0.12);
+}
+
+.pm-reqval-results { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+
+.pm-result-card--crit { border-left: 3px solid rgba(200,0,26,0.4) !important; background: rgba(200,0,26,0.02); }
+
+.pm-result-nome { font-size: 14px; font-weight: 500; color: rgba(26,18,8,0.82); margin-bottom: 6px; }
+.pm-result-obs  { font-size: 11px; font-style: italic; color: rgba(26,18,8,0.45); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(26,18,8,0.06); }
+
+.pm-btn-validar-um {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; margin-left: auto;
+  background: rgba(46,122,80,0.1); border: 1px solid rgba(46,122,80,0.25);
+  color: #2E7A50; font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.pm-btn-validar-um:hover { background: #2E7A50; color: #fff; }
+.pm-btn-validar-um:disabled { opacity: 0.4; cursor: default; }

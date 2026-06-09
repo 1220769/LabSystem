@@ -146,17 +146,22 @@ export default function PortalMedico() {
   /* ── VALIDAÇÃO state ── */
   const [valList, setValList]     = useState<IResultado[]>([])
   const [valTotal, setValTotal]   = useState(0)
-  const [valPage, setValPage]     = useState(1)
   const [valLoading, setValLoad]  = useState(false)
   const [valSearch, setValSearch] = useState('')
   const [valDebSearch, setValDeb] = useState('')
+  /* req panel */
+  const [reqPanel,  setReqPanel]  = useState<string | null>(null)
+  const [valObs,    setValObs]    = useState('')
+  const [valSaving, setValSaving] = useState<'all' | string | null>(null)
+  const [valSuccess, setValSuccess] = useState('')
+  const [valErr,    setValErr]    = useState('')
+  /* individual result panel (críticos / utentes) */
   const [panel, setPanel]         = useState<'validar' | 'relatorio' | null>(null)
   const [selRes, setSelRes]       = useState<IResultado | null>(null)
   const [fObs, setFObs]           = useState('')
   const [fEmitir, setFEmitir]     = useState(false)
   const [saving, setSaving]       = useState(false)
   const [panelErr, setPanelErr]   = useState('')
-  const [valSuccess, setValSuccess] = useState('')
 
   /* ── REQUISIÇÕES state ── */
   const [reqs, setReqs]           = useState<IRequisicao[]>([])
@@ -213,10 +218,16 @@ export default function PortalMedico() {
 
   const loadValidacao = useCallback(() => {
     setValLoad(true)
-    api.get('/resultados', { params: { estado: 'validado_tecnico', search: valDebSearch, page: valPage, limit: 25 } })
-      .then(({ data }) => { setValList(data.data); setValTotal(data.total) })
+    // só mostra requisições onde TODOS os resultados foram validados tecnicamente
+    api.get('/resultados/requisicoes-prontas', { params: { estado: 'validado_tecnico' } })
+      .then(({ data }) => {
+        const flat: IResultado[] = []
+        ;(data.data ?? []).forEach((g: any) => flat.push(...(g.items ?? [])))
+        setValList(flat)
+        setValTotal(data.data?.length ?? 0)
+      })
       .finally(() => setValLoad(false))
-  }, [valDebSearch, valPage])
+  }, [])
 
   const loadReqs = useCallback(() => {
     setReqLoad(true)
@@ -393,7 +404,95 @@ ${r.validacaoMedica?`<div class="vblock"><div class="vlbl">Validação Médica</
 
   const handleLogout = () => { logout(); navigate('/login') }
 
-  const valPages = Math.ceil(valTotal / 25)
+  /* ── agrupamento por requisição ── */
+  function groupByReqPM(list: IResultado[]) {
+    return list.reduce<Record<string, IResultado[]>>((acc, r) => {
+      if (!acc[r.requisicaoNumero]) acc[r.requisicaoNumero] = []
+      acc[r.requisicaoNumero].push(r)
+      return acc
+    }, {})
+  }
+
+  const byReqVal = groupByReqPM(
+    valList.filter(r =>
+      !valDebSearch ||
+      r.utenteNome.toLowerCase().includes(valDebSearch.toLowerCase()) ||
+      r.requisicaoNumero.toLowerCase().includes(valDebSearch.toLowerCase()) ||
+      r.codigoAmostra.toLowerCase().includes(valDebSearch.toLowerCase()) ||
+      r.analise.nome.toLowerCase().includes(valDebSearch.toLowerCase())
+    )
+  )
+
+  const validarTodosReq = async () => {
+    if (!reqPanel) return
+    setValSaving('all'); setValErr(''); setValSuccess('')
+    try {
+      await api.post(`/resultados/requisicao/${encodeURIComponent(reqPanel)}/validar-medico`, {
+        observacoes: valObs || undefined,
+      })
+      const n = (byReqVal[reqPanel] ?? []).length
+      setValSuccess(`✓ ${n} resultado${n !== 1 ? 's' : ''} validados — disponível ao utente`)
+      setValList(prev => prev.filter(r => r.requisicaoNumero !== reqPanel))
+      await loadStats()
+      setTimeout(() => { setReqPanel(null); setValObs(''); setValSuccess('') }, 2000)
+    } catch (e: any) {
+      setValErr(e.response?.data?.message ?? 'Erro ao validar')
+    } finally { setValSaving(null) }
+  }
+
+  const validarUmRes = async (r: IResultado) => {
+    setValSaving(r._id); setValErr('')
+    try {
+      await api.post(`/resultados/${r._id}/validar-medico`, { observacoes: valObs || undefined })
+      setValList(prev => prev.filter(x => x._id !== r._id))
+      const remaining = (byReqVal[reqPanel!] ?? []).filter(x => x._id !== r._id)
+      if (remaining.length === 0) {
+        await loadStats()
+        setTimeout(() => { setReqPanel(null); setValObs('') }, 800)
+      }
+    } catch (e: any) {
+      setValErr(e.response?.data?.message ?? 'Erro ao validar')
+    } finally { setValSaving(null) }
+  }
+
+  const printReqPDF = (reqNum: string, items: IResultado[]) => {
+    const utente  = items[0]?.utenteNome ?? ''
+    const amostra = items[0]?.codigoAmostra ?? ''
+    const date    = items[0] ? fmt(items[0].createdAt) : ''
+    const rows = items.map(r => `
+      <tr>
+        <td>${r.analise.nome}</td>
+        <td>${r.analise.categoria}</td>
+        <td style="font-weight:600;color:${FLAG_COLOR[r.flag]}">${r.valor ?? '—'} ${r.unidade ?? ''}</td>
+        <td>${r.refMin !== undefined && r.refMax !== undefined ? `${r.refMin} – ${r.refMax} ${r.unidade ?? ''}` : '—'}</td>
+        <td style="color:${FLAG_COLOR[r.flag]}">${FLAG_LABEL[r.flag]}</td>
+        <td>${r.observacoes ?? '—'}</td>
+      </tr>`).join('')
+    const html = `<!DOCTYPE html><html lang="pt"><head><meta charset="utf-8"/>
+      <title>Relatório ${reqNum}</title>
+      <style>
+        body{font-family:Georgia,serif;padding:40px;color:#1A1208;font-size:13px}
+        h1{font-size:22px;letter-spacing:.02em;margin-bottom:4px}
+        .sub{font-size:11px;color:#888;margin-bottom:32px}
+        table{width:100%;border-collapse:collapse}
+        th{text-align:left;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#888;padding:6px 10px;border-bottom:2px solid #eee}
+        td{padding:8px 10px;border-bottom:1px solid #f0ede8;font-size:12px;vertical-align:top}
+        tr:last-child td{border-bottom:none}
+        .footer{margin-top:40px;font-size:10px;color:#aaa;font-style:italic}
+      </style></head><body>
+      <h1>Relatório de Resultados</h1>
+      <div class="sub">${reqNum} · ${utente} · ${amostra} · ${date}</div>
+      <table>
+        <thead><tr><th>Análise</th><th>Categoria</th><th>Resultado</th><th>Referência</th><th>Flag</th><th>Observações</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="footer">Validado por ${user?.nome} · ${new Date().toLocaleString('pt-PT')}</div>
+      <script>window.onload=()=>{window.print();window.onafterprint=()=>window.close()}<\/script>
+    </body></html>`
+    const w = window.open('', '_blank')
+    if (w) { w.document.write(html); w.document.close() }
+  }
+
   const reqPages = Math.ceil(reqTotal / 15)
 
   /* ════════════════════════════ RENDER ════════════════════════════ */
@@ -515,63 +614,60 @@ ${r.validacaoMedica?`<div class="vblock"><div class="vlbl">Validação Médica</
             <div className="pm-section-toolbar">
               <div>
                 <div className="pm-section-title">Resultados aguardando validação médica</div>
-                <div className="pm-section-sub">Resultados com validação técnica concluída, a aguardar a sua assinatura</div>
+                <div className="pm-section-sub">Clique numa requisição para rever todos os resultados e assinar</div>
               </div>
-              <input className="pm-search" placeholder="análise · utente · amostra…"
+              <input className="pm-search" placeholder="utente · requisição · amostra · análise…"
                 value={valSearch} onChange={e => setValSearch(e.target.value)} />
-              <span className="pm-count">{valTotal} resultado{valTotal !== 1 ? 's' : ''}</span>
+              <span className="pm-count">{Object.keys(byReqVal).length} requisição{Object.keys(byReqVal).length !== 1 ? 'ões' : ''}</span>
             </div>
 
             {valLoading && <div className="pm-loading"><div className="pm-loading-bar" /></div>}
 
-            {!valLoading && valList.length === 0 && (
+            {!valLoading && Object.keys(byReqVal).length === 0 && (
               <div className="pm-empty-state">
                 <div className="pm-empty-icon">✓</div>
                 <div className="pm-empty-title">Tudo validado</div>
-                <div className="pm-empty-sub">Não há resultados pendentes de validação médica neste momento.</div>
+                <div className="pm-empty-sub">Não há requisições pendentes de validação médica neste momento.</div>
               </div>
             )}
 
-            {!valLoading && valList.length > 0 && (
-              <>
-                {valList.map((r, i) => (
-                  <motion.div key={r._id}
-                    className={`pm-val-row${isCrit(r.flag) ? ' pm-val-row--crit' : ''}`}
-                    initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.015 }}
-                    onClick={() => openValidar(r)}>
-                    {isCrit(r.flag) && <span className="pm-crit-pulse" />}
-                    <div className="pm-val-row-main">
-                      <div className="pm-val-row-top">
-                        <span className="pm-val-row-analise">{r.analise.nome}</span>
-                        <span className="pm-cat-tag" style={{ background: (CAT_COLOR[r.analise.categoria] ?? '#888') + '18', color: CAT_COLOR[r.analise.categoria] ?? '#888' }}>
-                          {r.analise.categoria}
-                        </span>
+            <div className="pm-valreq-list">
+              {Object.entries(byReqVal).map(([reqNum, items], i) => {
+                const hasCrit = items.some(r => isCrit(r.flag))
+                const utente  = items[0]?.utenteNome ?? ''
+                const amostra = items[0]?.codigoAmostra ?? ''
+                return (
+                  <motion.div key={reqNum}
+                    className={`pm-valreq-card${hasCrit ? ' pm-valreq-card--crit' : ''}`}
+                    initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    onClick={() => { setReqPanel(reqNum); setValObs(''); setValErr(''); setValSuccess('') }}>
+
+                    <div className="pm-valreq-hd">
+                      <div className="pm-valreq-left">
+                        <span className="pm-valreq-num">{reqNum}</span>
+                        <span className="pm-valreq-utente">{utente}</span>
+                        <span className="pm-valreq-amostra">{amostra}</span>
                       </div>
-                      <div className="pm-val-row-meta">{r.utenteNome} · {r.codigoAmostra} · {r.requisicaoNumero}</div>
+                      <div className="pm-valreq-right">
+                        {hasCrit && <span className="pm-valreq-crit">⬆ crítico</span>}
+                        <span className="pm-valreq-count">{items.length} ANÁLISES</span>
+                        <span className="pm-valreq-arrow">→</span>
+                      </div>
                     </div>
-                    <div className="pm-val-row-result">
-                      {r.valor ? (
-                        <span className="pm-val-valor" style={{ color: FLAG_COLOR[r.flag] }}>
-                          {r.valor} <span className="pm-val-unit">{r.unidade}</span>
+
+                    <div className="pm-valreq-tags">
+                      {items.map(r => (
+                        <span key={r._id} className="pm-valreq-tag"
+                          style={{ background: (CAT_COLOR[r.analise.categoria] ?? '#888') + '14', color: CAT_COLOR[r.analise.categoria] ?? '#888' }}>
+                          {r.analise.nome}
                         </span>
-                      ) : <span className="pm-val-sem">sem valor</span>}
-                      {(r.refMin !== undefined || r.refMax !== undefined) && (
-                        <span className="pm-val-ref">ref {r.refMin ?? '–'}–{r.refMax ?? '–'}</span>
-                      )}
-                    </div>
-                    <div className="pm-val-row-right">
-                      <span className="pm-flag-pill" style={{ background: FLAG_COLOR[r.flag] + '18', color: FLAG_COLOR[r.flag] }}>
-                        {FLAG_LABEL[r.flag]}
-                      </span>
-                      <span className="pm-val-date">{fmt(r.createdAt)}</span>
-                      <span className="pm-row-action">validar →</span>
+                      ))}
                     </div>
                   </motion.div>
-                ))}
-                {valPages > 1 && <Pag page={valPage} pages={valPages} onPrev={() => setValPage(p=>p-1)} onNext={() => setValPage(p=>p+1)} />}
-              </>
-            )}
+                )
+              })}
+            </div>
           </div>
         )}
 
@@ -1005,7 +1101,90 @@ ${r.validacaoMedica?`<div class="vblock"><div class="vlbl">Validação Médica</
         )}
       </AnimatePresence>
 
-      {/* ════════ PANEL VALIDAÇÃO ════════ */}
+      {/* ════════ PAINEL VALIDAÇÃO POR REQUISIÇÃO ════════ */}
+      <AnimatePresence>
+        {reqPanel && (
+          <motion.aside className="pm-reqval-panel"
+            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 280 }}>
+
+            <div className={`pm-panel-hd${(byReqVal[reqPanel] ?? []).some(r => isCrit(r.flag)) ? ' pm-panel-hd--crit' : ''}`}>
+              <button className="pm-panel-back" onClick={() => { setReqPanel(null); setValObs(''); setValErr(''); setValSuccess('') }}>← fechar</button>
+              <div className="pm-panel-label">Validação médica</div>
+              <div className="pm-panel-sub">{reqPanel} · {(byReqVal[reqPanel] ?? [])[0]?.utenteNome}</div>
+            </div>
+
+            <div className="pm-val-detail">
+              <div className="pm-reqval-results">
+                {(byReqVal[reqPanel] ?? []).map(r => {
+                  const isCritR = isCrit(r.flag)
+                  return (
+                    <div key={r._id} className={`pm-result-card pm-result-card--${r.flag}${isCritR ? ' pm-result-card--crit' : ''}`}>
+                      <div className="pm-result-top">
+                        <span className="pm-cat-tag" style={{ background: (CAT_COLOR[r.analise.categoria] ?? '#888') + '18', color: CAT_COLOR[r.analise.categoria] ?? '#888' }}>
+                          {r.analise.categoria}
+                        </span>
+                        <span className="pm-flag-pill pm-flag-pill--lg"
+                          style={{ background: FLAG_COLOR[r.flag] + '18', color: FLAG_COLOR[r.flag] }}>
+                          {FLAG_LABEL[r.flag]}
+                        </span>
+                        <button className="pm-btn-validar-um" title="Validar este resultado"
+                          disabled={valSaving !== null}
+                          onClick={e => { e.stopPropagation(); validarUmRes(r) }}>
+                          {valSaving === r._id ? '…' : '✓'}
+                        </button>
+                      </div>
+                      <div className="pm-result-nome">{r.analise.nome}</div>
+                      <div className="pm-result-valor" style={{ color: FLAG_COLOR[r.flag] }}>
+                        {r.valor ?? '—'}
+                        {r.unidade && <span className="pm-result-unit"> {r.unidade}</span>}
+                      </div>
+                      {(r.refMin !== undefined || r.refMax !== undefined) && (
+                        <div className="pm-result-ref">
+                          Ref: {r.refMin ?? '–'} – {r.refMax ?? '–'} {r.unidade}
+                        </div>
+                      )}
+                      {r.validacaoTecnica && (
+                        <div className="pm-val-hist pm-val-hist--tec" style={{ marginTop: 8 }}>
+                          <div className="pm-val-hist-lbl">✓ Validação técnica</div>
+                          <div className="pm-val-hist-who">{r.validacaoTecnica.nome}</div>
+                        </div>
+                      )}
+                      {r.observacoes && <div className="pm-result-obs">{r.observacoes}</div>}
+                    </div>
+                  )
+                })}
+              </div>
+
+              {valSuccess && (
+                <motion.div className="pm-success" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}>
+                  {valSuccess}
+                </motion.div>
+              )}
+              {valErr && <div className="pm-form-err">{valErr}</div>}
+
+              {!valSuccess && (
+                <div className="pm-val-action">
+                  <div className="pm-val-action-title">Observações clínicas <span style={{ fontWeight: 400, fontSize: 10, opacity: 0.5 }}>(opcional)</span></div>
+                  <textarea className="pm-input pm-textarea" rows={3}
+                    value={valObs} onChange={e => setValObs(e.target.value)}
+                    placeholder="Contexto clínico, interpretação, recomendações…" />
+                  <button className="pm-btn-validar" disabled={valSaving !== null} onClick={validarTodosReq}>
+                    {valSaving === 'all' ? 'a validar…'
+                      : `✓ Validar e assinar todos (${(byReqVal[reqPanel] ?? []).length}) — ${user?.nome}`}
+                  </button>
+                  <button className="pm-btn-relatorio" style={{ marginTop: 8 }}
+                    onClick={() => printReqPDF(reqPanel!, byReqVal[reqPanel] ?? [])}>
+                    ↓ Exportar PDF com todos os resultados
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* ════════ PANEL VALIDAÇÃO INDIVIDUAL (críticos) ════════ */}
       <AnimatePresence>
         {panel && selRes && (
           <motion.aside className="pm-val-panel"
