@@ -3,7 +3,9 @@ import { protect, authorize } from '../middleware/authMiddleware'
 import {
   gerarWorklist, getResultados, getResultadoById,
   updateResultado, getStats, getCategorias,
-  validarTecnico, validarMedico, validarRequisicaoMedico,
+  validarTecnico, validarMedico,
+  validarRequisicaoMedico, validarRequisicaoTecnico,
+  getRequisicoesProntas,
   emitirRelatorio, rejeitarResultado,
 } from '../controllers/resultadoController'
 
@@ -13,6 +15,8 @@ router.use(protect)
 
 router.get('/stats',      getStats)
 router.get('/categorias', getCategorias)
+// rotas estáticas antes de /:id para não serem capturadas como ObjectId
+router.get('/requisicoes-prontas', getRequisicoesProntas)
 router.get('/',           getResultados)
 router.get('/:id',        getResultadoById)
 
@@ -36,7 +40,12 @@ router.post('/:id/validar-medico',
   validarMedico
 )
 
-// deve vir antes de /:id para não ser capturado como ObjectId
+// bulk — vêm antes de /:id
+router.post('/requisicao/:reqNumero/validar-tecnico',
+  authorize('administrador','tecnico'),
+  validarRequisicaoTecnico
+)
+
 router.post('/requisicao/:reqNumero/validar-medico',
   authorize('administrador','medico'),
   validarRequisicaoMedico

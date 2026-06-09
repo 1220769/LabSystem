@@ -115,8 +115,14 @@ export default function MedicomainComponent() {
 
   const loadVal = useCallback(() => {
     setValLoading(true)
-    api.get('/resultados', { params: { estado: 'validado_tecnico', limit: 100 } })
-      .then(r => setValList(r.data.data ?? []))
+    // só mostra requisições onde TODOS os resultados estão validado_tecnico
+    api.get('/resultados/requisicoes-prontas', { params: { estado: 'validado_tecnico' } })
+      .then(r => {
+        const flat: IResultado[] = []
+        ;(r.data.data ?? []).forEach((g: any) => flat.push(...(g.items ?? [])))
+        setValList(flat)
+        setStats(prev => ({ ...prev, aguardam: r.data.data?.length ?? 0 }))
+      })
       .finally(() => setValLoading(false))
   }, [])
 

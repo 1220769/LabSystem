@@ -376,3 +376,82 @@
   font-style: italic; font-size: 13px;
   color: rgba(26,18,8,0.4);
 }
+
+/* ── resultados agrupados por requisição ── */
+.portal-req-group-card {
+  border: 1px solid rgba(26,18,8,0.08); border-radius: 10px;
+  margin-bottom: 12px; overflow: hidden;
+  background: #fff; transition: box-shadow 0.14s;
+}
+.portal-req-group-card:hover { box-shadow: 0 3px 14px rgba(26,18,8,0.07); }
+.portal-req-group-card--crit { border-left: 3px solid rgba(200,0,26,0.5); }
+
+.portal-req-group-hd {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; cursor: pointer;
+  border-bottom: 1px solid rgba(26,18,8,0.05);
+  transition: background 0.1s;
+}
+.portal-req-group-hd:hover { background: rgba(26,18,8,0.02); }
+
+.portal-req-group-left { flex: 1; min-width: 0; }
+.portal-req-group-num {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(26,18,8,0.42); margin-bottom: 3px;
+}
+.portal-req-group-meta { font-size: 11px; color: rgba(26,18,8,0.35); font-style: italic; }
+
+.portal-req-group-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.portal-req-group-crit {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+  background: rgba(200,0,26,0.1); color: #C8001A; font-weight: 700;
+}
+.portal-req-group-count {
+  font-size: 10px; letter-spacing: 0.08em; color: rgba(26,18,8,0.35);
+}
+
+/* sumário compacto */
+.portal-req-group-summary { padding: 0 20px 12px; display: flex; flex-direction: column; gap: 2px; }
+.portal-req-group-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid rgba(26,18,8,0.04);
+}
+.portal-req-group-row:last-child { border-bottom: none; }
+.portal-req-group-row-nome { flex: 1; font-size: 13px; color: rgba(26,18,8,0.75); }
+.portal-req-group-row-valor { font-size: 14px; font-weight: 500; flex-shrink: 0; }
+
+/* detalhe expandido */
+.portal-req-group-detail {
+  padding: 16px 20px 20px;
+  border-top: 1px solid rgba(26,18,8,0.06);
+  background: rgba(26,18,8,0.018);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.portal-req-group-detail-row {
+  background: #fff; border: 1px solid rgba(26,18,8,0.07);
+  border-radius: 6px; padding: 14px 16px;
+}
+.portal-req-group-detail-hd {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.portal-req-group-detail-nome {
+  font-size: 14px; font-weight: 500; color: rgba(26,18,8,0.82); flex: 1;
+}
+.portal-req-group-detail-cat {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px;
+  background: rgba(26,18,8,0.06); color: rgba(26,18,8,0.45);
+}
+.portal-req-group-detail-val {
+  font-size: 36px; font-style: italic; line-height: 1; margin-bottom: 4px;
+}
+.portal-req-group-detail-unit { font-size: 16px; color: rgba(26,18,8,0.4); }
+.portal-req-group-detail-ref {
+  font-size: 11px; font-style: italic; color: rgba(26,18,8,0.38); margin-top: 4px;
+}
+
+.portal-req-group-actions { padding-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.portal-btn-pdf {
+  width: 100%; justify-content: center; font-size: 11px; padding: 12px;
+}

@@ -370,3 +370,73 @@ export const getCategorias = async (_req: AuthRequest, res: Response) => {
     res.status(500).json({ message: 'Erro', error: err })
   }
 }
+
+// Devolve requisições onde TODOS os resultados têm o estado indicado
+// usado pelo técnico (resultado_disponivel) e médico (validado_tecnico)
+export const getRequisicoesProntas = async (req: AuthRequest, res: Response) => {
+  try {
+    const { estado } = req.query as { estado?: string }
+    if (!estado) return res.status(400).json({ message: 'Parâmetro estado obrigatório' })
+
+    const grupos = await Resultado.aggregate([
+      {
+        $group: {
+          _id:        '$requisicaoNumero',
+          total:      { $sum: 1 },
+          prontos:    { $sum: { $cond: [{ $eq: ['$estado', estado] }, 1, 0] } },
+          utenteNome: { $first: '$utenteNome' },
+          utente:     { $first: '$utente' },
+          createdAt:  { $first: '$createdAt' },
+          items:      { $push: '$$ROOT' },
+        },
+      },
+      // apenas requisições onde TODOS os resultados estão no estado pedido
+      { $match: { $expr: { $eq: ['$total', '$prontos'] } } },
+      { $sort:  { createdAt: 1 } },
+    ])
+
+    res.json({ data: grupos })
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao obter requisições prontas', error: err })
+  }
+}
+
+// Validação técnica em bloco — todos os resultados de uma requisição de uma vez
+export const validarRequisicaoTecnico = async (req: AuthRequest, res: Response) => {
+  try {
+    const { reqNumero } = req.params
+    const { observacoes } = req.body
+
+    const pendentes = await Resultado.find({
+      requisicaoNumero: reqNumero,
+      estado:           'resultado_disponivel',
+    })
+    if (pendentes.length === 0) {
+      return res.status(404).json({ message: 'Sem resultados disponíveis para validação técnica nesta requisição' })
+    }
+
+    const validacaoTecnica = {
+      userId:      req.user!._id,
+      nome:        req.user!.nome,
+      dataHora:    new Date(),
+      observacoes: observacoes || undefined,
+    }
+
+    await Resultado.updateMany(
+      { requisicaoNumero: reqNumero, estado: 'resultado_disponivel' },
+      { $set: { estado: 'validado_tecnico', validacaoTecnica } }
+    )
+
+    registarEvento({
+      utilizador:   req.user!.nome,
+      utilizadorId: req.user!._id as any,
+      acao:         'validacao_tecnica_bulk',
+      modulo:       'resultados',
+      detalhe:      `Requisição ${reqNumero} — ${pendentes.length} resultado(s) validados tecnicamente`,
+    })
+
+    res.json({ validated: pendentes.length, reqNumero })
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao validar tecnicamente', error: err })
+  }
+}

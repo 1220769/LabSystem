@@ -198,8 +198,15 @@ export default function TecnicomainComponent() {
 
   const loadValidacao = useCallback(() => {
     setVLoad(true)
-    api.get('/resultados', { params: { estado: 'resultado_disponivel', page: vPage, limit: 100 } })
-      .then(r => { setValList(r.data.data ?? []); setVTotal(r.data.total ?? 0) })
+    // só mostra requisições onde TODOS os resultados estão resultado_disponivel
+    api.get('/resultados/requisicoes-prontas', { params: { estado: 'resultado_disponivel' } })
+      .then(r => {
+        // o aggregate devolve: { _id: reqNumero, items: [...], utenteNome, ... }
+        const flat: IResultado[] = []
+        ;(r.data.data ?? []).forEach((g: any) => flat.push(...(g.items ?? [])))
+        setValList(flat)
+        setVTotal(r.data.data?.length ?? 0)
+      })
       .finally(() => setVLoad(false))
   }, [vPage])
 
@@ -305,9 +312,10 @@ export default function TecnicomainComponent() {
     const items = byReqVal[vReqPanel!] ?? []
     setVSaving(true); setVErr(''); setVSuccess('')
     try {
-      await Promise.all(items.map(r =>
-        api.post(`/resultados/${r._id}/validar-tecnico`, { observacoes: obsGlobal || undefined })
-      ))
+      // usa o endpoint bulk — valida todos os resultados da requisição de uma vez
+      await api.post(`/resultados/requisicao/${encodeURIComponent(vReqPanel!)}/validar-tecnico`, {
+        observacoes: obsGlobal || undefined,
+      })
       setVSuccess(`✓ ${items.length} resultado${items.length !== 1 ? 's' : ''} validado${items.length !== 1 ? 's' : ''} e assinados`)
       setValList(prev => prev.filter(r => r.requisicaoNumero !== vReqPanel))
       await loadStats()

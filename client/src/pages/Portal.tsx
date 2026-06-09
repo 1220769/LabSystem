@@ -84,6 +84,10 @@ const FLAG_DESC: Record<Flag, string> = {
   critico_baixo: 'Valor criticamente baixo. Pode requerer atenção médica imediata.',
   pendente:      'Resultado ainda em processamento.',
 }
+const FLAG_COLOR: Record<Flag, string> = {
+  normal: '#2E7A50', alto: '#C87800', baixo: '#0064B4',
+  critico_alto: '#C8001A', critico_baixo: '#C8001A', pendente: '#888',
+}
 
 /* ── pipeline ── */
 const PIPELINE = ['pendente', 'em_curso', 'concluida'] as const
@@ -450,78 +454,112 @@ export default function Portal() {
 
       <div className="portal-content">
 
-        {/* ── RESULTADOS ── */}
-        {tab === 'resultados' && (
-          <div className="portal-section">
-            <div className="portal-section-toolbar">
-              <div className="portal-flag-filters">
-                {(['todos','normal','alterado','critico'] as FlagFilter[]).map(f => (
-                  <button key={f} className={`portal-flag-btn portal-flag-btn--${f}${flagFilter === f ? ' portal-flag-btn--on' : ''}`}
-                    onClick={() => handleFlagFilter(f)}>{f}</button>
-                ))}
+        {/* ── RESULTADOS — agrupados por requisição ── */}
+        {tab === 'resultados' && (() => {
+          /* agrupar filteredRes por requisicaoNumero */
+          const byReq = filteredRes.reduce<Record<string, IRes[]>>((acc, r) => {
+            if (!acc[r.requisicaoNumero]) acc[r.requisicaoNumero] = []
+            acc[r.requisicaoNumero].push(r)
+            return acc
+          }, {})
+
+          return (
+            <div className="portal-section">
+              <div className="portal-section-toolbar">
+                <div className="portal-flag-filters">
+                  {(['todos','normal','alterado','critico'] as FlagFilter[]).map(f => (
+                    <button key={f} className={`portal-flag-btn portal-flag-btn--${f}${flagFilter === f ? ' portal-flag-btn--on' : ''}`}
+                      onClick={() => handleFlagFilter(f)}>{f}</button>
+                  ))}
+                </div>
+                <input className="portal-search" placeholder="pesquisar análise…" value={resSearch} onChange={e => setResSearch(e.target.value)} />
+                <span className="portal-count">{resLoading ? '…' : `${Object.keys(byReq).length} requisiç${Object.keys(byReq).length !== 1 ? 'ões' : 'ão'}`}</span>
               </div>
-              <input className="portal-search" placeholder="pesquisar análise…" value={resSearch} onChange={e => setResSearch(e.target.value)} />
-              <span className="portal-count">{resLoading ? '…' : `${resTotal} resultado${resTotal !== 1 ? 's' : ''}`}</span>
-            </div>
 
-            {resLoading
-              ? <div className="portal-empty">a carregar…</div>
-              : filteredRes.length === 0
-              ? <div className="portal-empty">Sem resultados{flagFilter !== 'todos' ? ' neste filtro' : ''}</div>
-              : filteredRes.map(r => (
-                <div key={r._id} className={`portal-res-card portal-res-card--${r.flag}`}>
-                  <div className="portal-res-card-main" onClick={() => setExpandedRes(expandedRes === r._id ? null : r._id)}>
-                    <div className="portal-res-card-left">
-                      <div className="portal-res-card-nome">{r.analise.nome}</div>
-                      <div className="portal-res-card-meta">{r.requisicaoNumero} · {fmtDate(r.createdAt)}</div>
-                    </div>
-                    <div className="portal-res-card-right">
-                      <span className="portal-res-card-valor">{r.valor ?? '—'} {r.unidade ?? ''}</span>
-                      <span className={`portal-res-flag portal-res-flag--${r.flag}`}>{FLAG_LABEL[r.flag]}</span>
-                      <span className="portal-res-chevron">{expandedRes === r._id ? '↑' : '↓'}</span>
-                    </div>
-                  </div>
+              {resLoading
+                ? <div className="portal-empty">a carregar…</div>
+                : Object.keys(byReq).length === 0
+                ? <div className="portal-empty">Sem resultados{flagFilter !== 'todos' ? ' neste filtro' : ''}</div>
+                : Object.entries(byReq).map(([reqNum, items]) => {
+                    const isOpen   = expandedRes === reqNum
+                    const hasCrit  = items.some(r => r.flag === 'critico_alto' || r.flag === 'critico_baixo')
+                    const dataVal  = items[0]?.validacaoMedica?.dataHora
+                    const medico   = items[0]?.validacaoMedica?.nome ?? ''
 
-                  {expandedRes === r._id && (
-                    <div className="portal-res-card-detail">
-                      <div className="portal-res-detail-grid">
-                        {(r.refMin !== undefined || r.refMax !== undefined) && (
-                          <div className="portal-res-detail-item">
-                            <span className="portal-res-detail-lbl">Referência</span>
-                            <span className="portal-res-detail-val">{r.refMin ?? '—'} – {r.refMax ?? '—'} {r.unidade ?? ''}</span>
+                    return (
+                      <div key={reqNum} className={`portal-req-group-card${hasCrit ? ' portal-req-group-card--crit' : ''}`}>
+                        <div className="portal-req-group-hd" onClick={() => setExpandedRes(isOpen ? null : reqNum)}>
+                          <div className="portal-req-group-left">
+                            <div className="portal-req-group-num">{reqNum}</div>
+                            <div className="portal-req-group-meta">
+                              {dataVal && fmtDate(dataVal)}
+                              {medico && <span> · validado por {medico}</span>}
+                            </div>
                           </div>
-                        )}
-                        <div className="portal-res-detail-item">
-                          <span className="portal-res-detail-lbl">Categoria</span>
-                          <span className="portal-res-detail-val">{r.analise.categoria}</span>
+                          <div className="portal-req-group-right">
+                            {hasCrit && <span className="portal-req-group-crit">⬆ valor crítico</span>}
+                            <span className="portal-req-group-count">{items.length} análise{items.length !== 1 ? 's' : ''}</span>
+                            <span className="portal-res-chevron">{isOpen ? '↑' : '↓'}</span>
+                          </div>
                         </div>
-                        {r.validacaoMedica && (
-                          <div className="portal-res-detail-item">
-                            <span className="portal-res-detail-lbl">Validado por</span>
-                            <span className="portal-res-detail-val">{r.validacaoMedica.nome} · {fmtDateTime(r.validacaoMedica.dataHora)}</span>
+
+                        {/* sumário compacto (sempre visível) */}
+                        <div className="portal-req-group-summary">
+                          {items.map(r => (
+                            <div key={r._id} className={`portal-req-group-row portal-req-group-row--${r.flag}`}>
+                              <span className="portal-req-group-row-nome">{r.analise.nome}</span>
+                              <span className="portal-req-group-row-valor" style={{ color: FLAG_COLOR[r.flag] }}>
+                                {r.valor ?? '—'} {r.unidade ?? ''}
+                              </span>
+                              <span className={`portal-res-flag portal-res-flag--${r.flag}`}>{FLAG_LABEL[r.flag]}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* detalhe expandido */}
+                        {isOpen && (
+                          <div className="portal-req-group-detail">
+                            {items.map(r => (
+                              <div key={r._id} className="portal-req-group-detail-row">
+                                <div className="portal-req-group-detail-hd">
+                                  <span className="portal-req-group-detail-nome">{r.analise.nome}</span>
+                                  <span className="portal-req-group-detail-cat">{r.analise.categoria}</span>
+                                </div>
+                                <div className="portal-req-group-detail-val" style={{ color: FLAG_COLOR[r.flag] }}>
+                                  {r.valor ?? '—'} <span className="portal-req-group-detail-unit">{r.unidade ?? ''}</span>
+                                </div>
+                                {(r.refMin !== undefined || r.refMax !== undefined) && (
+                                  <div className="portal-req-group-detail-ref">
+                                    referência: {r.refMin ?? '–'} – {r.refMax ?? '–'} {r.unidade ?? ''}
+                                  </div>
+                                )}
+                                <div className="portal-res-flag-desc">{FLAG_DESC[r.flag]}</div>
+                                {r.observacoes && <div className="portal-res-obs">{r.observacoes}</div>}
+                              </div>
+                            ))}
+
+                            <div className="portal-req-group-actions">
+                              <button className="portal-btn-outline portal-btn-pdf" onClick={() => {
+                                const msg = (m: string) => setRelMsg(prev => ({ ...prev, [reqNum]: m }))
+                                printRelatorioCompleto(reqNum, perfil?.nome ?? '', msg)
+                              }}>
+                                ↓ Descarregar relatório completo em PDF
+                              </button>
+                              {relMsg[reqNum] && (
+                                <div className={`portal-rel-msg${relMsg[reqNum].startsWith('Erro') || relMsg[reqNum].startsWith('Sem') ? ' portal-rel-msg--err' : ''}`}>
+                                  {relMsg[reqNum]}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         )}
                       </div>
-                      <div className="portal-res-flag-desc">{FLAG_DESC[r.flag]}</div>
-                      {r.observacoes && <div className="portal-res-obs">{r.observacoes}</div>}
-                      {r.relatorioEmitido && (
-                        <button className="portal-btn-outline" onClick={() => printRelatorioSimples(r)}>↓ Descarregar resultado em PDF</button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))
-            }
-
-            {Math.ceil(resTotal / 20) > 1 && (
-              <div className="portal-pag">
-                <button className="portal-pag-btn" disabled={resPage <= 1} onClick={() => loadRes(resPage - 1)}>‹</button>
-                <span className="portal-pag-info">{resPage} / {Math.ceil(resTotal / 20)}</span>
-                <button className="portal-pag-btn" disabled={resPage >= Math.ceil(resTotal / 20)} onClick={() => loadRes(resPage + 1)}>›</button>
-              </div>
-            )}
-          </div>
-        )}
+                    )
+                  })
+              }
+            </div>
+          )
+        })()}
 
         {/* ── REQUISIÇÕES ── */}
         {tab === 'requisicoes' && (
