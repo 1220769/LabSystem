@@ -5,13 +5,26 @@ import { useSocket } from '../hooks/useSocket'
 import { useAuthStore } from '../store/authStore'
 import './NotificationBell.css'
 
-// Para staff: link da notificação → rota do módulo
-const STAFF_NAV: Record<string, string> = {
-  fatura:     '/modulo/6',
-  colheita:   '/modulo/3',
-  analise:    '/modulo/4',
-  resultado:  '/modulo/5',
-  requisicao: '/modulo/2',
+// link da notificação → rota por papel
+// (os links são o 5º argumento de notifyUser no backend)
+const STAFF_NAV: Record<string, Record<string, string>> = {
+  administrador: {
+    financeiro:   '/modulo/6',   // nova requisição para faturar
+    utilizadores: '/modulo/0',   // nova conta pendente de aprovação
+  },
+  medico: {
+    validacao:  '/modulo/5',
+    requisicao: '/modulo/2',
+    resultado:  '/modulo/5',
+  },
+  tecnico: {
+    analise:    '/modulo/4',
+    resultado:  '/modulo/4',
+    colheita:   '/modulo/3',
+  },
+  enfermeiro: {
+    colheita:   '/modulo/3',
+  },
 }
 
 const ROLE_HOME: Record<string, string> = {
@@ -128,11 +141,10 @@ export default function NotificationBell({ theme = 'light' }: Props) {
 
     const role = user?.role ?? 'utente'
     if (role === 'utente') {
-      // utente vai para o portal com a tab correcta
       navigate('/portal', { state: { tab: n.link } })
     } else {
-      // staff → módulo correspondente ou página home do papel
-      const dest = STAFF_NAV[n.link] ?? ROLE_HOME[role] ?? '/'
+      const roleMap = STAFF_NAV[role] ?? {}
+      const dest    = roleMap[n.link] ?? ROLE_HOME[role] ?? '/'
       navigate(dest)
     }
   }
