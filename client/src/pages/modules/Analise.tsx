@@ -74,7 +74,6 @@ function calcFlag(valor: string, codigo: string): Flag {
   return 'normal'
 }
 
-/* ── types ── */
 interface Resultado {
   _id: string
   codigoResultado: string
@@ -93,6 +92,7 @@ interface Resultado {
   createdAt: string
 }
 
+interface EntryState { valor: string; unidade: string; flag: Flag; equip: string; obs: string }
 interface Seg { id: number; name: string; sub: string; color: string; stat: string; statLabel: string }
 
 const FLAG_ICON: Record<Flag, string> = {
@@ -110,43 +110,35 @@ export default function Analise({ seg }: { seg: Seg }) {
   const navigate = useNavigate()
   const { user } = useAuthStore()
 
-  const [resultados, setResultados] = useState<Resultado[]>([])
-  const [total, setTotal] = useState(0)
-  const [pages, setPages] = useState(1)
-  const [page, setPage]   = useState(1)
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter]   = useState<FiltroEstado>('todas')
-  const [catFilter, setCatFilter] = useState('todas')
-  const [search, setSearch]   = useState('')
-  const [debSearch, setDebSearch] = useState('')
-  const [categorias, setCategorias] = useState<string[]>([])
-  const [stats, setStats] = useState({ pendente: 0, em_processamento: 0, disponivel: 0, criticos: 0 })
+  const [resultados,  setResultados]  = useState<Resultado[]>([])
+  const [total,       setTotal]       = useState(0)
+  const [pages,       setPages]       = useState(1)
+  const [page,        setPage]        = useState(1)
+  const [loading,     setLoading]     = useState(true)
+  const [filter,      setFilter]      = useState<FiltroEstado>('todas')
+  const [search,      setSearch]      = useState('')
+  const [debSearch,   setDebSearch]   = useState('')
+  const [stats,       setStats]       = useState({ pendente: 0, em_processamento: 0, disponivel: 0, criticos: 0 })
 
   /* panel */
-  const [panel, setPanel]         = useState<'entry' | 'detail' | 'worklist' | null>(null)
-  const [selected, setSelected]   = useState<Resultado | null>(null)
-  const [reqEstado, setReqEstado] = useState<string | null>(null)
-
-  /* entry form */
-  const [fValor, setFValor]     = useState('')
-  const [fUnidade, setFUnidade] = useState('')
-  const [fFlag, setFFlag]       = useState<Flag>('normal')
-  const [fEquip, setFEquip]     = useState('')
-  const [fObs, setFObs]         = useState('')
-  const [saving, setSaving]     = useState(false)
-  const [formErr, setFormErr]   = useState('')
+  const [panel,      setPanel]      = useState<'req' | 'worklist' | null>(null)
+  const [reqItems,   setReqItems]   = useState<Resultado[]>([])
+  const [reqEntries, setReqEntries] = useState<Record<string, EntryState>>({})
+  const [savingAll,  setSavingAll]  = useState(false)
+  const [saveMsg,    setSaveMsg]    = useState('')
+  const [formErr,    setFormErr]    = useState('')
 
   /* worklist amostra search */
-  const [wSearch, setWSearch]   = useState('')
-  const [wResult, setWResult]   = useState<{_id:string; codigoAmostra:string; utenteNome:string}[]>([])
-  const [wLoading, setWLoading] = useState(false)
+  const [wSearch,     setWSearch]     = useState('')
+  const [wResult,     setWResult]     = useState<{ _id: string; codigoAmostra: string; utenteNome: string }[]>([])
+  const [wLoading,    setWLoading]    = useState(false)
   const [wGenerating, setWGenerating] = useState(false)
-  const [wMsg, setWMsg]         = useState('')
+  const [wMsg,        setWMsg]        = useState('')
 
   const debTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wTimer   = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const canWrite = ['administrador','tecnico'].includes(user?.role ?? '')
+  const canWrite = ['administrador', 'tecnico'].includes(user?.role ?? '')
 
   useEffect(() => {
     if (debTimer.current) clearTimeout(debTimer.current)
@@ -157,28 +149,22 @@ export default function Analise({ seg }: { seg: Seg }) {
   const fetchResultados = () => {
     setLoading(true)
     api.get('/resultados', {
-      params: {
-        estado:    filter === 'todas' ? undefined : filter,
-        categoria: catFilter === 'todas' ? undefined : catFilter,
-        search:    debSearch, page, limit: 50
-      }
+      params: { estado: filter === 'todas' ? undefined : filter, search: debSearch, page, limit: 100 }
     }).then(({ data }) => {
       setResultados(data.data); setTotal(data.total); setPages(data.pages)
     }).finally(() => setLoading(false))
   }
 
-  useEffect(() => { fetchResultados() }, [filter, catFilter, debSearch, page])
+  useEffect(() => { fetchResultados() }, [filter, debSearch, page])
 
   useEffect(() => {
     api.get('/resultados/stats').then(({ data }) => setStats(data)).catch(() => {})
-    api.get('/resultados/categorias').then(({ data }) => setCategorias(data)).catch(() => {})
   }, [resultados])
 
-  /* group by category */
-  const grouped = resultados.reduce<Record<string, Resultado[]>>((acc, r) => {
-    const cat = r.analise.categoria
-    if (!acc[cat]) acc[cat] = []
-    acc[cat].push(r)
+  /* group by requisição */
+  const byReq = resultados.reduce<Record<string, Resultado[]>>((acc, r) => {
+    if (!acc[r.requisicaoNumero]) acc[r.requisicaoNumero] = []
+    acc[r.requisicaoNumero].push(r)
     return acc
   }, {})
 
@@ -207,57 +193,62 @@ export default function Analise({ seg }: { seg: Seg }) {
     } finally { setWGenerating(false) }
   }
 
-  const openEntry = (r: Resultado) => {
-    const ref = REF[r.analise.codigo]
-    setSelected(r)
-    setFValor(r.valor ?? '')
-    setFUnidade(r.unidade ?? ref?.unidade ?? '')
-    setFFlag(r.flag === 'pendente' ? 'normal' : r.flag)
-    setFEquip(r.equipamento ?? EQUIP[r.analise.codigo] ?? '')
-    setFObs(r.observacoes ?? '')
-    setFormErr('')
-    setPanel('entry')
-    if (r.estado === 'pendente') {
+  const openReq = (reqNumero: string) => {
+    const items = byReq[reqNumero] ?? []
+    setReqItems(items)
+    const entries: Record<string, EntryState> = {}
+    items.forEach(r => {
+      const ref = REF[r.analise.codigo]
+      entries[r._id] = {
+        valor:    r.valor      ?? '',
+        unidade:  r.unidade    ?? ref?.unidade ?? '',
+        flag:     r.flag === 'pendente' ? 'normal' : r.flag,
+        equip:    r.equipamento ?? EQUIP[r.analise.codigo] ?? '',
+        obs:      r.observacoes ?? '',
+      }
+    })
+    setReqEntries(entries)
+    setSaveMsg(''); setFormErr('')
+    setPanel('req')
+    /* marcar os pendentes como em_processamento */
+    items.filter(r => r.estado === 'pendente').forEach(r => {
       api.put(`/resultados/${r._id}`, { estado: 'em_processamento' }).catch(() => {})
+    })
+  }
+
+  const updateEntry = (id: string, patch: Partial<EntryState>) =>
+    setReqEntries(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
+
+  const handleSaveAll = async () => {
+    const missing = reqItems.filter(r => !reqEntries[r._id]?.valor.trim())
+    if (missing.length > 0) {
+      setFormErr(`Faltam valores em: ${missing.map(r => r.analise.nome).join(', ')}`)
+      return
     }
-  }
-
-  const fetchReqEstado = (r: Resultado) => {
-    setReqEstado(null)
-    api.get(`/requisicoes/${(r as unknown as Record<string,string>).requisicao}`)
-      .then(res => setReqEstado(res.data.estado)).catch(() => {})
-  }
-  const openDetail = (r: Resultado) => { setSelected(r); setPanel('detail'); fetchReqEstado(r) }
-  const closePanel = () => { setPanel(null); setSelected(null); setFormErr(''); setWMsg(''); setReqEstado(null) }
-
-  const handleValorChange = (v: string) => {
-    setFValor(v)
-    if (selected) setFFlag(calcFlag(v, selected.analise.codigo))
-  }
-
-  const handleSave = async () => {
-    if (!fValor.trim()) return setFormErr('Introduza o valor do resultado')
-    if (!selected) return
-    setSaving(true); setFormErr('')
+    setSavingAll(true); setFormErr(''); setSaveMsg('')
     try {
-      const ref = REF[selected.analise.codigo]
-      await api.put(`/resultados/${selected._id}`, {
-        valor:       fValor,
-        unidade:     fUnidade,
-        flag:        fFlag,
-        estado:      'resultado_disponivel',
-        equipamento: fEquip || undefined,
-        observacoes: fObs   || undefined,
-        refMin:      ref?.min,
-        refMax:      ref?.max,
-      })
-      closePanel(); fetchResultados()
+      await Promise.all(reqItems.map(r => {
+        const e   = reqEntries[r._id]
+        const ref = REF[r.analise.codigo]
+        return api.put(`/resultados/${r._id}`, {
+          valor:       e.valor,
+          unidade:     e.unidade,
+          flag:        e.flag,
+          estado:      'resultado_disponivel',
+          equipamento: e.equip  || undefined,
+          observacoes: e.obs    || undefined,
+          refMin:      ref?.min,
+          refMax:      ref?.max,
+        })
+      }))
+      setSaveMsg('✓ Todos os resultados guardados com sucesso')
+      fetchResultados()
     } catch (err: any) {
-      setFormErr(err.response?.data?.message ?? 'Erro ao guardar resultado')
-    } finally { setSaving(false) }
+      setFormErr(err.response?.data?.message ?? 'Erro ao guardar resultados')
+    } finally { setSavingAll(false) }
   }
 
-  const fmt = (d: string) => new Date(d).toLocaleDateString('pt-PT')
+  const closePanel = () => { setPanel(null); setReqItems([]); setReqEntries({}); setSaveMsg(''); setFormErr(''); setWMsg('') }
 
   return (
     <motion.div
@@ -296,7 +287,7 @@ export default function Analise({ seg }: { seg: Seg }) {
       {/* toolbar */}
       <div className="an-toolbar">
         <div className="an-tabs">
-          {(['todas','pendente','em_processamento','resultado_disponivel'] as FiltroEstado[]).map(e => (
+          {(['todas', 'pendente', 'em_processamento', 'resultado_disponivel'] as FiltroEstado[]).map(e => (
             <button key={e} className={`an-tab ${filter === e ? 'an-tab--on' : ''}`}
               onClick={() => { setFilter(e); setPage(1) }}>
               {e === 'todas' ? 'Todas' : ESTADO_LABEL[e as EstadoR]}
@@ -304,12 +295,7 @@ export default function Analise({ seg }: { seg: Seg }) {
           ))}
         </div>
         <div className="an-toolbar-row2">
-          <select className="an-select" value={catFilter}
-            onChange={e => { setCatFilter(e.target.value); setPage(1) }}>
-            <option value="todas">todas as categorias</option>
-            {categorias.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <input className="an-search" placeholder="análise · utente · amostra…"
+          <input className="an-search" placeholder="requisição · utente · amostra…"
             value={search} onChange={e => setSearch(e.target.value)} />
           {canWrite && (
             <button className="an-btn-wl" onClick={() => { setWSearch(''); setWMsg(''); setPanel('worklist') }}>
@@ -319,53 +305,54 @@ export default function Analise({ seg }: { seg: Seg }) {
         </div>
       </div>
 
-      {/* list grouped by category */}
+      {/* list grouped by requisição */}
       <div className="an-list-area">
         {loading ? (
           <div className="an-msg">a carregar…</div>
-        ) : resultados.length === 0 ? (
+        ) : Object.keys(byReq).length === 0 ? (
           <div className="an-msg">sem resultados na worklist</div>
         ) : (
-          Object.entries(grouped).map(([cat, items]) => (
-            <div key={cat} className="an-group">
-              <div className="an-group-title">{cat}</div>
-              {items.map((r, i) => (
-                <motion.div key={r._id} className="an-row"
-                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.02 }}
-                  onClick={() => r.estado === 'resultado_disponivel' ? openDetail(r) : openEntry(r)}>
+          Object.entries(byReq).map(([reqNum, items]) => {
+            const allDone  = items.every(r => r.estado === 'resultado_disponivel')
+            const pending  = items.filter(r => r.estado !== 'resultado_disponivel').length
+            const hasCrit  = items.some(r => r.flag === 'critico_alto' || r.flag === 'critico_baixo')
+            const utente   = items[0]?.utenteNome ?? ''
+            const amostra  = items[0]?.codigoAmostra ?? ''
 
-                  <div className="an-row-analise">
-                    <span className="an-row-cod">{r.analise.codigo}</span>
-                    <span className="an-row-nome">{r.analise.nome}</span>
-                  </div>
+            return (
+              <motion.div key={reqNum} className={`an-req-group ${hasCrit ? 'an-req-group--crit' : ''}`}
+                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                onClick={() => openReq(reqNum)}>
 
-                  <div className="an-row-mid">
-                    <span className="an-row-amostra">{r.codigoAmostra}</span>
-                    <span className="an-sep">·</span>
-                    <span className="an-row-utente">{r.utenteNome}</span>
+                <div className="an-req-group-hd">
+                  <span className="an-req-num">{reqNum}</span>
+                  <span className="an-req-utente">{utente}</span>
+                  <span className="an-req-amostra">{amostra}</span>
+                  <div className="an-req-badges">
+                    {hasCrit && <span className="an-req-crit-badge">⬆ crítico</span>}
+                    <span className={`an-req-status ${allDone ? 'an-req-status--done' : 'an-req-status--pend'}`}>
+                      {allDone ? '✓ Completo' : `${pending} pendente${pending !== 1 ? 's' : ''}`}
+                    </span>
                   </div>
+                  <span className="an-arr">→</span>
+                </div>
 
-                  <div className="an-row-right">
-                    {r.equipamento && <span className="an-equip">{r.equipamento}</span>}
-                    {r.valor && (
-                      <span className={`an-valor an-valor--${r.flag}`}>
-                        {r.valor} {r.unidade}
-                        {FLAG_ICON[r.flag] && <span className="an-flag-icon">{FLAG_ICON[r.flag]}</span>}
-                      </span>
-                    )}
-                    <span className={`an-badge an-badge--${r.estado}`}>{ESTADO_LABEL[r.estado]}</span>
-                    <span className="an-arr">→</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ))
+                <div className="an-req-tags">
+                  {items.map(r => (
+                    <span key={r._id} className={`an-req-tag an-req-tag--${r.estado} ${(r.flag === 'critico_alto' || r.flag === 'critico_baixo') ? 'an-req-tag--crit' : ''}`}>
+                      {r.analise.codigo}
+                      {FLAG_ICON[r.flag] && <span className="an-req-tag-flag">{FLAG_ICON[r.flag]}</span>}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )
+          })
         )}
         {pages > 1 && (
           <div className="an-pag">
             <button className="an-pag-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</button>
-            <span className="an-pag-info">{page} / {pages}</span>
+            <span className="an-pag-info">{page} / {pages} · {total} resultados</span>
             <button className="an-pag-btn" disabled={page >= pages} onClick={() => setPage(p => p + 1)}>›</button>
           </div>
         )}
@@ -382,8 +369,7 @@ export default function Analise({ seg }: { seg: Seg }) {
               <button className="an-back an-back--panel" onClick={closePanel}>← fechar</button>
               <div className="an-panel-label">
                 {panel === 'worklist' ? 'Gerar Worklist'
-                  : panel === 'detail' ? selected?.analise.nome
-                  : `Introduzir resultado · ${selected?.analise.nome}`}
+                  : `Introduzir resultados · ${reqItems[0]?.requisicaoNumero ?? ''}`}
               </div>
             </div>
 
@@ -418,146 +404,84 @@ export default function Analise({ seg }: { seg: Seg }) {
               </div>
             )}
 
-            {/* ── RESULT DETAIL ── */}
-            {panel === 'detail' && selected && (
-              <div className="an-detail">
-                <div className="an-detail-header">
-                  <div className="an-detail-cod">{selected.codigoResultado}</div>
-                  <span className={`an-flag-badge an-flag-badge--${selected.flag}`}>
-                    {FLAG_ICON[selected.flag]} {selected.flag.replace('_', ' ')}
-                  </span>
-                  {reqEstado && (
-                    <span className={`an-req-estado an-req-estado--${reqEstado}`}>
-                      REQ {reqEstado.replace(/_/g,' ')}
-                    </span>
-                  )}
+            {/* ── REQUISIÇÃO PANEL — introduzir todos os valores ── */}
+            {panel === 'req' && (
+              <div className="an-req-form">
+                <div className="an-req-form-info">
+                  <span className="an-req-form-num">{reqItems[0]?.requisicaoNumero}</span>
+                  <span className="an-req-form-utente">{reqItems[0]?.utenteNome}</span>
+                  <span className="an-req-form-count">{reqItems.length} análise{reqItems.length !== 1 ? 's' : ''}</span>
                 </div>
 
-                <div className="an-result-display">
-                  <div className="an-result-valor">{selected.valor}</div>
-                  <div className="an-result-unidade">{selected.unidade}</div>
-                </div>
-
-                {(selected.refMin !== undefined || selected.refMax !== undefined) && (
-                  <div className="an-ref-bar-wrap">
-                    <div className="an-ref-label">Valores de referência</div>
-                    <div className="an-ref-range">
-                      {selected.refMin !== undefined && <span>{selected.refMin}</span>}
-                      <span className="an-ref-dash">—</span>
-                      {selected.refMax !== undefined && <span>{selected.refMax}</span>}
-                      <span className="an-ref-unit">{selected.unidade}</span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="an-dfields">
-                  <DField l="Análise"    v={`${selected.analise.codigo} · ${selected.analise.nome}`} />
-                  <DField l="Amostra"    v={selected.codigoAmostra} />
-                  <DField l="Utente"     v={selected.utenteNome} />
-                  <DField l="Requisição" v={selected.requisicaoNumero} />
-                  {selected.equipamento && <DField l="Equipamento" v={selected.equipamento} />}
-                  {selected.observacoes && <DField l="Observações" v={selected.observacoes} />}
-                  <DField l="Data"       v={fmt(selected.createdAt)} />
-                </div>
-
-                {canWrite && (
-                  <button className="an-btn-reedit" onClick={() => openEntry(selected)}>
-                    Corrigir resultado
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* ── ENTRY FORM ── */}
-            {panel === 'entry' && selected && (
-              <div className="an-form">
                 {formErr && <div className="an-form-err">{formErr}</div>}
+                {saveMsg && <div className="an-form-ok">{saveMsg}</div>}
 
-                <div className="an-entry-header">
-                  <div className="an-entry-analise">{selected.analise.nome}</div>
-                  <div className="an-entry-meta">{selected.codigoAmostra} · {selected.utenteNome}</div>
-                  {(() => {
-                    const ref = REF[selected.analise.codigo]
-                    if (!ref || ref.tipo === 'text') return null
+                <div className="an-req-rows">
+                  {reqItems.map(r => {
+                    const entry = reqEntries[r._id] ?? { valor: '', unidade: '', flag: 'normal' as Flag, equip: '', obs: '' }
+                    const ref   = REF[r.analise.codigo]
+                    const isCrit = entry.flag === 'critico_alto' || entry.flag === 'critico_baixo'
+
                     return (
-                      <div className="an-entry-ref">
-                        Ref: {ref.min ?? '–'} – {ref.max ?? '–'} {ref.unidade}
-                        {ref.criticoMax && <span className="an-crit-warn"> · crítico &gt;{ref.criticoMax}</span>}
-                        {ref.criticoMin && <span className="an-crit-warn"> · crítico &lt;{ref.criticoMin}</span>}
+                      <div key={r._id} className={`an-rr ${isCrit ? 'an-rr--crit' : ''}`}>
+                        <div className="an-rr-hd">
+                          <span className="an-rr-cod">{r.analise.codigo}</span>
+                          <span className="an-rr-nome">{r.analise.nome}</span>
+                          {ref && ref.tipo !== 'text' && (
+                            <span className="an-rr-ref">
+                              ref: {ref.min ?? '–'} – {ref.max ?? '–'} {ref.unidade}
+                            </span>
+                          )}
+                          {r.estado === 'resultado_disponivel' && (
+                            <span className="an-rr-done">✓</span>
+                          )}
+                        </div>
+
+                        <div className="an-rr-inputs">
+                          <input className="an-input an-input--sm"
+                            placeholder={ref?.tipo === 'text' ? 'ex: Negativo, Ver relatório…' : '0.00'}
+                            value={entry.valor}
+                            onChange={e => {
+                              const val  = e.target.value
+                              const flag = calcFlag(val, r.analise.codigo)
+                              updateEntry(r._id, { valor: val, flag })
+                            }} />
+                          <input className="an-input an-input--sm an-input--unit"
+                            placeholder="unidade"
+                            value={entry.unidade}
+                            onChange={e => updateEntry(r._id, { unidade: e.target.value })} />
+                          {entry.flag !== 'normal' && entry.flag !== 'pendente' && (
+                            <span className={`an-rr-flag an-rr-flag--${entry.flag}`}>
+                              {FLAG_ICON[entry.flag]} {entry.flag.replace(/_/g, ' ')}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="an-rr-extra">
+                          <input className="an-input an-input--sm" placeholder={EQUIP[r.analise.codigo] ?? 'equipamento'}
+                            value={entry.equip}
+                            onChange={e => updateEntry(r._id, { equip: e.target.value })} />
+                          <input className="an-input an-input--sm" placeholder="observações (opcional)"
+                            value={entry.obs}
+                            onChange={e => updateEntry(r._id, { obs: e.target.value })} />
+                        </div>
                       </div>
                     )
-                  })()}
-                </div>
-
-                <div className="an-fsection">
-                  <div className="an-row2">
-                    <div className="an-ff">
-                      <label className="an-ff-label">Valor *</label>
-                      <input className="an-input an-input--valor"
-                        value={fValor} onChange={e => handleValorChange(e.target.value)}
-                        placeholder={REF[selected.analise.codigo]?.tipo === 'text' ? 'ex: Negativo, Ver relatório…' : '0.00'}
-                        autoFocus />
-                    </div>
-                    <div className="an-ff">
-                      <label className="an-ff-label">Unidade</label>
-                      <input className="an-input" value={fUnidade} onChange={e => setFUnidade(e.target.value)} />
-                    </div>
-                  </div>
-
-                  {fValor && (
-                    <div className={`an-flag-preview an-flag-preview--${fFlag}`}>
-                      {fFlag === 'normal' ? '✓ Dentro dos valores de referência'
-                        : fFlag === 'alto' ? '↑ Acima do valor máximo'
-                        : fFlag === 'baixo' ? '↓ Abaixo do valor mínimo'
-                        : fFlag === 'critico_alto' ? '⬆ VALOR CRÍTICO — acima do limite crítico'
-                        : fFlag === 'critico_baixo' ? '⬇ VALOR CRÍTICO — abaixo do limite crítico'
-                        : ''}
-                    </div>
-                  )}
-
-                  <div className="an-ff">
-                    <label className="an-ff-label">Flag (auto-calculado)</label>
-                    <select className="an-input" value={fFlag} onChange={e => setFFlag(e.target.value as Flag)}>
-                      <option value="normal">Normal</option>
-                      <option value="alto">Alto ↑</option>
-                      <option value="baixo">Baixo ↓</option>
-                      <option value="critico_alto">Crítico alto ⬆</option>
-                      <option value="critico_baixo">Crítico baixo ⬇</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="an-fsection">
-                  <div className="an-ff">
-                    <label className="an-ff-label">Equipamento</label>
-                    <input className="an-input" value={fEquip} onChange={e => setFEquip(e.target.value)} />
-                  </div>
-                  <div className="an-ff">
-                    <label className="an-ff-label">Observações</label>
-                    <textarea className="an-input" rows={2} value={fObs} onChange={e => setFObs(e.target.value)} />
-                  </div>
+                  })}
                 </div>
 
                 <div className="an-form-actions">
                   <button className="an-btn-cancel" onClick={closePanel}>Cancelar</button>
-                  <button className="an-btn-save" onClick={handleSave} disabled={saving}>
-                    {saving ? 'a guardar…' : 'Guardar resultado'}
+                  <button className="an-btn-save" onClick={handleSaveAll} disabled={savingAll}>
+                    {savingAll ? 'a guardar…' : `Guardar ${reqItems.length} resultado${reqItems.length !== 1 ? 's' : ''}`}
                   </button>
                 </div>
               </div>
             )}
+
           </motion.aside>
         )}
       </AnimatePresence>
     </motion.div>
-  )
-}
-
-function DField({ l, v }: { l: string; v: string }) {
-  return (
-    <div className="an-dfield">
-      <div className="an-dfield-l">{l}</div>
-      <div className="an-dfield-v">{v}</div>
-    </div>
   )
 }

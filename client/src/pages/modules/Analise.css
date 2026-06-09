@@ -406,3 +406,160 @@ select.an-input  { cursor: pointer; }
 .an-req-estado--em_curso  { background: rgba(90,100,200,0.1); color: #5A64C8; }
 .an-req-estado--concluida { background: rgba(46,122,80,0.1);  color: #2E7A50; }
 .an-req-estado--cancelada { background: rgba(200,0,26,0.1);   color: #C8001A; }
+
+/* ── requisição group cards (list) ── */
+.an-req-group {
+  background: rgba(40,20,0,0.04);
+  border: 1px solid rgba(40,20,0,0.08);
+  border-radius: 4px; padding: 14px 18px;
+  margin-bottom: 8px; cursor: pointer;
+  transition: background 0.14s, border-color 0.14s, transform 0.12s;
+}
+.an-req-group:hover {
+  background: rgba(40,20,0,0.07);
+  border-color: rgba(40,20,0,0.16);
+  transform: translateX(3px);
+}
+.an-req-group--crit {
+  border-left: 3px solid rgba(139,0,0,0.55);
+  background: rgba(139,0,0,0.04);
+}
+.an-req-group--crit:hover { background: rgba(139,0,0,0.07); }
+
+.an-req-group-hd {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+}
+
+.an-req-num {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 11px; letter-spacing: 0.12em;
+  color: rgba(40,20,0,0.55); flex-shrink: 0;
+}
+.an-req-utente {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 14px; font-weight: 500; color: rgba(40,20,0,0.82); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.an-req-amostra {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 10px; letter-spacing: 0.08em; color: rgba(40,20,0,0.38); flex-shrink: 0;
+}
+.an-req-badges { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+.an-req-crit-badge {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+  background: rgba(139,0,0,0.12); color: #8B0000; font-weight: 700;
+}
+.an-req-status {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+}
+.an-req-status--done { background: rgba(46,122,80,0.12); color: #1E5A38; }
+.an-req-status--pend { background: rgba(212,146,10,0.14); color: #7A4800; }
+
+.an-req-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.an-req-tag {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px; letter-spacing: 0.1em;
+  padding: 3px 8px; border-radius: 2px;
+  display: inline-flex; align-items: center; gap: 3px;
+}
+.an-req-tag--pendente            { background: rgba(40,20,0,0.07);    color: rgba(40,20,0,0.4); }
+.an-req-tag--em_processamento    { background: rgba(212,146,10,0.15); color: #7A4800; }
+.an-req-tag--resultado_disponivel{ background: rgba(46,122,80,0.12);  color: #1E5A38; }
+.an-req-tag--crit                { background: rgba(139,0,0,0.12);    color: #8B0000; font-weight: 700; }
+.an-req-tag-flag { font-size: 8px; }
+
+/* arrow hover */
+.an-req-group .an-arr {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 14px;
+  color: rgba(40,20,0,0.18); transition: color 0.12s, transform 0.12s; flex-shrink: 0;
+}
+.an-req-group:hover .an-arr { color: rgba(40,20,0,0.55); transform: translateX(3px); }
+
+/* ── req panel form ── */
+.an-req-form { padding: 20px 36px 60px; display: flex; flex-direction: column; gap: 0; }
+
+.an-req-form-info {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(40,20,0,0.05); border-radius: 4px;
+  padding: 12px 16px; margin-bottom: 20px;
+  border-left: 3px solid rgba(40,20,0,0.25);
+}
+.an-req-form-num {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 10px; letter-spacing: 0.14em; color: rgba(40,20,0,0.45); flex-shrink: 0;
+}
+.an-req-form-utente {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 15px; font-weight: 600; text-transform: uppercase;
+  color: rgba(40,20,0,0.82); flex: 1;
+}
+.an-req-form-count {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(40,20,0,0.35); flex-shrink: 0;
+}
+
+.an-form-ok {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-size: 12px;
+  color: #1E5A38; background: rgba(46,122,80,0.1);
+  border: 1px solid rgba(46,122,80,0.2);
+  border-radius: 3px; padding: 10px 14px; margin-bottom: 16px;
+}
+
+.an-req-rows { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+
+.an-rr {
+  background: rgba(40,20,0,0.04);
+  border: 1px solid rgba(40,20,0,0.08);
+  border-radius: 4px; padding: 14px 16px;
+  transition: border-color 0.12s;
+}
+.an-rr:focus-within { border-color: rgba(40,20,0,0.22); }
+.an-rr--crit { border-left: 3px solid rgba(139,0,0,0.5); background: rgba(139,0,0,0.03); }
+
+.an-rr-hd {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.an-rr-cod {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px; letter-spacing: 0.12em; color: rgba(40,20,0,0.35); flex-shrink: 0;
+}
+.an-rr-nome {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 13px; font-weight: 500; color: rgba(40,20,0,0.82); flex: 1;
+}
+.an-rr-ref {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px; letter-spacing: 0.08em; color: rgba(40,20,0,0.38); flex-shrink: 0;
+}
+.an-rr-done {
+  font-size: 11px; color: #1E5A38; flex-shrink: 0;
+}
+
+.an-rr-inputs {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.an-rr-extra {
+  display: flex; gap: 8px;
+}
+
+.an-input--sm {
+  width: auto; flex: 1; padding: 7px 10px; font-size: 12px;
+}
+.an-input--unit { max-width: 90px; flex: 0 0 90px; }
+
+.an-rr-flag {
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 8px; border-radius: 2px; white-space: nowrap; flex-shrink: 0;
+}
+.an-rr-flag--alto          { background: rgba(176,90,0,0.12);  color: #7A3800; }
+.an-rr-flag--baixo         { background: rgba(26,96,128,0.12); color: #0E4A62; }
+.an-rr-flag--critico_alto  { background: rgba(139,0,0,0.12);   color: #8B0000; font-weight: 700; }
+.an-rr-flag--critico_baixo { background: rgba(139,0,0,0.12);   color: #8B0000; font-weight: 700; }
