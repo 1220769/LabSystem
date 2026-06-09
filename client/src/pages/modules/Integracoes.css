@@ -7,7 +7,7 @@
 .int-top { margin-bottom:24px; }
 .int-num { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.18em; opacity:.4; margin-bottom:6px; }
 .int-title { font-family:'Oswald',sans-serif; font-size:clamp(48px,7vw,96px); font-weight:700; line-height:.92; letter-spacing:.03em; text-transform:uppercase; margin-bottom:10px; }
-.int-sub { font-family:'Fraunces',serif; font-size:15px; font-style:italic; opacity:.55; }
+.int-sub { font-family:'Fraunces',serif; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; opacity:.65; }
 
 /* status bar */
 .int-status-bar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; }

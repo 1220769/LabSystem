@@ -32,8 +32,9 @@
   color: rgba(40,20,0,0.88); line-height: 1; margin: 0 0 10px;
 }
 .an-sub {
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-style: italic; font-weight: 300;
-  font-size: 15px; color: rgba(40,20,0,0.65); margin: 0;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 300;
+  font-size: 13px; color: rgba(40,20,0,0.65);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 0;
 }
 
 .an-kpis { display: flex; gap: 28px; padding-bottom: 10px; flex-shrink: 0; }

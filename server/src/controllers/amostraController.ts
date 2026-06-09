@@ -54,14 +54,25 @@ export const createAmostra = async (req: AuthRequest, res: Response) => {
     const count = await Amostra.countDocuments({ codigoAmostra: { $regex: `^AM-${year}` } })
     const codigoAmostra = `AM-${year}-${String(count + 1).padStart(4, '0')}`
 
+    // presencial → colhida e entregue no mesmo acto; domiciliária → aguarda_colheita até ser feita
+    const estadoInicial = req.body.tipoColheita === 'domiciliaria' ? 'aguarda_colheita' : 'recebida'
+
     const amostra = await Amostra.create({
       ...req.body,
       codigoAmostra,
-      createdBy: req.user!._id,
+      estado:              estadoInicial,
+      enfermeiroAtribuido: req.user!._id,
+      enfermeiroNome:      req.user!.nome,
+      createdBy:           req.user!._id,
     })
 
     // requisição passa a em_curso quando a amostra é registada
     await Requisicao.findByIdAndUpdate(req.body.requisicao, { estado: 'em_curso' }).catch(() => {})
+
+    // se ficou logo recebida (colheita presencial), gerar worklist para o técnico
+    if (estadoInicial === 'recebida') {
+      gerarWorklistAutomatico(String(amostra._id), req.user!._id as import('mongoose').Types.ObjectId).catch(() => {})
+    }
 
     res.status(201).json(amostra)
   } catch (err: unknown) {

@@ -153,10 +153,11 @@
 
 .seg-label-desc {
   font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-style: italic;
   font-weight: 300;
-  font-size: 11px;
-  color: rgba(10,10,8,0.35);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(10,10,8,0.38);
   margin-top: 3px;
   white-space: nowrap;
 }

@@ -7,7 +7,7 @@
 .eq-top { margin-bottom: 28px; }
 .eq-num { font-family: 'DM Mono',monospace; font-size: 11px; letter-spacing: .18em; opacity: .45; margin-bottom: 6px; }
 .eq-title { font-family: 'Oswald',sans-serif; font-size: clamp(48px,7vw,96px); font-weight: 700; line-height: .92; letter-spacing: .03em; text-transform: uppercase; margin-bottom: 10px; }
-.eq-sub { font-family: 'Fraunces',serif; font-size: 15px; font-style: italic; opacity: .6; }
+.eq-sub { font-family: 'Fraunces',serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; opacity: .65; }
 
 /* KPIs */
 .eq-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 24px; }

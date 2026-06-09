@@ -57,10 +57,11 @@
 
 .rq-sub {
   font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif;
-  font-style: italic;
   font-weight: 300;
-  font-size: 15px;
+  font-size: 13px;
   color: rgba(12, 24, 40, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   margin: 0;
 }
 

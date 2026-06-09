@@ -40,8 +40,9 @@
   color: rgba(255,240,235,0.92); line-height: 1; margin: 0 0 10px;
 }
 .col-sub {
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-style: italic; font-weight: 300;
-  font-size: 15px; color: rgba(255,240,235,0.45); margin: 0;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 300;
+  font-size: 13px; color: rgba(255,240,235,0.55);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 0;
 }
 
 .col-kpis { display: flex; gap: 28px; padding-bottom: 10px; flex-shrink: 0; }

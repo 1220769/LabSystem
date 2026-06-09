@@ -2,7 +2,25 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import { useSocket } from '../hooks/useSocket'
+import { useAuthStore } from '../store/authStore'
 import './NotificationBell.css'
+
+// Para staff: link da notificação → rota do módulo
+const STAFF_NAV: Record<string, string> = {
+  fatura:     '/modulo/6',
+  colheita:   '/modulo/3',
+  analise:    '/modulo/4',
+  resultado:  '/modulo/5',
+  requisicao: '/modulo/2',
+}
+
+const ROLE_HOME: Record<string, string> = {
+  administrador: '/',
+  medico:        '/medico',
+  tecnico:       '/tecnico',
+  enfermeiro:    '/private',
+  utente:        '/portal',
+}
 
 type NotifTipo = 'resultado' | 'critico' | 'requisicao' | 'fatura'
 
@@ -45,6 +63,7 @@ interface Props {
 
 export default function NotificationBell({ theme = 'light' }: Props) {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [open,          setOpen]          = useState(false)
   const [notifications, setNotifications] = useState<INotification[]>([])
   const [unread,        setUnread]        = useState(0)
@@ -105,9 +124,16 @@ export default function NotificationBell({ theme = 'light' }: Props) {
   async function handleNotifClick(n: INotification) {
     if (!n.lida) await markRead(n._id)
     setOpen(false)
-    if (n.link) {
-      // navega para o portal na tab correta
+    if (!n.link) return
+
+    const role = user?.role ?? 'utente'
+    if (role === 'utente') {
+      // utente vai para o portal com a tab correcta
       navigate('/portal', { state: { tab: n.link } })
+    } else {
+      // staff → módulo correspondente ou página home do papel
+      const dest = STAFF_NAV[n.link] ?? ROLE_HOME[role] ?? '/'
+      navigate(dest)
     }
   }
 

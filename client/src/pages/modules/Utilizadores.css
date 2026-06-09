@@ -67,8 +67,9 @@
   color: rgba(240,235,225,0.88); line-height: 1; margin: 0 0 10px;
 }
 .uz-sub {
-  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-style: italic; font-weight: 300;
-  font-size: 15px; color: rgba(240,235,225,0.38); margin: 0;
+  font-family: 'GFS Didot', 'Didot', 'Bodoni MT', Georgia, serif; font-weight: 300;
+  font-size: 13px; color: rgba(240,235,225,0.52);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 0;
 }
 
 .uz-kpis { display: flex; gap: 28px; padding-bottom: 10px; flex-shrink: 0; }

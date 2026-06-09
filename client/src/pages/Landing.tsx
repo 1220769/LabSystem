@@ -178,7 +178,7 @@ export default function Landing() {
           <span className="landing-user-role">{user?.role}</span>
         </div>
         <div className="landing-topbar-right">
-          <NotificationBell theme="dark" />
+          <NotificationBell theme="light" />
           <button className="landing-logout" onClick={handleLogout}>Sair</button>
         </div>
       </div>
