@@ -1,1 +1,317 @@
-.staff-portal--medico { --staff-accent: #3F7890; --staff-accent-soft: rgba(63,120,144,0.1); }
+.staff-portal--medico {
+  --med-accent:      #3F7890;
+  --med-accent-soft: rgba(63,120,144,0.1);
+  --med-ok:          #2E7A50;
+  --med-warn:        #C87800;
+  --med-danger:      #C8001A;
+}
+
+/* ── KPIs ── */
+.med-kpis { display: flex; gap: 14px; }
+
+.med-kpi {
+  display: flex; flex-direction: column;
+  padding: 16px 18px 14px; background: #fff;
+  border: 1px solid rgba(26,18,8,0.07); border-radius: 10px;
+  cursor: pointer; text-align: left; min-width: 130px;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+}
+.med-kpi:hover { border-color: rgba(63,120,144,0.3); box-shadow: 0 4px 16px rgba(26,18,8,0.07); transform: translateY(-1px); }
+.med-kpi--action { border-color: rgba(63,120,144,0.28); }
+.med-kpi--crit   { border-color: rgba(200,0,26,0.28); animation: med-pulse 2.2s ease-in-out infinite; }
+@keyframes med-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(200,0,26,0); }
+  50%      { box-shadow: 0 0 0 4px rgba(200,0,26,0.1); }
+}
+
+.med-kpi-icon { font-size: 18px; margin-bottom: 10px; opacity: 0.35; }
+.med-kpi-val  { font-size: 38px; line-height: 1; color: rgba(26,18,8,0.82); margin-bottom: 5px; }
+.med-kpi-lbl  { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26,18,8,0.34); }
+.med-kpi--action .med-kpi-val { color: var(--med-accent); }
+.med-kpi--crit   .med-kpi-val { color: var(--med-danger); }
+
+/* ── TABS ── */
+.med-tabs { padding-top: 0; }
+.med-tab {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 12px 22px; border: 0; border-bottom: 2px solid transparent;
+  background: transparent; color: rgba(26,18,8,0.38); cursor: pointer; margin-bottom: -1px;
+  transition: color 0.15s;
+}
+.med-tab:hover { color: rgba(26,18,8,0.65); }
+.med-tab--on { color: var(--med-accent); border-bottom-color: var(--med-accent); }
+.med-tab-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 17px; height: 17px; border-radius: 9px; padding: 0 4px;
+  background: var(--med-accent); color: #fff; font-size: 9px;
+}
+
+/* ── SECTION ── */
+.med-section {
+  background: #fff; border: 1px solid rgba(26,18,8,0.07);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(26,18,8,0.04);
+}
+
+.med-toolbar {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 16px 22px; border-bottom: 1px solid rgba(26,18,8,0.06);
+  background: rgba(26,18,8,0.015);
+}
+.med-stitle { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(26,18,8,0.48); }
+.med-ssub   { font-size: 10px; font-style: italic; color: rgba(26,18,8,0.3); margin-top: 2px; }
+.med-count  { font-size: 10px; letter-spacing: 0.06em; color: rgba(26,18,8,0.28); margin-left: auto; flex-shrink: 0; }
+
+.med-search {
+  flex: 1; min-width: 180px; background: #fff;
+  border: 1px solid rgba(26,18,8,0.1); border-radius: 4px;
+  padding: 7px 12px; font-family: 'GFS Didot','Didot',Georgia,serif;
+  font-size: 12px; color: rgba(26,18,8,0.78); outline: none; transition: border-color 0.15s;
+}
+.med-search:focus { border-color: rgba(63,120,144,0.35); }
+.med-search::placeholder { color: rgba(26,18,8,0.25); }
+
+.med-filter-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.med-filter {
+  font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 3px;
+  border: 1px solid rgba(26,18,8,0.12); background: #fff;
+  color: rgba(26,18,8,0.45); cursor: pointer; transition: all 0.15s;
+}
+.med-filter:hover { border-color: rgba(63,120,144,0.35); color: var(--med-accent); }
+.med-filter--on   { background: var(--med-accent); border-color: var(--med-accent); color: #fff; }
+
+/* ── LOADING / EMPTY ── */
+.med-loading { overflow: hidden; }
+.med-loading-bar {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--med-accent), transparent);
+  animation: med-load 1.5s ease-in-out infinite;
+}
+@keyframes med-load { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+.med-empty {
+  padding: 52px 24px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+}
+.med-empty-icon  { font-size: 28px; opacity: 0.15; }
+.med-empty-title { font-size: 16px; color: rgba(26,18,8,0.45); }
+.med-empty-sub   { font-size: 12px; font-style: italic; color: rgba(26,18,8,0.3); }
+
+/* ── CARDS POR REQUISIÇÃO ── */
+.med-req-list { padding: 14px 22px 22px; display: flex; flex-direction: column; gap: 10px; }
+
+.med-req-card {
+  background: #fafafa; border: 1px solid rgba(26,18,8,0.08);
+  border-radius: 8px; padding: 16px 18px;
+  cursor: pointer; transition: border-color 0.14s, box-shadow 0.14s, transform 0.12s;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+}
+.med-req-card:hover {
+  border-color: rgba(63,120,144,0.3);
+  box-shadow: 0 3px 14px rgba(26,18,8,0.07);
+  transform: translateX(3px);
+}
+.med-req-card--crit {
+  border-left: 3px solid rgba(200,0,26,0.55);
+  background: rgba(200,0,26,0.02);
+}
+.med-req-card--crit:hover { border-color: rgba(200,0,26,0.45); }
+.med-req-card--req { cursor: default; }
+.med-req-card--req:hover { transform: none; box-shadow: none; }
+.med-req-card--urgente { border-left: 3px solid rgba(200,120,0,0.55); }
+
+.med-req-card-hd {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.med-req-left  { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.med-req-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.med-req-num {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(26,18,8,0.38); flex-shrink: 0;
+}
+.med-req-utente {
+  font-size: 15px; font-weight: 500; color: rgba(26,18,8,0.82);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.med-req-date {
+  font-size: 10px; color: rgba(26,18,8,0.3); flex-shrink: 0;
+}
+.med-req-count {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 2px;
+  background: var(--med-accent-soft); color: var(--med-accent);
+}
+.med-req-arrow {
+  font-size: 13px; color: rgba(26,18,8,0.22);
+  transition: color 0.12s, transform 0.12s;
+}
+.med-req-card:not(.med-req-card--req):hover .med-req-arrow { color: var(--med-accent); transform: translateX(4px); }
+
+.med-crit-chip {
+  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+  background: rgba(200,0,26,0.1); color: var(--med-danger); font-weight: 700;
+}
+.med-urgente-chip {
+  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+  background: rgba(200,120,0,0.1); color: var(--med-warn); font-weight: 700;
+}
+.med-req-estado {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 2px;
+}
+
+/* linhas de resultado dentro do card */
+.med-req-results { display: flex; flex-direction: column; gap: 5px; }
+.med-req-result-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 0; border-top: 1px solid rgba(26,18,8,0.04);
+}
+.med-req-result-nome  { flex: 1; font-size: 13px; color: rgba(26,18,8,0.72); }
+.med-req-result-valor { font-size: 14px; font-weight: 500; flex-shrink: 0; }
+.med-req-result-flag  { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; flex-shrink: 0; }
+
+/* tags de análises (tab requisições) */
+.med-req-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.med-req-tag  { font-size: 10px; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 3px; }
+
+/* ── CRÍTICOS ── */
+.med-crit-card {
+  background: rgba(200,0,26,0.03); border: 1px solid rgba(200,0,26,0.18);
+  border-radius: 8px; padding: 14px 18px;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+}
+.med-crit-card-hd {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.med-crit-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--med-danger); flex-shrink: 0;
+  animation: med-cdot 1.2s ease-in-out infinite;
+}
+@keyframes med-cdot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.4; transform:scale(.7); } }
+.med-crit-card-body {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+}
+.med-crit-analise { font-size: 15px; flex: 1; color: rgba(26,18,8,0.82); }
+.med-crit-valor   { font-size: 22px; font-weight: 600; }
+.med-crit-flag    { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; font-weight: 700; }
+.med-crit-tec     { font-size: 10px; font-style: italic; color: rgba(26,18,8,0.35); margin-top: 8px; }
+
+/* ── PAINEL LATERAL ── */
+.med-side-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(500px, 100vw); background: #F8F6F2;
+  display: flex; flex-direction: column; z-index: 500;
+  overflow-y: auto; box-shadow: -20px 0 60px rgba(26,18,8,0.12);
+}
+
+.med-panel-hd {
+  position: sticky; top: 0; background: #F8F6F2;
+  padding: 20px 26px 16px;
+  border-bottom: 1px solid rgba(26,18,8,0.08); z-index: 10;
+}
+.med-panel-hd--crit { background: rgba(200,0,26,0.03); border-bottom-color: rgba(200,0,26,0.15); }
+.med-panel-back {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  background: none; border: none; cursor: pointer;
+  color: rgba(26,18,8,0.3); padding: 0; transition: color 0.15s;
+  display: block; margin-bottom: 8px; font-family: 'GFS Didot','Didot',Georgia,serif;
+}
+.med-panel-back:hover { color: rgba(26,18,8,0.65); }
+.med-panel-label { font-size: 20px; letter-spacing: 0.02em; color: rgba(26,18,8,0.82); font-family: 'GFS Didot','Didot',Georgia,serif; }
+.med-panel-sub   { font-size: 11px; color: rgba(26,18,8,0.35); margin-top: 3px; font-family: 'GFS Didot','Didot',Georgia,serif; }
+
+.med-panel-body { padding: 20px 26px 60px; }
+
+/* resultados no painel */
+.med-val-results { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+
+.med-result-card {
+  background: rgba(26,18,8,0.02); border: 1px solid;
+  border-radius: 8px; padding: 16px 18px;
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+}
+.med-result-card--crit { border-left: 3px solid rgba(200,0,26,0.5) !important; background: rgba(200,0,26,0.02); }
+
+.med-result-top {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.med-result-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.med-result-nome {
+  font-size: 14px; font-weight: 500; color: rgba(26,18,8,0.82);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.med-cat-tag {
+  font-size: 8px; letter-spacing: 0.09em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px; flex-shrink: 0;
+}
+
+.med-btn-validar-um {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(46,122,80,0.1); border: 1px solid rgba(46,122,80,0.25);
+  color: var(--med-ok); font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; font-family: 'GFS Didot','Didot',Georgia,serif;
+}
+.med-btn-validar-um:hover { background: var(--med-ok); color: #fff; }
+.med-btn-validar-um:disabled { opacity: 0.4; cursor: default; }
+
+.med-result-val-big {
+  font-size: 44px; font-style: italic; line-height: 1; margin-bottom: 6px;
+}
+.med-result-unit { font-size: 18px; color: rgba(26,18,8,0.45); }
+.med-result-row2 { display: flex; align-items: center; gap: 10px; }
+.med-flag-badge {
+  font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 2px; white-space: nowrap;
+}
+.med-result-ref  { font-size: 11px; color: rgba(26,18,8,0.38); }
+.med-result-tec  { font-size: 10px; font-style: italic; color: rgba(46,122,80,0.7); margin-top: 8px; }
+.med-result-obs  { font-size: 11px; font-style: italic; color: rgba(26,18,8,0.45); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(26,18,8,0.06); }
+
+/* ação de validação global */
+.med-val-action {
+  padding-top: 16px; border-top: 1px solid rgba(26,18,8,0.08);
+}
+.med-ff { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.med-lbl {
+  font-family: 'GFS Didot','Didot',Georgia,serif;
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(26,18,8,0.3);
+}
+.med-opt { font-size: 9px; letter-spacing: 0; text-transform: none; color: rgba(26,18,8,0.28); }
+.med-input {
+  background: #fff; border: 1px solid rgba(26,18,8,0.1); border-radius: 4px;
+  padding: 8px 11px; font-family: 'GFS Didot','Didot',Georgia,serif;
+  font-size: 13px; color: rgba(26,18,8,0.82); outline: none; transition: border-color 0.15s;
+  width: 100%; box-sizing: border-box;
+}
+.med-input:focus { border-color: rgba(63,120,144,0.38); }
+.med-textarea { resize: vertical; min-height: 70px; }
+
+.med-btn { font-family: 'GFS Didot','Didot',Georgia,serif; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 9px 16px; border-radius: 3px; border: 1px solid rgba(26,18,8,0.14); background: #fff; color: rgba(26,18,8,0.55); cursor: pointer; transition: all 0.15s; }
+.med-btn--primary { background: var(--med-accent); border-color: var(--med-accent); color: #fff; }
+.med-btn--primary:hover { filter: brightness(0.9); }
+
+.med-btn--validar-all {
+  width: 100%; padding: 13px; font-size: 11px; font-family: 'GFS Didot','Didot',Georgia,serif;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--med-accent); border: none; border-radius: 6px;
+  color: #fff; cursor: pointer; transition: filter 0.15s;
+}
+.med-btn--validar-all:hover { filter: brightness(0.9); }
+.med-btn--validar-all:disabled { opacity: 0.4; cursor: default; }
+
+.med-success { font-size: 12px; color: var(--med-ok); background: rgba(46,122,80,0.07); border: 1px solid rgba(46,122,80,0.2); border-radius: 4px; padding: 8px 14px; margin-bottom: 12px; font-family: 'GFS Didot','Didot',Georgia,serif; }
+.med-err     { font-size: 12px; color: var(--med-danger); background: rgba(200,0,26,0.06); border: 1px solid rgba(200,0,26,0.18); border-radius: 4px; padding: 8px 14px; margin-bottom: 12px; font-family: 'GFS Didot','Didot',Georgia,serif; }
+
+@media (max-width: 680px) {
+  .med-kpis { gap: 8px; }
+  .med-kpi  { min-width: 0; padding: 12px 14px 10px; }
+}

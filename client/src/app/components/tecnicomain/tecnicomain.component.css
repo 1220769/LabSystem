@@ -288,11 +288,146 @@ select.tec-input { cursor: pointer; }
 .tec-pag-btn:disabled { opacity: .2; cursor: default; }
 .tec-pag-info { font-size: 10px; letter-spacing: 0.1em; color: rgba(26,18,8,0.28); }
 
+/* ── CARDS POR REQUISIÇÃO (análise + validação) ── */
+.tec-req-list { padding: 14px 22px 22px; display: flex; flex-direction: column; gap: 10px; }
+
+.tec-req-card {
+  background: #fff; border: 1px solid rgba(26,18,8,0.08);
+  border-radius: 8px; padding: 16px 18px;
+  cursor: pointer; transition: border-color 0.14s, box-shadow 0.14s, transform 0.12s;
+}
+.tec-req-card:hover {
+  border-color: rgba(45,106,159,0.3);
+  box-shadow: 0 3px 14px rgba(26,18,8,0.07);
+  transform: translateX(3px);
+}
+.tec-req-card--crit {
+  border-left: 3px solid rgba(200,0,26,0.55);
+  background: rgba(200,0,26,0.02);
+}
+.tec-req-card--crit:hover { border-color: rgba(200,0,26,0.45); }
+
+.tec-req-card-hd {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.tec-req-card-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.tec-req-card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.tec-req-num {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(26,18,8,0.38); flex-shrink: 0;
+}
+.tec-req-utente {
+  font-size: 15px; font-weight: 500; color: rgba(26,18,8,0.82);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tec-req-amostra {
+  font-size: 10px; letter-spacing: 0.08em; color: rgba(26,18,8,0.3); flex-shrink: 0;
+}
+.tec-req-count {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 2px;
+  background: rgba(45,106,159,0.08); color: var(--tec-accent);
+}
+.tec-req-arrow {
+  font-size: 13px; color: rgba(26,18,8,0.22);
+  transition: color 0.12s, transform 0.12s;
+}
+.tec-req-card:hover .tec-req-arrow { color: var(--tec-accent); transform: translateX(4px); }
+
+.tec-crit-chip {
+  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+  background: rgba(200,0,26,0.1); color: var(--tec-danger); font-weight: 700;
+}
+
+.tec-req-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.tec-req-tag {
+  font-size: 10px; letter-spacing: 0.04em;
+  padding: 3px 9px; border-radius: 3px;
+}
+.tec-req-tag--crit { font-weight: 700; outline: 1px solid rgba(200,0,26,0.3); }
+
+/* resultados dentro do card de validação */
+.tec-req-val-rows { display: flex; flex-direction: column; gap: 5px; }
+.tec-req-val-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 0; border-top: 1px solid rgba(26,18,8,0.04);
+}
+.tec-req-val-nome {
+  flex: 1; font-size: 13px; color: rgba(26,18,8,0.72);
+}
+.tec-req-val-valor {
+  font-size: 14px; font-weight: 500; flex-shrink: 0;
+}
+.tec-req-val-flag {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; flex-shrink: 0;
+}
+
+/* ── PAINEL LATERAL (análise + validação) ── */
+.tec-side-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(500px, 100vw); background: #F8F6F2;
+  display: flex; flex-direction: column; z-index: 500;
+  overflow-y: auto; box-shadow: -20px 0 60px rgba(26,18,8,0.12);
+}
+
+/* análise: lista de formulários por análise */
+.tec-req-form-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+
+.tec-req-form-item {
+  background: #fff; border: 1px solid rgba(26,18,8,0.08);
+  border-radius: 6px; padding: 14px 16px;
+  transition: border-color 0.12s;
+}
+.tec-req-form-item:focus-within { border-color: rgba(45,106,159,0.3); }
+.tec-req-form-item--crit { border-left: 3px solid rgba(200,0,26,0.5); background: rgba(200,0,26,0.02); }
+
+.tec-req-form-hd {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.tec-req-form-nome { flex: 1; font-size: 14px; color: rgba(26,18,8,0.82); font-weight: 500; }
+.tec-req-form-ref {
+  font-size: 9px; letter-spacing: 0.08em; color: rgba(26,18,8,0.35); flex-shrink: 0;
+}
+
+.tec-req-form-inputs {
+  display: flex; align-items: flex-end; gap: 8px; margin-bottom: 8px;
+}
+.tec-req-form-extra { display: flex; gap: 8px; }
+
+.tec-ff--valor { flex: 1.5; }
+.tec-ff--unit  { flex: 1; }
+.tec-ff--flag  { flex-shrink: 0; }
+
+.tec-input--sm { padding: 6px 9px; font-size: 12px; }
+.tec-input--crit { border-color: rgba(200,0,26,0.35) !important; background: rgba(200,0,26,0.02); }
+
+.tec-flag-chip {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 5px 9px; border-radius: 3px; white-space: nowrap; margin-top: 18px;
+}
+
+.tec-panel-actions {
+  display: flex; gap: 8px; padding-top: 16px;
+  border-top: 1px solid rgba(26,18,8,0.08); margin-top: 4px;
+}
+.tec-panel-actions .tec-btn--concluir { flex: 1; padding: 11px; font-size: 10px; }
+
+/* validação: results cards no painel */
+.tec-val-results { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.tec-result-card--crit { border-left: 3px solid rgba(200,0,26,0.5) !important; }
+.tec-result-row2 { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.tec-result-obs {
+  font-size: 11px; font-style: italic; color: rgba(26,18,8,0.45);
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(26,18,8,0.06);
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 980px) {
-  .tec-two       { grid-template-columns: 1fr; }
-  .tec-form-grid { grid-template-columns: repeat(2,1fr); }
-  .tec-panel-grid{ grid-template-columns: 1fr; }
+  .tec-two        { grid-template-columns: 1fr; }
+  .tec-form-grid  { grid-template-columns: repeat(2,1fr); }
+  .tec-panel-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 680px) {
   .tec-row { flex-direction: column; align-items: flex-start; }
