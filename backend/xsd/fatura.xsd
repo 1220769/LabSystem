@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <!-- ═══════════════════════════════════════════════
+       Schema de validação para FATURAS
+       LabSystem · exportação contabilística SAP (XML)
+       ═══════════════════════════════════════════════ -->
+
+  <xs:element name="faturas" type="FaturasType"/>
+
+  <xs:complexType name="FaturasType">
+    <xs:sequence>
+      <xs:element name="fatura" type="FaturaType" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="periodo" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="FaturaType">
+    <xs:sequence>
+      <xs:element name="numeroFatura"         type="xs:string"/>
+      <xs:element name="dataEmissao"          type="xs:date"/>
+      <xs:element name="utenteNome"           type="xs:string"/>
+      <xs:element name="tipo"                 type="TipoFaturaType"/>
+      <xs:element name="seguradora"           type="xs:string" minOccurs="0"/>
+      <xs:element name="valorBruto"           type="xs:decimal"/>
+      <xs:element name="percentComparticipacao" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="valorLiquido"         type="xs:decimal"/>
+      <xs:element name="estado"               type="EstadoFaturaType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="TipoFaturaType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="particular"/>
+      <xs:enumeration value="sns"/>
+      <xs:enumeration value="seguradora"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="EstadoFaturaType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="rascunho"/>
+      <xs:enumeration value="emitida"/>
+      <xs:enumeration value="paga"/>
+      <xs:enumeration value="anulada"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

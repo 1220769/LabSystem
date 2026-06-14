@@ -1,0 +1,143 @@
+import { Response } from 'express'
+import { AuthRequest } from '../middleWare/authMiddleware'
+import Utente     from '../models/utente.model'
+import Requisicao from '../models/requisicao.model'
+import Resultado  from '../models/resultado.model'
+import Fatura     from '../models/fatura.model'
+import User       from '../models/user.model'
+
+function utenteId(req: AuthRequest) {
+  return req.user?.utenteRef
+}
+
+export async function getPerfil(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.status(404).json({ message: 'Sem registo de utente associado a esta conta' })
+    const utente = await Utente.findById(id)
+    if (!utente) return res.status(404).json({ message: 'Utente não encontrado' })
+    res.json(utente)
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter perfil' })
+  }
+}
+
+export async function getRequisicoes(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.json({ data: [], total: 0 })
+    const page  = Math.max(1, parseInt(req.query.page as string) || 1)
+    const limit = 10
+    const total = await Requisicao.countDocuments({ utente: id })
+    const data  = await Requisicao.find({ utente: id })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+    res.json({ data, total, page, pages: Math.ceil(total / limit) })
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter requisições' })
+  }
+}
+
+export async function getResultados(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.json({ data: [], total: 0 })
+    const page       = Math.max(1, parseInt(req.query.page as string) || 1)
+    const limit      = 20
+    const flagFilter = req.query.flagFilter as string | undefined
+
+    const flagCondition: Record<string, unknown> = { estado: 'validado_medico' as const }
+    if (flagFilter === 'normal')   flagCondition.flag = 'normal'
+    if (flagFilter === 'alterado') flagCondition.flag = { $in: ['alto', 'baixo'] }
+    if (flagFilter === 'critico')  flagCondition.flag = { $in: ['critico_alto', 'critico_baixo'] }
+
+    const filter = { utente: id, ...flagCondition }
+    const total  = await Resultado.countDocuments(filter)
+    const data   = await Resultado.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+    res.json({ data, total, page, pages: Math.ceil(total / limit) })
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter resultados' })
+  }
+}
+
+export async function updatePerfil(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.status(404).json({ message: 'Sem registo clínico associado' })
+    const allowed = ['contacto', 'email', 'morada', 'medico']
+    const update  = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)))
+    const utente  = await Utente.findByIdAndUpdate(id, update, { new: true, runValidators: true })
+    if (!utente) return res.status(404).json({ message: 'Utente não encontrado' })
+    res.json(utente)
+  } catch {
+    res.status(500).json({ message: 'Erro ao actualizar perfil' })
+  }
+}
+
+export async function getResultadosByRequisicao(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.json({ data: [] })
+    const data = await Resultado.find({
+      utente: id,
+      requisicaoNumero: req.params.reqNumero,
+      estado: 'validado_medico',
+    }).sort({ 'analise.categoria': 1 })
+    res.json({ data })
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter resultados' })
+  }
+}
+
+export async function getFaturas(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.json({ data: [], total: 0 })
+    const total = await Fatura.countDocuments({ utente: id, estado: { $ne: 'anulada' } })
+    const data  = await Fatura.find({ utente: id, estado: { $ne: 'anulada' } })
+      .sort({ createdAt: -1 })
+      .limit(50)
+    res.json({ data, total })
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter faturas' })
+  }
+}
+
+export async function linkUtente(req: AuthRequest, res: Response) {
+  try {
+    const { nif, sns } = req.body
+    if (!nif && !sns) return res.status(400).json({ message: 'Indique NIF ou Nº SNS' })
+
+    const filter: Record<string, string> = {}
+    if (nif) filter.nif = nif.trim()
+    else if (sns) filter.sns = sns.trim()
+
+    const utente = await Utente.findOne(filter)
+    if (!utente) return res.status(404).json({ message: 'Nenhum registo clínico encontrado com esses dados' })
+
+    await User.findByIdAndUpdate(req.user!._id, { utenteRef: utente._id, linkedAt: new Date(), linkedBy: null })
+    res.json({ message: 'Conta ligada com sucesso', utente: { nome: utente.nome, sns: utente.sns } })
+  } catch {
+    res.status(500).json({ message: 'Erro ao ligar conta' })
+  }
+}
+
+export async function getSummary(req: AuthRequest, res: Response) {
+  try {
+    const id = utenteId(req)
+    if (!id) return res.json({ requisicoes: 0, resultados: 0, faturasPendentes: 0, criticos: 0 })
+    const [requisicoes, resultados, faturasPendentes, criticos] = await Promise.all([
+      Requisicao.countDocuments({ utente: id }),
+      Resultado.countDocuments({ utente: id, estado: 'validado_medico' }),
+      Fatura.countDocuments({ utente: id, estado: 'emitida' }),
+      Resultado.countDocuments({ utente: id, flag: { $in: ['critico_alto','critico_baixo'] }, estado: 'validado_medico' }),
+    ])
+    res.json({ requisicoes, resultados, faturasPendentes, criticos })
+  } catch {
+    res.status(500).json({ message: 'Erro ao obter resumo' })
+  }
+}

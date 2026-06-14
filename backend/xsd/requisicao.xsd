@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <!-- ═══════════════════════════════════════════════
+       Schema de validação para REQUISIÇÕES analíticas
+       LabSystem · troca de dados em XML
+       ═══════════════════════════════════════════════ -->
+
+  <xs:element name="requisicao" type="RequisicaoType"/>
+
+  <!-- raiz de coleção para exportação/importação em lote -->
+  <xs:element name="requisicoes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="requisicao" type="RequisicaoType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="exportadoEm" type="xs:dateTime" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="RequisicaoType">
+    <xs:sequence>
+      <xs:element name="numeroRequisicao" type="xs:string"/>
+      <xs:element name="dataEmissao"      type="xs:dateTime"/>
+      <xs:element name="urgente"          type="xs:boolean" default="false"/>
+      <xs:element name="estado"           type="EstadoReqType"/>
+      <xs:element name="utente"           type="UtenteRefType"/>
+      <xs:element name="medico"           type="xs:string" minOccurs="0"/>
+      <xs:element name="analises"         type="AnalisesType"/>
+      <xs:element name="observacoes"      type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="UtenteRefType">
+    <xs:sequence>
+      <xs:element name="numeroProcesso" type="xs:string"/>
+      <xs:element name="nome"           type="xs:string"/>
+      <xs:element name="sns"            type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AnalisesType">
+    <xs:sequence>
+      <xs:element name="analise" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="codigo" type="xs:string"/>
+            <xs:element name="nome"   type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="EstadoReqType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pendente"/>
+      <xs:enumeration value="em_curso"/>
+      <xs:enumeration value="concluida"/>
+      <xs:enumeration value="cancelada"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

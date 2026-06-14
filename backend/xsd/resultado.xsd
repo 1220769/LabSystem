@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <!-- ═══════════════════════════════════════════════
+       Schema de validação para RESULTADOS analíticos
+       LabSystem · exportação/importação XML
+       (um <resultado> por parâmetro analisado)
+       ═══════════════════════════════════════════════ -->
+
+  <xs:element name="resultado" type="ResultadoType"/>
+
+  <!-- raiz de coleção para exportação/importação em lote -->
+  <xs:element name="resultados">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="resultado" type="ResultadoType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="exportadoEm" type="xs:dateTime" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="ResultadoType">
+    <xs:sequence>
+      <xs:element name="codigoResultado"  type="xs:string"/>
+      <xs:element name="requisicaoNumero" type="xs:string"/>
+      <xs:element name="amostraCodigo"    type="xs:string"/>
+      <xs:element name="utenteNome"       type="xs:string"/>
+      <xs:element name="analiseCodigo"    type="xs:string"/>
+      <xs:element name="analiseNome"      type="xs:string"/>
+      <xs:element name="valor"            type="xs:string"  minOccurs="0"/>
+      <xs:element name="unidade"          type="xs:string"  minOccurs="0"/>
+      <xs:element name="flag"             type="FlagResType"/>
+      <xs:element name="estado"           type="EstadoResType"/>
+      <xs:element name="dataValidacao"    type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="observacoes"      type="xs:string"  minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:simpleType name="FlagResType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pendente"/>
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="alto"/>
+      <xs:enumeration value="baixo"/>
+      <xs:enumeration value="critico_alto"/>
+      <xs:enumeration value="critico_baixo"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="EstadoResType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pendente"/>
+      <xs:enumeration value="em_processamento"/>
+      <xs:enumeration value="resultado_disponivel"/>
+      <xs:enumeration value="validado_tecnico"/>
+      <xs:enumeration value="validado_medico"/>
+      <xs:enumeration value="rejeitado"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
